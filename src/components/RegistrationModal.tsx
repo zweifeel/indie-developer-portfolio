@@ -79,7 +79,7 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
     setTimeout(() => {
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 600);
+    }, 400);
   };
 
   return (
@@ -89,12 +89,12 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
       aria-modal="true"
       aria-labelledby="modal-title"
     >
-      <div className="relative w-full max-w-lg rounded-2xl border border-stone-750 bg-[#0f121d] p-6 sm:p-8 shadow-2xl text-[#E7E5E4]">
+      <div className="relative w-full max-w-lg rounded-2xl border border-stone-750 bg-[#0e1017] p-6 sm:p-8 shadow-2xl text-[#D6D3D1]">
         {/* Close Button */}
         <button
           onClick={onClose}
           type="button"
-          className="absolute top-5 right-5 p-2 rounded-lg text-[#A8A29E] hover:text-[#FAFAF9] hover:bg-stone-800 transition-colors focus:outline-hidden focus:ring-2 focus:ring-cyan-500"
+          className="absolute top-5 right-5 p-2 rounded-lg text-[#A8A29E] hover:text-[#F5F5F4] hover:bg-stone-850 transition-colors focus:outline-hidden focus:ring-2 focus:ring-stone-400"
           aria-label="Tutup jendela pendaftaran"
         >
           <X className="w-5 h-5" />
@@ -103,15 +103,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
         {!isSubmitted ? (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="p-1 rounded-md bg-cyan-950/80 border border-cyan-800/60 text-cyan-300">
-                <Sparkles className="w-3.5 h-3.5" />
+              <span className="p-1 rounded-md bg-stone-900 border border-stone-800 text-[#E7E5E4]">
+                <Sparkles className="w-3.5 h-3.5 text-[#A8A29E]" />
               </span>
-              <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-semibold">
+              <span className="text-xs font-mono uppercase tracking-wider text-[#A8A29E] font-semibold">
                 {project.name}
               </span>
             </div>
 
-            <h2 id="modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-[#FAFAF9] mb-2">
+            <h2 id="modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-[#F5F5F4] mb-2">
               {id.registrationModal.title}
             </h2>
             <p className="text-sm text-[#A8A29E] mb-6 leading-relaxed">
@@ -134,8 +134,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
               {/* Tester Name */}
               <div>
-                <label htmlFor="testerName" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
-                  {id.registrationModal.nameLabel} <span className="text-rose-400">*</span>
+                <label htmlFor="testerName" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
+                  {id.registrationModal.nameLabel} <span className="text-stone-400">*</span>
                 </label>
                 <input
                   id="testerName"
@@ -146,8 +146,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     if (errors.testerName) setErrors({ ...errors, testerName: undefined });
                   }}
                   placeholder={id.registrationModal.namePlaceholder}
-                  className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] transition-colors focus:outline-hidden focus:ring-2 focus:ring-cyan-500 ${
-                    errors.testerName ? 'border-rose-500/80' : 'border-stone-800 focus:border-cyan-500'
+                  className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] transition-colors focus:outline-hidden focus:ring-2 focus:ring-stone-400 ${
+                    errors.testerName ? 'border-rose-500/80' : 'border-stone-800 focus:border-stone-600'
                   }`}
                   required
                 />
@@ -158,8 +158,8 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
 
               {/* Tester Email */}
               <div>
-                <label htmlFor="testerEmail" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
-                  {id.registrationModal.emailLabel} <span className="text-rose-400">*</span>
+                <label htmlFor="testerEmail" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
+                  {id.registrationModal.emailLabel} <span className="text-stone-400">*</span>
                 </label>
                 <input
                   id="testerEmail"
@@ -170,59 +170,64 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                     if (errors.testerEmail) setErrors({ ...errors, testerEmail: undefined });
                   }}
                   placeholder={id.registrationModal.emailPlaceholder}
-                  className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] transition-colors focus:outline-hidden focus:ring-2 focus:ring-cyan-500 ${
-                    errors.testerEmail ? 'border-rose-500/80' : 'border-stone-800 focus:border-cyan-500'
+                  className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] transition-colors focus:outline-hidden focus:ring-2 focus:ring-stone-400 ${
+                    errors.testerEmail ? 'border-rose-500/80' : 'border-stone-800 focus:border-stone-600'
                   }`}
                   required
                 />
                 {errors.testerEmail && (
                   <p className="mt-1 text-xs text-rose-400">{errors.testerEmail}</p>
                 )}
-                <p className="mt-1.5 text-[11px] text-[#78716C]">
-                  Pastikan alamat email sesuai dengan akun Google Play aktif Anda untuk otorisasi akses instalasi.
+                <p className="mt-1.5 text-[11px] text-[#8A8580]">
+                  Gunakan email aktif akun Google Play Anda untuk otorisasi instalasi resmi.
                 </p>
               </div>
 
               {/* Requirement reminder */}
-              <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-3 flex gap-2.5 items-start text-xs text-[#A8A29E] leading-relaxed">
-                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-cyan-400" />
+              <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-3 flex gap-2.5 items-start text-xs text-[#A8A29E] leading-relaxed">
+                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-[#D6D3D1]" />
                 <span>
-                  Sesuai kebijakan Google Play, penguji diharapkan memasang dan mempertahankan aplikasi selama minimal 14 hari berturut-turut.
+                  Sesuai kebijakan Google Play, penguji wajib memasang dan mempertahankan aplikasi selama minimal 14 hari berturut-turut.
                 </span>
               </div>
+
+              {/* Notice for frontend preview */}
+              <p className="text-[11px] text-[#8A8580] italic">
+                * Mode Pratinjau Frontend: Data divalidasi pada antarmuka. Integrasi penyimpanan Google Sheets diaktifkan pada Milestone 2.
+              </p>
 
               {/* Actions */}
               <div className="pt-2 flex items-center justify-end gap-3">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2.5 rounded-xl border border-stone-700 text-sm font-medium text-[#A8A29E] hover:bg-stone-800 hover:text-[#FAFAF9] transition-colors"
+                  className="px-4 py-2.5 rounded-xl border border-stone-800 text-sm font-medium text-[#A8A29E] hover:bg-stone-850 hover:text-[#F5F5F4] transition-colors"
                 >
                   {id.registrationModal.cancelBtn}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-stone-950 text-sm font-semibold shadow-sm transition-all hover:scale-[1.02] disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 text-sm font-semibold shadow-xs transition-all hover:scale-[1.01] disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  {isSubmitting ? 'Memproses...' : id.registrationModal.submitBtn}
+                  {isSubmitting ? 'Memeriksa...' : id.registrationModal.submitBtn}
                 </button>
               </div>
             </form>
           </div>
         ) : (
           <div className="py-4">
-            <div className="w-12 h-12 rounded-full bg-emerald-950/80 border border-emerald-700/60 text-emerald-400 flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-6 h-6" />
+            <div className="w-12 h-12 rounded-full bg-stone-900 border border-stone-750 text-[#F5F5F4] flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-6 h-6 text-stone-300" />
             </div>
-            <h2 className="text-xl font-bold text-[#FAFAF9] mb-2">{id.registrationModal.successTitle}</h2>
-            <p className="text-sm text-[#E7E5E4] mb-6 leading-relaxed">
-              {id.registrationModal.successDesc}
+            <h2 className="text-xl font-bold text-[#F5F5F4] mb-2">{id.registrationModal.successTitle}</h2>
+            <p className="text-sm text-[#D6D3D1] mb-6 leading-relaxed">
+              Format data pendaftaran Anda valid pada pemeriksaan frontend. Alur pengiriman data ke server akan aktif pada Milestone 2.
             </p>
 
-            <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-4 mb-6">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-cyan-300 mb-3">
+            <div className="rounded-xl border border-stone-800 bg-stone-900/80 p-4 mb-6">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-[#E7E5E4] mb-3">
                 {id.registrationModal.nextStepsTitle}
               </h3>
               <ol className="list-decimal list-inside space-y-2 text-xs text-[#A8A29E] leading-relaxed">

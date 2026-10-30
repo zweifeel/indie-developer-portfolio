@@ -65,16 +65,6 @@ export function getWorkInProgressProjects(): readonly Project[] {
   return projects.filter((p) => p.status === 'WORK_IN_PROGRESS');
 }
 
-export function getLatestProjects(limit = 5): readonly Project[] {
-  return [...projects]
-    .sort((a, b) => {
-      const timeA = a.lastUpdated ? new Date(a.lastUpdated).getTime() : 0;
-      const timeB = b.lastUpdated ? new Date(b.lastUpdated).getTime() : 0;
-      return timeB - timeA;
-    })
-    .slice(0, limit);
-}
-
 export function calculateProjectStatistics(): ProjectStatistics {
   const totalProjects = projects.length;
   let readyForReleaseProjects = 0;

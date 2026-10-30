@@ -8,6 +8,12 @@ export type ProjectStatus =
   | 'WORK_IN_PROGRESS'
   | 'COMING_SOON';
 
+export interface ProjectCapability {
+  readonly title: string;
+  readonly description: string;
+  readonly icon: string;
+}
+
 export interface Project {
   readonly id: string;
   readonly slug: string;
@@ -16,6 +22,7 @@ export interface Project {
   readonly status: ProjectStatus;
   readonly shortDescription: string;
   readonly fullDescription: string;
+  readonly tagline?: string;
   readonly icon: string;
   readonly screenshots: readonly string[];
   readonly version: string;
@@ -27,6 +34,8 @@ export interface Project {
   readonly featured: boolean;
   readonly tags?: readonly string[];
   readonly technicalHighlights?: readonly string[];
+  readonly capabilities?: readonly ProjectCapability[];
+  readonly vision?: string;
 }
 
 export type ReportType = 'BUG_REPORT' | 'FEEDBACK' | 'FEATURE_SUGGESTION';

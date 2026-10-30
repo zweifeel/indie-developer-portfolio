@@ -90,5 +90,67 @@
     "registrationOpen": false,
     "featured": false,
     "tags": ["Game", "MMORPG", "Dalam Pengembangan"]
+  },
+  {
+    "id": "worklume",
+    "slug": "worklume",
+    "name": "Worklume",
+    "category": "APPLICATION",
+    "status": "WORK_IN_PROGRESS",
+    "tagline": "Work Smarter. Stay Organized.",
+    "shortDescription": "Universal Work & Reporting Platform built to make everyday work simpler, smarter, and more organized.",
+    "fullDescription": "Worklume is a Universal Work & Reporting Platform built to make everyday work simpler, smarter, and more organized.\n\nDesigned for individuals, teams, and organizations across different industries, Worklume provides a unified workspace to create reports, manage operational data, organize workflows, and maintain important business information.\n\nWith flexible reporting templates, structured data management, organizational workspaces, and local-first data capabilities, Worklume adapts to the way you work instead of forcing you into a rigid system.\n\nFrom individual productivity to multi-organization operations, Worklume helps transform scattered information and repetitive tasks into structured, manageable workflows.",
+    "icon": "/assets/projects/worklume/icon.png",
+    "screenshots": [],
+    "version": "",
+    "lastUpdated": "",
+    "playStoreUrl": "",
+    "testingUrl": "",
+    "registrationOpen": false,
+    "featured": true,
+    "tags": ["Aplikasi", "Universal Reporting", "Workflows", "Dalam Pengembangan"],
+    "capabilities": [
+      {
+        "title": "Universal Reporting",
+        "description": "Create, organize, and manage reports for different industries and operational needs.",
+        "icon": "FileText"
+      },
+      {
+        "title": "Customizable Templates",
+        "description": "Build reusable reporting formats and adapt forms to your workflow.",
+        "icon": "LayoutTemplate"
+      },
+      {
+        "title": "Organizational Workspaces",
+        "description": "Manage individual workspaces, teams, memberships, roles, and permissions.",
+        "icon": "Users"
+      },
+      {
+        "title": "Local-First Data Management",
+        "description": "Keep your data accessible locally with backup and restore capabilities.",
+        "icon": "Database"
+      },
+      {
+        "title": "Cloud Synchronization",
+        "description": "Optional cloud synchronization designed to support access across devices.",
+        "icon": "Cloud"
+      },
+      {
+        "title": "Workflow Management",
+        "description": "Organize daily activities, reporting processes, and operational information.",
+        "icon": "Workflow"
+      },
+      {
+        "title": "Data Export & Portability",
+        "description": "Export and preserve important information in practical formats.",
+        "icon": "Download"
+      },
+      {
+        "title": "Cross-Platform Vision",
+        "description": "Designed to grow across Android, Windows Desktop, and Web-based administration.",
+        "icon": "MonitorSmartphone"
+      }
+    ],
+    "vision": "We believe work management should be flexible, accessible, and adaptable. Worklume aims to bring essential work tools into one platform, helping individuals and organizations spend less time managing scattered information and more time focusing on meaningful work."
   }
 ]

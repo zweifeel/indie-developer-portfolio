@@ -11,9 +11,9 @@ import {
 } from '../services/projectService';
 
 describe('Project Service & Official Projects Verification', () => {
-  it('loads exactly the 5 official projects', () => {
+  it('loads exactly the 6 official projects', () => {
     const all = getAllProjects();
-    expect(all.length).toBe(5);
+    expect(all.length).toBe(6);
 
     const ids = all.map((p) => p.id);
     expect(ids).toEqual([
@@ -22,6 +22,7 @@ describe('Project Service & Official Projects Verification', () => {
       'mobile-kasir',
       'idle-mining',
       'the-broken-origin',
+      'worklume',
     ]);
   });
 
@@ -52,7 +53,7 @@ describe('Project Service & Official Projects Verification', () => {
     expect(mobileKasir?.testerRequirementDays).toBe(14);
   });
 
-  it('validates IDLE MASTER, Idle Mining, and The Broken Origin are WORK_IN_PROGRESS', () => {
+  it('validates IDLE MASTER, Idle Mining, and The Broken Origin are WORK_IN_PROGRESS games', () => {
     const idleMaster = getProjectBySlug('idle-master');
     const idleMining = getProjectBySlug('idle-mining');
     const theBrokenOrigin = getProjectBySlug('the-broken-origin');
@@ -66,23 +67,36 @@ describe('Project Service & Official Projects Verification', () => {
     expect(theBrokenOrigin?.category).toBe('GAME');
   });
 
-  it('calculates project statistics dynamically matching official numbers', () => {
+  it('validates Worklume has correct metadata, capabilities, and tagline', () => {
+    const worklume = getProjectBySlug('worklume');
+    expect(worklume).toBeDefined();
+    expect(worklume?.name).toBe('Worklume');
+    expect(worklume?.category).toBe('APPLICATION');
+    expect(worklume?.status).toBe('WORK_IN_PROGRESS');
+    expect(worklume?.featured).toBe(true);
+    expect(worklume?.tagline).toBe('Work Smarter. Stay Organized.');
+    expect(worklume?.capabilities?.length).toBe(8);
+    expect(worklume?.vision).toBeDefined();
+  });
+
+  it('calculates project statistics dynamically matching official numbers for 6 projects', () => {
     const stats = calculateProjectStatistics();
-    expect(stats.totalProjects).toBe(5);
+    expect(stats.totalProjects).toBe(6);
     expect(stats.readyForReleaseProjects).toBe(1);
     expect(stats.releasedProjects).toBe(0);
     expect(stats.closedTestingProjects).toBe(1);
-    expect(stats.workInProgressProjects).toBe(3);
+    expect(stats.workInProgressProjects).toBe(4);
     expect(stats.totalGames).toBe(3);
-    expect(stats.totalApplications).toBe(2);
+    expect(stats.totalApplications).toBe(3);
     expect(stats.activeRecruitmentCount).toBe(1);
   });
 
-  it('filters ready for release and closed testing correctly', () => {
+  it('filters ready for release, closed testing, and featured correctly', () => {
     const featured = getFeaturedProjects();
-    expect(featured.length).toBe(2);
+    expect(featured.length).toBe(3);
     expect(featured.map((p) => p.id)).toContain('dompetnalar');
     expect(featured.map((p) => p.id)).toContain('mobile-kasir');
+    expect(featured.map((p) => p.id)).toContain('worklume');
 
     const ready = getReadyForReleaseProjects();
     expect(ready.length).toBe(1);
@@ -93,7 +107,7 @@ describe('Project Service & Official Projects Verification', () => {
     expect(closed[0].id).toBe('mobile-kasir');
 
     const inDev = getWorkInProgressProjects();
-    expect(inDev.length).toBe(3);
+    expect(inDev.length).toBe(4);
   });
 
   it('validates schema and rejects malformed project objects', () => {

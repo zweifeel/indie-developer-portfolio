@@ -28,10 +28,10 @@ export const ProjectIcon: React.FC<ProjectIconProps> = ({
   if (hasError || !src) {
     return (
       <div
-        className={`flex items-center justify-center rounded-xl bg-linear-to-b from-stone-850 to-stone-900 border border-stone-700/80 text-stone-200 font-bold text-sm select-none shadow-xs ${className}`}
+        className={`flex items-center justify-center rounded-xl bg-stone-900 border border-stone-800 text-[#E7E5E4] font-semibold text-sm select-none shadow-xs ${className}`}
         aria-label={alt}
       >
-        {initials || (category === 'GAME' ? <Gamepad2 className="w-5 h-5 text-stone-300" /> : <AppWindow className="w-5 h-5 text-cyan-300" />)}
+        {initials || (category === 'GAME' ? <Gamepad2 className="w-5 h-5 text-[#A8A29E]" /> : <AppWindow className="w-5 h-5 text-[#A8A29E]" />)}
       </div>
     );
   }
@@ -58,10 +58,10 @@ export const ScreenshotImage: React.FC<ScreenshotImageProps> = ({ src, alt, inde
 
   if (hasError || !src) {
     return (
-      <div className="aspect-16/9 w-full rounded-xl bg-stone-900/90 border border-stone-800 flex flex-col items-center justify-center p-6 text-stone-400 text-center select-none shadow-xs">
-        <ImageIcon className="w-7 h-7 mb-2 text-stone-500" aria-hidden="true" />
-        <span className="text-xs font-mono text-stone-300">Pratinjau Layar #{index + 1}</span>
-        <span className="text-[11px] text-stone-500 mt-1">Pratinjau Belum Tersedia</span>
+      <div className="aspect-16/9 w-full rounded-xl bg-stone-900/90 border border-stone-800 flex flex-col items-center justify-center p-6 text-[#A8A29E] text-center select-none shadow-xs">
+        <ImageIcon className="w-7 h-7 mb-2 text-[#78716C]" aria-hidden="true" />
+        <span className="text-xs font-mono text-[#D6D3D1]">Pratinjau Layar #{index + 1}</span>
+        <span className="text-[11px] text-[#78716C] mt-1">Pratinjau Belum Tersedia</span>
       </div>
     );
   }

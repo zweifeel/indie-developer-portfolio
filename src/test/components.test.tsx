@@ -101,8 +101,26 @@ describe('UI Component Unit Tests with Official Projects', () => {
     );
 
     expect(screen.getByRole('heading', { level: 1, name: /IDLE MASTER/i })).toBeInTheDocument();
-    expect(screen.getByText(/Proyek masih dalam tahap pengembangan aktif/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Proyek masih dalam tahap pengembangan aktif/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.queryByRole('button', { name: /daftar jadi penguji/i })).not.toBeInTheDocument();
+  });
+
+  it('renders Worklume detail with tagline, capabilities grid, and vision section', () => {
+    render(
+      <MemoryRouter initialEntries={['/projects/worklume']}>
+        <Routes>
+          <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    expect(screen.getByRole('heading', { level: 1, name: /Worklume/i })).toBeInTheDocument();
+    expect(screen.getByText('Work Smarter. Stay Organized.')).toBeInTheDocument();
+    expect(screen.getByText('Core Capabilities')).toBeInTheDocument();
+    expect(screen.getByText('Universal Reporting')).toBeInTheDocument();
+    expect(screen.getByText('Organizational Workspaces')).toBeInTheDocument();
+    expect(screen.getByText('Local-First Data Management')).toBeInTheDocument();
+    expect(screen.getByText('Our Vision')).toBeInTheDocument();
   });
 
   it('renders ProjectsPage with all status filters including Siap Rilis', () => {
