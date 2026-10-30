@@ -43,23 +43,28 @@ export const HomePage: React.FC = () => {
   return (
     <div className="space-y-16 sm:space-y-24 pb-16">
       {/* HERO SECTION */}
-      <section className="relative pt-12 sm:pt-20 pb-6">
+      <section className="relative pt-12 sm:pt-20 pb-6 overflow-hidden">
+        {/* Subtle studio cyan ambient lighting */}
+        <div
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[540px] h-[280px] bg-cyan-600/5 blur-[120px] rounded-full pointer-events-none -z-10"
+          aria-hidden="true"
+        />
+
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl">
             {/* Top Studio Badge */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-800 bg-stone-900/90 text-xs font-mono text-[#A8A29E] mb-6">
-              <Sparkles className="w-3.5 h-3.5 text-[#8A8580]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-800 bg-stone-900/90 text-xs font-mono text-stone-300 mb-6">
+              <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
               <span>{id.hero.badge}</span>
             </div>
 
-            {/* Headline - Strictly Monochrome, No Gradient */}
-            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-[#F5F5F4] leading-[1.15] mb-6">
-              {id.hero.titleLine1}{' '}
-              <span>{id.hero.titleHighlight}</span>
+            {/* Headline - Solid Color, No Gradient */}
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-[1.15] mb-6">
+              {id.hero.titleLine1} {id.hero.titleHighlight}
             </h1>
 
             {/* Subtitle */}
-            <p className="text-base sm:text-lg text-[#D6D3D1] leading-relaxed mb-8 max-w-2xl">
+            <p className="text-base sm:text-lg text-stone-300 leading-relaxed mb-8 max-w-2xl">
               {id.hero.subtitle}
             </p>
 
@@ -76,7 +81,7 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedTestingProject(mobileKasir)}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-stone-900 hover:bg-stone-850 text-[#E7E5E4] border border-stone-800 hover:border-stone-700 font-medium text-sm transition-all"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cyan-950/60 hover:bg-cyan-900/60 text-cyan-200 border border-cyan-800/60 font-semibold text-sm transition-all"
                 >
                   <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
                   <span>Daftar Tester {mobileKasir.name}</span>
@@ -87,67 +92,67 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* DYNAMIC STATISTICS - All Numbers in Off-White / Bone White (#F5F5F4), Labels in #A8A29E */}
+      {/* DYNAMIC STATISTICS (Calculated from JSON) */}
       <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8" aria-label="Statistik Proyek">
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Total Projects */}
           <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-5">
-            <div className="flex items-center justify-between mb-3 text-[#A8A29E]">
+            <div className="flex items-center justify-between mb-3 text-stone-400">
               <span className="text-xs font-mono uppercase tracking-wider">{id.stats.totalProjects}</span>
-              <Layers className="w-4 h-4 text-[#8A8580]" />
+              <Layers className="w-4 h-4 text-stone-400" />
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#F5F5F4] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
               {stats.totalProjects}
             </div>
-            <div className="mt-1 text-xs text-[#8A8580]">Proyek aktif studio</div>
+            <div className="mt-1 text-xs text-stone-400">Proyek aktif studio</div>
           </div>
 
           {/* Ready For Release */}
           <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-5">
-            <div className="flex items-center justify-between mb-3 text-[#A8A29E]">
+            <div className="flex items-center justify-between mb-3 text-stone-400">
               <span className="text-xs font-mono uppercase tracking-wider">{id.stats.readyForRelease}</span>
-              <CheckCircle2 className="w-4 h-4 text-[#8A8580]" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#F5F5F4] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold text-emerald-400 tracking-tight">
               {stats.readyForReleaseProjects}
             </div>
-            <div className="mt-1 text-xs text-[#8A8580]">DompetNalar siap rilis</div>
+            <div className="mt-1 text-xs text-stone-400">DompetNalar siap rilis</div>
           </div>
 
           {/* Closed Testing Active */}
           <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-5">
-            <div className="flex items-center justify-between mb-3 text-[#A8A29E]">
+            <div className="flex items-center justify-between mb-3 text-stone-400">
               <span className="text-xs font-mono uppercase tracking-wider">{id.stats.activeRecruitment}</span>
               <Radio className="w-4 h-4 text-cyan-400 animate-pulse" />
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#F5F5F4] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold text-cyan-400 tracking-tight">
               {stats.activeRecruitmentCount}
             </div>
-            <div className="mt-1 text-xs text-[#8A8580]">Mobile Kasir (14 Hari)</div>
+            <div className="mt-1 text-xs text-stone-400">Mobile Kasir (14 Hari)</div>
           </div>
 
           {/* In Development */}
           <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-5">
-            <div className="flex items-center justify-between mb-3 text-[#A8A29E]">
+            <div className="flex items-center justify-between mb-3 text-stone-400">
               <span className="text-xs font-mono uppercase tracking-wider">{id.stats.inDevelopment}</span>
-              <Clock className="w-4 h-4 text-[#8A8580]" />
+              <Clock className="w-4 h-4 text-amber-400" />
             </div>
-            <div className="text-2xl sm:text-3xl font-bold text-[#F5F5F4] tracking-tight">
+            <div className="text-2xl sm:text-3xl font-bold text-stone-200 tracking-tight">
               {stats.workInProgressProjects}
             </div>
-            <div className="mt-1 text-xs text-[#8A8580]">Worklume & 3 Game</div>
+            <div className="mt-1 text-xs text-stone-400">Worklume & 3 Game</div>
           </div>
 
           {/* Category Ratio: Games / Apps */}
           <div className="col-span-2 lg:col-span-1 rounded-2xl border border-stone-800 bg-[#0f1118] p-5">
-            <div className="flex items-center justify-between mb-3 text-[#A8A29E]">
+            <div className="flex items-center justify-between mb-3 text-stone-400">
               <span className="text-xs font-mono uppercase tracking-wider">Kategori</span>
-              <Gamepad2 className="w-4 h-4 text-[#8A8580]" />
+              <Gamepad2 className="w-4 h-4 text-cyan-400" />
             </div>
-            <div className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+            <div className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               {stats.totalGames} Game / {stats.totalApplications} App
             </div>
-            <div className="mt-1 text-xs text-[#8A8580]">Distribusi portofolio</div>
+            <div className="mt-1 text-xs text-stone-400">Distribusi portofolio</div>
           </div>
         </div>
       </section>
@@ -155,27 +160,27 @@ export const HomePage: React.FC = () => {
       {/* SECTION 1: DOMPETNALAR SPOTLIGHT (READY_FOR_RELEASE) */}
       {dompetNalar && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-6 sm:p-8">
+          <div className="rounded-2xl border border-emerald-900/40 bg-[#0f1418] p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="max-w-2xl space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-stone-900 border border-stone-800 text-xs text-[#D6D3D1]">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-950/70 border border-emerald-700/60 text-xs font-medium text-emerald-300">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   <span>Tahap Closed Testing Selesai</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   {dompetNalar.name} — Siap Rilis Google Play
                 </h2>
-                <p className="text-sm text-[#D6D3D1] leading-relaxed">
+                <p className="text-sm text-stone-300 leading-relaxed">
                   {dompetNalar.shortDescription} Seluruh kriteria pengujian tertutup 14 hari telah dipenuhi dan saat ini dalam antrean peluncuran publik Google Play Store.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-[#A8A29E]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-stone-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     <span>Closed testing Google Play tuntas</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-[#A8A29E]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-stone-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                     <span>Persiapan peluncuran publik</span>
                   </div>
                 </div>
@@ -189,7 +194,7 @@ export const HomePage: React.FC = () => {
                   <span>Detail {dompetNalar.name}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
-                <span className="text-xs text-center text-[#8A8580]">
+                <span className="text-xs text-center text-stone-400">
                   URL Play Store segera tersedia saat rilis
                 </span>
               </div>
@@ -201,27 +206,27 @@ export const HomePage: React.FC = () => {
       {/* SECTION 2: MOBILE KASIR SPOTLIGHT (CLOSED_TESTING ACTIVE) */}
       {mobileKasir && (
         <section className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-6 sm:p-8">
+          <div className="rounded-2xl border border-cyan-900/50 bg-[#0d141e] p-6 sm:p-8 relative overflow-hidden">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="max-w-2xl space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-stone-900 border border-stone-800 text-xs text-[#D6D3D1]">
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-700/60 text-xs font-medium text-cyan-200">
                   <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
                   <span>Perekrutan Penguji Tertutup Aktif</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   {mobileKasir.name} — Membutuhkan Penguji
                 </h2>
-                <p className="text-sm text-[#D6D3D1] leading-relaxed">
+                <p className="text-sm text-stone-300 leading-relaxed">
                   {mobileKasir.shortDescription} Bantu kami memenuhi standar 14 hari pengujian Google Play Console. Dapatkan akses prarilis dan bantu menguji alur kasir offline.
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-                  <div className="flex items-center gap-2 text-xs text-[#A8A29E]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-stone-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <span>Wajib komitmen 14 hari instalasi</span>
                   </div>
-                  <div className="flex items-center gap-2 text-xs text-[#A8A29E]">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                  <div className="flex items-center gap-2 text-xs text-stone-300">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <span>Akses prarilis eksklusif</span>
                   </div>
                 </div>
@@ -231,14 +236,14 @@ export const HomePage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setSelectedTestingProject(mobileKasir)}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 font-semibold text-xs transition-all hover:scale-[1.01]"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-stone-950 font-bold text-xs transition-all hover:scale-[1.01] shadow-xs"
                 >
+                  <Radio className="w-3.5 h-3.5 animate-pulse" />
                   <span>Daftar Penguji {mobileKasir.name}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
                 <Link
                   to={`/projects/${mobileKasir.slug}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-850 text-[#E7E5E4] text-xs font-medium transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-cyan-800/60 bg-cyan-950/40 hover:bg-cyan-900/50 text-cyan-200 text-xs font-medium transition-colors"
                 >
                   <span>Lihat Ketentuan 14 Hari</span>
                 </Link>
@@ -254,18 +259,18 @@ export const HomePage: React.FC = () => {
           <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-6 sm:p-8">
             <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <div className="max-w-2xl space-y-2.5">
-                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-stone-900 border border-stone-800 text-xs text-[#D6D3D1]">
-                  <Briefcase className="w-3.5 h-3.5 text-[#A8A29E]" />
+                <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-cyan-950/70 border border-cyan-700/60 text-xs font-medium text-cyan-300">
+                  <Briefcase className="w-3.5 h-3.5 text-cyan-400" />
                   <span>Universal Work & Reporting Platform</span>
                 </div>
-                <h2 className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+                <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                   {worklume.name} — {worklume.tagline}
                 </h2>
-                <p className="text-sm text-[#D6D3D1] leading-relaxed">
+                <p className="text-sm text-stone-300 leading-relaxed">
                   {worklume.shortDescription} Dirancang untuk produktivitas mandiri hingga operasional multi-organisasi dengan kapabilitas local-first data management.
                 </p>
 
-                <div className="flex flex-wrap gap-2 pt-1 text-xs text-[#8A8580]">
+                <div className="flex flex-wrap gap-2 pt-1 text-xs text-stone-400">
                   <span>• Universal Reporting</span>
                   <span>• Customizable Templates</span>
                   <span>• Organizational Workspaces</span>
@@ -276,10 +281,10 @@ export const HomePage: React.FC = () => {
               <div className="shrink-0">
                 <Link
                   to={`/projects/${worklume.slug}`}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-stone-750 bg-stone-900 hover:bg-stone-850 text-[#F5F5F4] text-xs font-medium transition-colors"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-stone-750 bg-stone-900 hover:bg-stone-850 hover:border-cyan-800/60 text-stone-200 hover:text-white text-xs font-medium transition-colors"
                 >
                   <span>Detail & Core Capabilities</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <ArrowRight className="w-3.5 h-3.5 text-cyan-400" />
                 </Link>
               </div>
             </div>
@@ -342,11 +347,11 @@ export const HomePage: React.FC = () => {
         <div className="rounded-2xl border border-stone-800 bg-[#0d0f15] p-6 sm:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
             <div className="lg:col-span-7 space-y-3.5">
-              <div className="flex items-center gap-2 text-xs font-mono text-[#A8A29E]">
-                <Terminal className="w-3.5 h-3.5" />
+              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full border border-stone-800 bg-stone-900/80 text-xs font-mono text-cyan-300">
+                <Terminal className="w-3.5 h-3.5 text-cyan-400" />
                 <span>{developerProfile.role}</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+              <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
                 {id.sections.aboutPreviewTitle}
               </h2>
               <p className="text-sm text-[#D6D3D1] leading-relaxed">
@@ -356,7 +361,7 @@ export const HomePage: React.FC = () => {
               <div className="space-y-2 pt-1">
                 {developerProfile.philosophy.slice(0, 3).map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs text-[#D6D3D1]">
-                    <Zap className="w-3.5 h-3.5 text-[#8A8580] shrink-0 mt-0.5" />
+                    <Zap className="w-3.5 h-3.5 text-cyan-400 shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -365,7 +370,7 @@ export const HomePage: React.FC = () => {
               <div className="pt-3 flex items-center gap-4">
                 <Link
                   to="/about"
-                  className="inline-flex items-center gap-2 text-xs font-semibold text-[#E7E5E4] hover:text-[#F5F5F4] transition-colors underline decoration-stone-750 underline-offset-4"
+                  className="inline-flex items-center gap-2 text-xs font-semibold text-cyan-400 hover:text-cyan-300 transition-colors underline decoration-cyan-800/60 underline-offset-4"
                 >
                   <span>{id.sections.readMoreAbout}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -386,15 +391,15 @@ export const HomePage: React.FC = () => {
               </h3>
               <div className="space-y-2.5">
                 <div className="p-3 rounded-lg bg-stone-900 border border-stone-850">
-                  <div className="text-xs font-medium text-[#F5F5F4] mb-0.5">Closed Testing 14 Hari</div>
+                  <div className="text-xs font-medium text-emerald-400 mb-0.5">Closed Testing 14 Hari</div>
                   <div className="text-[11px] text-[#A8A29E]">Memenuhi persyaratan uji coba 20 penguji Google Play Console.</div>
                 </div>
                 <div className="p-3 rounded-lg bg-stone-900 border border-stone-850">
-                  <div className="text-xs font-medium text-[#F5F5F4] mb-0.5">Arsitektur Bebas Biaya</div>
+                  <div className="text-xs font-medium text-cyan-400 mb-0.5">Arsitektur Bebas Biaya</div>
                   <div className="text-[11px] text-[#A8A29E]">100% Zero-Cost Stack: Cloudflare Pages + Google Apps Script.</div>
                 </div>
                 <div className="p-3 rounded-lg bg-stone-900 border border-stone-850">
-                  <div className="text-xs font-medium text-[#F5F5F4] mb-0.5">Zero Bloatware</div>
+                  <div className="text-xs font-medium text-amber-300 mb-0.5">Zero Bloatware</div>
                   <div className="text-[11px] text-[#A8A29E]">Efisien, ringan, hemat konsumsi memori dan baterai perangkat.</div>
                 </div>
               </div>

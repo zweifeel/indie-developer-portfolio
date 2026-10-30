@@ -103,15 +103,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
         {!isSubmitted ? (
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <span className="p-1 rounded-md bg-stone-900 border border-stone-800 text-[#E7E5E4]">
-                <Sparkles className="w-3.5 h-3.5 text-[#A8A29E]" />
+              <span className="p-1 rounded-md bg-cyan-950/50 border border-cyan-800/60 text-cyan-300">
+                <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
               </span>
-              <span className="text-xs font-mono uppercase tracking-wider text-[#A8A29E] font-semibold">
+              <span className="text-xs font-mono uppercase tracking-wider text-cyan-300 font-semibold">
                 {project.name}
               </span>
             </div>
 
-            <h2 id="modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-[#F5F5F4] mb-2">
+            <h2 id="modal-title" className="text-xl sm:text-2xl font-bold tracking-tight text-white mb-2">
               {id.registrationModal.title}
             </h2>
             <p className="text-sm text-[#A8A29E] mb-6 leading-relaxed">
@@ -184,15 +184,15 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
               </div>
 
               {/* Requirement reminder */}
-              <div className="rounded-xl border border-stone-800 bg-stone-900/70 p-3 flex gap-2.5 items-start text-xs text-[#A8A29E] leading-relaxed">
-                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-[#D6D3D1]" />
+              <div className="rounded-xl border border-cyan-800/50 bg-cyan-950/30 p-3 flex gap-2.5 items-start text-xs text-stone-300 leading-relaxed">
+                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-cyan-400" />
                 <span>
                   Sesuai kebijakan Google Play, penguji wajib memasang dan mempertahankan aplikasi selama minimal 14 hari berturut-turut.
                 </span>
               </div>
 
               {/* Notice for frontend preview */}
-              <p className="text-[11px] text-[#8A8580] italic">
+              <p className="text-[11px] text-stone-400 italic">
                 * Mode Pratinjau Frontend: Data divalidasi pada antarmuka. Integrasi penyimpanan Google Sheets diaktifkan pada Milestone 2.
               </p>
 
@@ -201,14 +201,14 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2.5 rounded-xl border border-stone-800 text-sm font-medium text-[#A8A29E] hover:bg-stone-850 hover:text-[#F5F5F4] transition-colors"
+                  className="px-4 py-2.5 rounded-xl border border-stone-800 text-sm font-medium text-stone-400 hover:bg-stone-850 hover:text-white transition-colors"
                 >
                   {id.registrationModal.cancelBtn}
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 text-sm font-semibold shadow-xs transition-all hover:scale-[1.01] disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-stone-950 text-sm font-bold shadow-xs transition-all hover:scale-[1.01] disabled:opacity-50"
                 >
                   <Send className="w-3.5 h-3.5" />
                   {isSubmitting ? 'Memeriksa...' : id.registrationModal.submitBtn}
@@ -218,10 +218,10 @@ export const RegistrationModal: React.FC<RegistrationModalProps> = ({
           </div>
         ) : (
           <div className="py-4">
-            <div className="w-12 h-12 rounded-full bg-stone-900 border border-stone-750 text-[#F5F5F4] flex items-center justify-center mb-4">
-              <CheckCircle2 className="w-6 h-6 text-stone-300" />
+            <div className="w-12 h-12 rounded-full bg-emerald-950/70 border border-emerald-700/60 text-emerald-400 flex items-center justify-center mb-4">
+              <CheckCircle2 className="w-6 h-6 text-emerald-400" />
             </div>
-            <h2 className="text-xl font-bold text-[#F5F5F4] mb-2">{id.registrationModal.successTitle}</h2>
+            <h2 className="text-xl font-bold text-white mb-2">{id.registrationModal.successTitle}</h2>
             <p className="text-sm text-[#D6D3D1] mb-6 leading-relaxed">
               Format data pendaftaran Anda valid pada pemeriksaan frontend. Alur pengiriman data ke server akan aktif pada Milestone 2.
             </p>

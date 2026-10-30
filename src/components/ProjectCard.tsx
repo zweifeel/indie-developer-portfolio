@@ -44,10 +44,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 </h3>
                 {project.featured && (
                   <span
-                    className="inline-flex items-center gap-1 rounded bg-stone-850 px-1.5 py-0.5 text-[10px] font-medium text-[#A8A29E] border border-stone-750"
+                    className="inline-flex items-center gap-1 rounded bg-cyan-950/50 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300 border border-cyan-800/60"
                     title="Proyek Unggulan"
                   >
-                    <Sparkles className="w-2.5 h-2.5 text-[#A8A29E]" />
+                    <Sparkles className="w-2.5 h-2.5 text-cyan-400" />
                     Featured
                   </span>
                 )}
@@ -67,13 +67,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         <div className="flex flex-wrap items-center gap-2 mb-3">
           <CategoryBadge category={project.category} />
           {isClosedTesting && project.registrationOpen && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#D6D3D1] bg-stone-900 border border-stone-800 rounded px-2 py-0.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-cyan-300 bg-cyan-950/40 border border-cyan-800/50 rounded px-2 py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-cyan-400 animate-pulse" />
               <span>Butuh Penguji ({project.testerRequirementDays || 14} Hari)</span>
             </span>
           )}
           {isReady && (
-            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-[#D6D3D1] bg-stone-900 border border-stone-800 rounded px-2 py-0.5">
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-300 bg-emerald-950/40 border border-emerald-800/50 rounded px-2 py-0.5">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
               <span>Siap Rilis Google Play</span>
             </span>
@@ -109,11 +109,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </span>
         <Link
           to={`/projects/${project.slug}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E7E5E4] hover:text-[#F5F5F4] transition-colors group-hover:translate-x-0.5"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-200 hover:text-white transition-colors group-hover:translate-x-0.5"
           aria-label={`Lihat rincian lengkap proyek ${project.name}`}
         >
-          <span className="underline decoration-stone-700 underline-offset-4 group-hover:decoration-stone-400">Detail Proyek</span>
-          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 text-[#A8A29E]" />
+          <span className="underline decoration-stone-700 underline-offset-4 group-hover:decoration-cyan-400">Detail Proyek</span>
+          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1 text-cyan-400" />
         </Link>
       </div>
     </article>

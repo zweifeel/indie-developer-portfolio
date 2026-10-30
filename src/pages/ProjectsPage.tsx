@@ -107,14 +107,14 @@ export const ProjectsPage: React.FC = () => {
     <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16 space-y-8">
       {/* Header */}
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-800 bg-stone-900 text-xs font-mono text-[#A8A29E] mb-3">
-          <Layers className="w-3.5 h-3.5 text-[#8A8580]" />
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-stone-800 bg-stone-900 text-xs font-mono text-cyan-300 mb-3">
+          <Layers className="w-3.5 h-3.5 text-cyan-400" />
           <span>Direktori Proyek Google Play & Platform</span>
         </div>
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#F5F5F4] tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight">
           {id.nav.projects}
         </h1>
-        <p className="mt-2 text-sm sm:text-base text-[#A8A29E] max-w-2xl leading-relaxed">
+        <p className="mt-2 text-sm sm:text-base text-stone-300 max-w-2xl leading-relaxed">
           Koleksi enam proyek resmi aplikasi dan game. Saring berdasarkan status kesiapan rilis atau kategori aplikasi.
         </p>
       </div>

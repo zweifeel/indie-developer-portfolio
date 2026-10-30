@@ -109,17 +109,17 @@ export const FeedbackPage: React.FC = () => {
     {
       type: 'BUG_REPORT',
       label: id.feedback.types.BUG_REPORT,
-      icon: <Bug className="w-4 h-4 text-stone-400" />,
+      icon: <Bug className="w-4 h-4 text-rose-400" />,
     },
     {
       type: 'FEEDBACK',
       label: id.feedback.types.FEEDBACK,
-      icon: <MessageSquare className="w-4 h-4 text-stone-400" />,
+      icon: <MessageSquare className="w-4 h-4 text-cyan-400" />,
     },
     {
       type: 'FEATURE_SUGGESTION',
       label: id.feedback.types.FEATURE_SUGGESTION,
-      icon: <Lightbulb className="w-4 h-4 text-stone-400" />,
+      icon: <Lightbulb className="w-4 h-4 text-amber-400" />,
     },
   ];
 
@@ -129,7 +129,7 @@ export const FeedbackPage: React.FC = () => {
       <div>
         <Link
           to={`/projects/${project.slug}`}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-[#A8A29E] hover:text-[#F5F5F4] transition-colors underline decoration-stone-850 underline-offset-4"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-stone-300 hover:text-white transition-colors underline decoration-stone-850 hover:decoration-cyan-500 underline-offset-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Detail {project.name}</span>
@@ -138,12 +138,12 @@ export const FeedbackPage: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-[#F5F5F4] tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
           {id.feedback.title}
         </h1>
-        <p className="mt-2 text-sm text-[#A8A29E]">
+        <p className="mt-2 text-sm text-stone-300">
           {id.feedback.subtitle} Laporan ini ditujukan langsung untuk proyek{' '}
-          <strong className="text-[#F5F5F4]">{project.name}</strong>.
+          <strong className="text-white">{project.name}</strong>.
         </p>
       </div>
 
@@ -193,8 +193,8 @@ export const FeedbackPage: React.FC = () => {
                   onClick={() => setFormData({ ...formData, reportType: item.type })}
                   className={`flex items-center gap-2.5 p-3 rounded-xl border text-xs font-semibold text-left transition-all ${
                     formData.reportType === item.type
-                      ? 'bg-stone-850 border-stone-600 text-[#F5F5F4] shadow-xs'
-                      : 'bg-stone-900 border-stone-800 text-[#A8A29E] hover:text-[#F5F5F4] hover:bg-stone-850'
+                      ? 'bg-cyan-950/60 border-cyan-700/60 text-cyan-200 shadow-xs'
+                      : 'bg-stone-900 border-stone-800 text-stone-400 hover:text-stone-200 hover:bg-stone-850'
                   }`}
                 >
                   {item.icon}
@@ -353,7 +353,7 @@ export const FeedbackPage: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-stone-100 hover:bg-white text-stone-950 text-sm font-semibold shadow-xs transition-all hover:scale-[1.01] disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-stone-950 text-sm font-bold shadow-xs transition-all hover:scale-[1.01] disabled:opacity-50"
             >
               <Send className="w-4 h-4" />
               <span>{isSubmitting ? id.feedback.submitting : id.feedback.submitBtn}</span>
@@ -362,10 +362,10 @@ export const FeedbackPage: React.FC = () => {
         </form>
       ) : (
         <div className="rounded-2xl border border-stone-800 bg-[#0f1118] p-8 sm:p-12 text-center shadow-xl space-y-4">
-          <div className="w-12 h-12 mx-auto rounded-full bg-stone-900 border border-stone-750 text-[#F5F5F4] flex items-center justify-center">
-            <CheckCircle2 className="w-6 h-6 text-stone-300" />
+          <div className="w-12 h-12 mx-auto rounded-full bg-emerald-950/70 border border-emerald-700/60 text-emerald-400 flex items-center justify-center">
+            <CheckCircle2 className="w-6 h-6 text-emerald-400" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-[#F5F5F4] tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
             Validasi Input Formulir Berhasil (Mode Pratinjau)
           </h2>
           <p className="text-sm text-[#D6D3D1] max-w-lg mx-auto leading-relaxed">
