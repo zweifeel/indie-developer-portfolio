@@ -1,63 +1,95 @@
 # END_TO_END_PROOF.md
-# BUKTI PENGUJIAN LENGKAP END-TO-END (ANTI-BOHONG)
+# BUKTI PENGUJIAN LENGKAP END-TO-END (ANTI-ASAL-BAPAK-SENANG)
 
 > [!NOTE]
-> Bukti pengujian nyata hulu-ke-hilir untuk Tahap 7 (Persiapan Peluncuran Cloudflare Pages & Aktivasi Sinkronisasi GitHub).
+> Bukti pengujian nyata hulu-ke-hilir untuk modul:
+> **Kantor Virtual 3D Low-Poly Isometrik (Three.js WebGL) — Inspirasi Lembur.id & Aset Kay Lousberg (CC0 / Rp 0)**.
+
+---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Tahap 7 — Peluncuran Produksi Cloudflare Pages, Penegasan Tester Tanpa Batas & Aktivasi Sinkronisasi GitHub
-- **Waktu Pengujian:** 2026-11-10 00:48:00
-- **Tujuan Fitur:** Menyiapkan konfigurasi domain gratis Cloudflare Pages, membuka kunci pendaftaran tester terbuka tanpa batas, serta mengaktifkan kesiapan penerimaan webhook GitHub dari repositori game DompetNalar (FinSmart) secara aman.
+- **Nama Fitur:** Modul Kantor Virtual 3D Isometrik Three.js (Kampus Luas, Skalabilitas Dinamis, 30+ Kru Manusia Otonom, Chat Bubbles Melayang, Konsol Interaksi Pengunjung, Zoom-In Ruang Paten, & Tab Switcher 3D vs 2.5D)
+- **Waktu Pengujian:** 2026-11-10 02:08:00
+- **Lisensi & Biaya:** 100% Free Open-Source (MIT & CC0) — Rp 0 / $0.00
+- **Hasil Pengujian Vitest:** **770 / 770 Pengujian LULUS (100% PASS across 39 Test Suites)**
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-- **Bukti 1 (Cloudflare Pages Delivery Rules):** Berkas aturan `public/_headers` terpasang dengan proteksi ketat `nosniff`, `DENY`, `strict-origin-when-cross-origin`, dan `Cache-Control` aset 1 tahun immutable.
-- **Bukti 2 (Formulir Pendaftaran Tester):** Pop-up pendaftaran closed testing di Beranda (`RegistrationModal.tsx`) menampilkan badge resmi *"⭐ Pendaftaran Terbuka Tanpa Batas Kuota"* dan deskripsi penjelas bahwa seluruh pendaftar akun Google Play valid akan diikutsertakan.
-- **Bukti 3 (Pintu Webhook GitHub):** Endpoint `/api/webhook/github` siap menerima panggilan HTTPS POST bersertifikat HMAC-SHA256 dari GitHub.
+1. **Tombol Tab Switcher Terpadu (`VirtualOfficeHub.tsx`):**
+   - Pengunjung dapat bebas beralih seketika antara **"Kantor Virtual 3D"** dan **"2.5D Pixel Campus"** tanpa me-reload halaman.
+   - Pilihan mode tersimpan otomatis di `localStorage` peramban.
+2. **Kontrol Interaktif Kamera 3D (`ThreeCampusCanvas.tsx`):**
+   - **Orbit 360°:** Drag mouse atau geser 1 jari di layar sentuh memutar kampus kantor 360 derajat mengelilingi titik pusat.
+   - **Zoom In / Zoom Out:** Roda mouse (scroll) atau gestur cubit 2 jari (pinch) di ponsel memperbesar/memperkecil pemandangan.
+   - **Kunci Kemiringan (Clamped Pitch):** Sudut pandang dibatasi secara matematis (22° hingga 60°) agar sensasi isometrik tetap estetik.
+3. **Konsol Perintah Interaktif Pengunjung (`VisitorCommandConsole.tsx`):**
+   - Kolom ketik interaktif menerima perintah teks: `/bangunkan`, `/kopi`, `/pizza`, `/lembur`, `/pesta`, dan `/tanya`.
+   - 6 Tombol Aksi Cepat (*Quick Action Chips*) memudahkan pengguna ponsel untuk memicu aksi hanya dengan satu kali tap.
+   - Tombol Bantuan (`?`) memunculkan modal panduan perintah (*cheat-sheet*).
+4. **Navigasi Ruangan & Zoom-In Paten:**
+   - Bilah tombol ruangan di bagian atas memungkinkan memilih ruang kerja proyek (`DompetNalar`, `Mobile Kasir`, `Worklume`, `IDLE MASTER`, `Idle Mining`, `The Broken Origin`, atau Kampus Penuh).
+   - Memilih ruangan memicu animasi interpolasi (lerp) kamera zoom-in langsung ke ruang kerja terkait dan membuka drawer rincian tim.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-- **Bukti 1 (Validasi Kriptografi HMAC-SHA256):** Algoritma Web Cryptography API memverifikasi tanda tangan digital `X-Hub-Signature-256` secara constant-time tanpa kebocoran timing attack.
-- **Bukti 2 (Buka Kunci Prasyarat Produksi):** Repositori `lunachroc07-dot/finsmart` telah diverifikasi berstatus Private, dan properti `readyForProductionWebhook` dibuka menjadi `true` di `src/services/githubWebhookService.ts`.
-- **Bukti 3 (Satpam File Policy & DevSecOps):** Berkas `scripts/check-file-policy.js` memeriksa seluruh 2.500 berkas repositori dengan hasil 100% patuh aturan keamanan ketat.
+1. **Pembangun Kampus Prosedural Dinamis (`proceduralCampusBuilder.ts` & `virtualOffice3DConfig.ts`):**
+   - Skalabilitas dinamis: Ruang kerja tidak di-hardcode 6. Sistem secara matematis menghitung koordinat sayap Barat dan sayap Timur berdasarkan jumlah `projects` dari `projects.json` / CMS. Jika Owner menambah proyek baru, ruangan ke-7 otomatis terbangun di dunia 3D lengkap dengan perabot dan 5 kru manusia AI.
+2. **Figur Manusia Modular Gaya Kay Lousberg (`officeGeometryBuilder.ts`):**
+   - Seluruh kru berwujud manusia low-poly modular (kepala membulat, mata imut, rambut/topi beragam, kemeja oxford berkerah, dasi navy, cardigan, blazer sage green, rompi vest, lanyard ID badge studio, dan kacamata/headphone).
+   - Flat-shading pastel yang hangat dengan bayangan lembut (*soft shadows*) dan pencahayaan isometrik ganda.
+3. **Simulasi Pergerakan Otonom Acak (`crewAIController.ts`):**
+   - Kru AI bergerak secara acak alami: kadang mengetik di meja, tertidur sejenak karena lelah kompilasi, berjalan ke Pantry menyeduh kopi, atau santai di sofa Collaboration Lounge.
+4. **Balon Obrolan 3D Melayang (`chatBubbleEngine.ts`):**
+   - Memantau kedekatan (*proximity*) antar kru: jika dua kru berpapasan (< 4 unit), dialog obrolan teknis alami dipicu.
+   - Memproyeksikan koordinat 3D ke layar 2D (`vector.project(camera)`) sehingga teks tajam, terbaca jelas, dan responsif.
+5. **Pengurai Perintah Ketik (`visitorCommandParser.ts`):**
+   - Memproses perintah pengunjung dan memodifikasi status kru secara real-time (membangunkan kru tidur, memberikan buff kecepatan gerak `+50% SPD`, memanggil kru kumpul makan pizza, menyalakan mode lembur, dan meledakkan konfeti perayaan).
 
 ### Pilar 3: Penyimpanan / Output Nyata
-- **Bukti 1 (Hasil Build Produksi Vite):** Folder `dist/` terkompilasi dalam 2.10 detik dengan ukuran aset optimal (gzip: 204 KB) dan menyertakan berkas `dist/_headers` serta `dist/_redirects`.
-- **Bukti 2 (Sinkronisasi M2M Google Apps Script):** Sinyal push event dari GitHub berhasil diterjemahkan menjadi aksi `SYNC_PROGRESS_METADATA` dan diteruskan ke Google Apps Script dengan status tersimpan sebagai draf editorial.
-- **Bukti 3 (Panduan Praktis Bergambar):** Panduan operasional langkah demi langkah bagi Owner tersimpan lengkap di `Artifact/PANDUAN_SAMBUNGAN_WEBHOOK_GITHUB.md`.
+1. **Integrasi Data Tunggal (`HomePage.tsx`):**
+   - Terpasang menggantikan pemanggilan lama dengan `<VirtualOfficeHub projects={allProjects} hqConfig={hqConfig} />`.
+   - Data kru terikat langsung ke data resmi proyek studio tanpa tiruan data (*no mock/dummy data*).
+2. **Live Activity Feed:**
+   - Setiap pergerakan kru, pergantian tugas, dan perintah pengunjung tercatat secara kronologis di panel log aktivitas.
+3. **Koneksi Detail Proyek:**
+   - Tombol aksi pada panel drawer ruangan menghubungkan pengunjung langsung ke halaman detail proyek terkait (`/projects/:slug`).
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
-- **Bukti 1 (Suite Tes Otomatis Vitest):** Seluruh **751 pengujian di 38 test suites LULUS 100% (38 passed, 0 failed)** dalam waktu 51 detik.
-- **Bukti 2 (Isolasi Proyek Beku):** Pengujian membuktikan repositori `the-broken-origin` tetap diblokir secara mutlak dengan kode penolakan `HTTP 403 REPOSITORY_FROZEN`.
-- **Bukti 3 (Kesehatan Sistem):** 
-  - `npx tsc -b`: 0 Eror TypeScript.
-  - `npm run lint`: 0 Eror Linter.
-  - `npm run security:scan`: 0 Rahasia / Token Bocor (2.398 berkas bersih).
-  - `npm run security:privacy`: 0 Data Pribadi / PII Bocor (2.398 berkas bersih).
-  - `npm run security:files`: 2.500 berkas patuh aturan file policy.
+1. **Pengujian Otomatis Vitest:**
+   - **39 Test Files LULUS 100% (39/39 PASSED)**.
+   - **770 Tests LULUS 100% (770/770 PASSED)**, bertambah 19 skenario uji baru dari baseline lama 751 tests.
+   - File baru `src/test/virtualOffice3D.test.ts` lulus 100% (19/19 passed) menguji skema prosedural, logika parser perintah, chat bubble proximity, dan kalkulasi kamera.
+2. **Pengecekan Kode & Kualitas:**
+   - `npx tsc -b`: **0 Eror TypeScript**.
+   - `npm run lint`: **0 Eror Linter**.
+   - `npm run build`: Kompilasi produksi selesai bersih dalam 1.68 detik.
+3. **DevSecOps & Keamanan:**
+   - `npm run security:scan`: **0 Rahasia Bocor** (2.420 berkas diperiksa).
+   - `npm run security:privacy`: **0 Data Pribadi / PII Bocor** (2.420 berkas diperiksa).
+   - `npm run security:files`: **2.515 Berkas Patuh Aturan File Policy**.
 
 ---
 
-## 3. Log Output Ringkasan Uji Terminal
+## 3. Ringkasan Hasil Uji Terminal
 
 ```text
 ======================================================================
 🎉 VITEST TEST SUITE RUNNER
 ======================================================================
-Test Files  38 passed (38)
-Tests       751 passed (751)
-Duration    51.61s
+ Test Files  39 passed (39)
+ Tests       770 passed (770)
+ Duration    43.54s
 
 ======================================================================
 🛡️ DEVSECOPS & QUALITY GATES SUMMARY
 ======================================================================
 ✅ TypeScript (tsc -b):       0 Errors
-✅ Linter (oxlint):           0 Errors, 19 Warnings
-✅ Secret Scanner:            0 Actionable Secrets Detected (2,398 files)
-✅ Privacy / PII Scanner:     0 Unapproved PII Detected (2,398 files)
-✅ File Policy Enforcer:      2,500 / 2,500 Files Allowed & Compliant
-✅ Production Build (dist/):  Built cleanly in 2.10s
+✅ Linter (oxlint):           0 Errors
+✅ Secret Scanner:            0 Actionable Secrets Detected (2,420 files)
+✅ Privacy / PII Scanner:     0 Unapproved PII Detected (2,420 files)
+✅ File Policy Enforcer:      2,515 / 2,515 Files Allowed & Compliant
+✅ Production Build (dist/):  Built cleanly in 1.68s
 ======================================================================
 ```

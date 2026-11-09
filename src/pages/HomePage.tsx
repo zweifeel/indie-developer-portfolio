@@ -24,7 +24,7 @@ import { RegistrationModal } from '../components/RegistrationModal';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { useSiteSettings } from '../services/cmsSettingsService';
 import type { Project } from '../types/project';
-import { PixelVirtualHQ } from '../components/virtual-office/PixelVirtualHQ';
+import { VirtualOfficeHub } from '../components/virtual-office/VirtualOfficeHub';
 import { provisionVirtualHQ } from '../data/virtualOfficePresets';
 
 export const HomePage: React.FC = () => {
@@ -178,8 +178,8 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* VIRTUAL DEVELOPMENT OFFICE — COZY ISOMETRIC PIXEL ART VIRTUAL HQ */}
-      <PixelVirtualHQ hqConfig={hqConfig} />
+      {/* VIRTUAL DEVELOPMENT OFFICE — UNIFIED 3D WEBGL & 2.5D CAMPUS */}
+      <VirtualOfficeHub projects={allProjects} hqConfig={hqConfig} />
 
       {/* Backend Unavailable Banner */}
       {isUnavailable && (

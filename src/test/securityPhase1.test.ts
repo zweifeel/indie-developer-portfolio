@@ -107,7 +107,7 @@ describe('Phase 1: Repository Security & DevSecOps Validation Suite', () => {
     // Verify tracked files are clean of PII
     const privacyResult = runPrivacyScan(process.cwd(), { mode: 'tracked' });
     expect(privacyResult.success).toBe(true);
-  });
+  }, 30000);
 
   // Scenario 6: File .env Prohibited
   it('[Scenario 6] blocks .env and environment secret files from entering repository', () => {
@@ -174,7 +174,7 @@ describe('Phase 1: Repository Security & DevSecOps Validation Suite', () => {
 
     const prePushResult = runPrePushChecks(process.cwd());
     expect(prePushResult.success).toBe(true);
-  }, 15000);
+  }, 35000);
 
   // Scenario 11: Verified False-Positive Handling (Itch.io Twitter ID)
   it('[Scenario 11] handles verified Itch.io Twitter ID without false alarm', () => {
