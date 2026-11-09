@@ -1,0 +1,116 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" width="64" height="88">
+  <defs>
+    <radialGradient id="reviewerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="reviewerCardigan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#f59e0b" />
+      <stop offset="100%" stopColor="#b45309" />
+    </linearGradient>
+    <linearGradient id="reviewerPants" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#1e293b" />
+      <stop offset="100%" stopColor="#0f172a" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .reviewer-body {
+        animation: reviewerIdle 3.1s ease-in-out infinite;
+        transform-origin: 32px 82px;
+      }
+    }
+    @keyframes reviewerIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.5px); }
+    }
+  </style>
+
+  <!-- Ground Contact Shadow -->
+  <ellipse cx="32" cy="83" rx="20" ry="4.5" fill="#000" opacity="0.35" />
+
+  <!-- Animated Character Body Group -->
+  <g class="reviewer-body">
+    <!-- Legs & Oxford Shoes -->
+    <!-- Left Leg (Navy trousers) -->
+    <path d="M 26 53 L 25 76 L 22 78 L 22 81 L 28 81 L 29 76 L 29 53 Z" fill="url(#reviewerPants)" />
+    <!-- Left Dark Oxford Shoe -->
+    <path d="M 22 78 Q 20 82 28 82 L 29 80 Z" fill="#292524" />
+    <rect x="22" y="80.5" width="7" height="1.5" rx="0.5" fill="#44403c" />
+
+    <!-- Right Leg -->
+    <path d="M 35 53 L 35 76 L 35 78 L 35 81 L 42 81 L 41 76 L 38 53 Z" fill="url(#reviewerPants)" />
+    <!-- Right Dark Oxford Shoe -->
+    <path d="M 35 78 Q 36 82 43 82 L 43 80 Z" fill="#292524" />
+    <rect x="35" y="80.5" width="7" height="1.5" rx="0.5" fill="#44403c" />
+
+    <!-- Torso: Warm Amber Knit Cardigan over White Collared Shirt -->
+    <path d="M 21 34 Q 32 32 43 34 L 41 54 Q 32 56 23 54 Z" fill="url(#reviewerCardigan)" />
+    <!-- White Collared Shirt V-neck Insert -->
+    <polygon points="28,34 36,34 33,44 32,45 31,44" fill="#f8fafc" />
+    <!-- Cardigan Buttons & Ribbing -->
+    <line x1="32" y1="45" x2="32" y2="54" stroke="#92400e" stroke-width="1.2" />
+    <circle cx="32" cy="47" r="0.8" fill="#78350f" />
+    <circle cx="32" cy="51" r="0.8" fill="#78350f" />
+    <!-- Cardigan Pockets -->
+    <rect x="24" y="47" width="5" height="4" rx="0.8" fill="#d97706" />
+    <rect x="35" y="47" width="5" height="4" rx="0.8" fill="#b45309" />
+    <!-- Brown Leather Belt -->
+    <rect x="24" y="52" width="16" height="2" fill="#451a03" />
+
+    <!-- Left Arm: Down holding clipboard -->
+    <path d="M 21 35 Q 16 42 19 50 L 22 49 Q 19 42 24 37 Z" fill="#d97706" />
+    <circle cx="20" cy="50" r="2.4" fill="#d97706" />
+
+    <!-- Clipboard with Review Checklist -->
+    <g transform="translate(13, 44) rotate(-5)">
+      <rect x="0" y="0" width="12" height="16" rx="1.5" fill="#78350f" />
+      <rect x="3.5" y="-1.5" width="5" height="2.5" rx="0.5" fill="#e2e8f0" />
+      <rect x="1" y="1.5" width="10" height="13.5" rx="0.8" fill="#fef3c7" />
+      <!-- Checklist lines & checkmarks -->
+      <path d="M 2.5 4 L 3.5 5 L 5 3.5" stroke="#16a34a" stroke-width="0.8" fill="none" stroke-linecap="round" />
+      <line x1="6" y1="4" x2="9.5" y2="4" stroke="#334155" stroke-width="0.7" stroke-linecap="round" />
+      <path d="M 2.5 7 L 3.5 8 L 5 6.5" stroke="#16a34a" stroke-width="0.8" fill="none" stroke-linecap="round" />
+      <line x1="6" y1="7" x2="9.5" y2="7" stroke="#334155" stroke-width="0.7" stroke-linecap="round" />
+      <path d="M 2.5 10 L 3.5 11 L 5 9.5" stroke="#16a34a" stroke-width="0.8" fill="none" stroke-linecap="round" />
+      <line x1="6" y1="10" x2="8.5" y2="10" stroke="#334155" stroke-width="0.7" stroke-linecap="round" />
+      <!-- Approved stamp -->
+      <circle cx="8" cy="12" r="1.5" fill="#22c55e" opacity="0.8" />
+    </g>
+
+    <!-- Right Arm: Gesturing / pointing to discuss feedback -->
+    <path d="M 43 35 Q 49 42 46 49 L 43 48 Q 45 42 40 37 Z" fill="#b45309" />
+    <circle cx="46" cy="49" r="2.4" fill="#a16207" />
+
+    <!-- Head & Neck -->
+    <rect x="29" y="27" width="6" height="7" rx="1" fill="#a16207" />
+    <!-- Head Shape (Deep warm tone) -->
+    <ellipse cx="32" cy="21" rx="8" ry="9" fill="#a16207" />
+
+    <!-- Facial Features -->
+    <!-- Smiling friendly eyes -->
+    <circle cx="29" cy="20" r="1.1" fill="#1c1917" />
+    <circle cx="35" cy="20" r="1.1" fill="#1c1917" />
+    <circle cx="28.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <circle cx="34.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <!-- Stylish Round Tortoiseshell Glasses -->
+    <circle cx="29" cy="20" r="2.8" fill="none" stroke="#f59e0b" stroke-width="0.8" />
+    <circle cx="35" cy="20" r="2.8" fill="none" stroke="#f59e0b" stroke-width="0.8" />
+    <line x1="31.8" y1="20" x2="32.2" y2="20" stroke="#f59e0b" stroke-width="0.8" />
+    <!-- Nose & Warm Smile -->
+    <circle cx="32" cy="23.2" r="0.6" fill="#78350f" />
+    <path d="M 30 25.5 Q 32 27.8 34 25.5" stroke="#451a03" stroke-width="1" stroke-linecap="round" fill="none" />
+
+    <!-- Ears -->
+    <circle cx="23.5" cy="21" r="1.8" fill="#a16207" />
+    <circle cx="40.5" cy="21" r="1.8" fill="#a16207" />
+
+    <!-- Neat Short Fade / Textured Curls Hair (Black) -->
+    <path d="M 23 18 Q 23 11 32 10 Q 41 11 41 18 Q 40 13 32 13 Q 24 13 23 18 Z" fill="#171717" />
+    <circle cx="26" cy="13" r="2.5" fill="#262626" />
+    <circle cx="30" cy="11.5" r="2.8" fill="#171717" />
+    <circle cx="35" cy="12" r="2.6" fill="#262626" />
+    <circle cx="38" cy="14" r="2.2" fill="#171717" />
+  </g>
+</svg>

@@ -17,6 +17,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 }) => {
   const isReady = project.status === 'READY_FOR_RELEASE';
   const isClosedTesting = project.status === 'CLOSED_TESTING';
+  const isPreReg = project.status === 'PRE_REGISTRATION';
 
   return (
     <article
@@ -39,7 +40,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             />
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold tracking-tight text-[#F5F5F4]">
+                <h3 className="text-lg font-bold tracking-tight text-[#FAFAF9]">
                   {project.name}
                 </h3>
                 {project.featured && (
@@ -53,10 +54,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 )}
               </div>
               {project.tagline && (
-                <p className="text-xs font-mono text-[#8A8580] mt-0.5">{project.tagline}</p>
+                <p className="text-xs font-mono text-cyan-400 mt-0.5">{project.tagline}</p>
               )}
               {project.version && (
-                <span className="text-xs font-mono text-[#8A8580]">v{project.version}</span>
+                <span className="text-xs font-mono text-[#78716C]">v{project.version}</span>
               )}
             </div>
           </div>
@@ -78,10 +79,16 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               <span>Siap Rilis Google Play</span>
             </span>
           )}
+          {isPreReg && (
+            <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-indigo-300 bg-indigo-950/40 border border-indigo-800/50 rounded px-2 py-0.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-indigo-400 animate-pulse" />
+              <span>{project.testingUrl ? 'Pra-Registrasi Dibuka' : 'Pre-Registration'}</span>
+            </span>
+          )}
         </div>
 
         {/* Description */}
-        <p className="text-sm text-[#D6D3D1] line-clamp-3 leading-relaxed mb-4">
+        <p className="text-sm text-[#E7E5E4] line-clamp-3 leading-relaxed mb-4">
           {project.shortDescription}
         </p>
 
@@ -91,7 +98,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             {project.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-[11px] font-mono px-2 py-0.5 rounded bg-stone-900 border border-stone-850 text-[#8A8580]"
+                className="text-[11px] font-mono px-2 py-0.5 rounded bg-stone-900 border border-stone-850 text-[#A8A29E]"
               >
                 #{tag}
               </span>
@@ -102,14 +109,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
       {/* Footer Action */}
       <div className="pt-4 border-t border-stone-850 flex items-center justify-between">
-        <span className="text-xs text-[#8A8580]">
+        <span className="text-xs text-[#78716C]">
           {project.lastUpdated
             ? `Update: ${new Date(project.lastUpdated).toLocaleDateString('id-ID', { month: 'short', year: 'numeric' })}`
             : 'Fase Aktif'}
         </span>
         <Link
           to={`/projects/${project.slug}`}
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-200 hover:text-white transition-colors group-hover:translate-x-0.5"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#E7E5E4] hover:text-[#FAFAF9] transition-colors group-hover:translate-x-0.5 min-h-[44px] py-2 px-1"
           aria-label={`Lihat rincian lengkap proyek ${project.name}`}
         >
           <span className="underline decoration-stone-700 underline-offset-4 group-hover:decoration-cyan-400">Detail Proyek</span>

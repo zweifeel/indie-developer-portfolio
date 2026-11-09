@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SleepyKoala Studio — Cozy Isometric Pixel Art Asset Contact Sheet</title>
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #06b6d4;
+      --amber: #f59e0b;
+      --emerald: #10b981;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      padding: 2.5rem 1.5rem;
+      line-height: 1.5;
+    }
+    .header {
+      max-width: 1200px;
+      margin: 0 auto 2.5rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 1.5rem;
+    }
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: rgba(6, 182, 212, 0.15);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      color: var(--accent);
+      border-radius: 9999px;
+      font-family: monospace;
+      font-size: 0.75rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    h1 {
+      font-size: 1.875rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.5rem;
+    }
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+    .section-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1.25rem;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 1rem;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+    .sprite-box {
+      width: 100%;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.06), transparent 70%);
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+    }
+    .sprite-box img {
+      image-rendering: pixelated;
+      max-width: 90%;
+      max-height: 90px;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.4));
+    }
+    .sprite-name {
+      font-weight: 700;
+      font-size: 0.875rem;
+      color: var(--text-main);
+      margin-bottom: 0.25rem;
+    }
+    .sprite-dim {
+      font-family: monospace;
+      font-size: 0.7rem;
+      color: var(--accent);
+      margin-bottom: 0.35rem;
+    }
+    .sprite-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="badge">AI AGENT CREW — SIMULATION • ASSET CONTACT SHEET</div>
+    <h1>SleepyKoala Studio — Cozy Isometric Pixel Art Assets</h1>
+    <p class="subtitle">Koleksi sprite pixel art isometrik 2:1 dimetric resmi untuk Virtual HQ & Project Rooms.</p>
+  </div>
+
+  <div class="container">
+    <!-- SECTION 1: 5 CORE HUMAN AGENTS -->
+    <div>
+      <h2 class="section-title">👔 1. Lima Digital Coworker Inti (Core 5 Human Office Agents)</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="sprite-box"><img src="../characters/human-planner.svg" alt="Planner"></div>
+          <div class="sprite-name">Planner</div>
+          <div class="sprite-dim">ROLE: PLANNER • 64×88px</div>
+          <div class="sprite-desc">Setelan blazer navy, kacamata kawat, digital roadmap tablet.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../characters/human-developer.svg" alt="Developer"></div>
+          <div class="sprite-name">Developer</div>
+          <div class="sprite-dim">ROLE: DEVELOPER • 64×88px</div>
+          <div class="sprite-desc">Hoodie teal modern, headphone neck, silver laptop IDE code.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../characters/human-tester.svg" alt="Tester"></div>
+          <div class="sprite-name">Tester</div>
+          <div class="sprite-dim">ROLE: TESTER • 64×88px</div>
+          <div class="sprite-desc">Kemeja oxford emerald, smart slacks, mobile QA test phone.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../characters/human-reviewer.svg" alt="Reviewer"></div>
+          <div class="sprite-name">Reviewer</div>
+          <div class="sprite-dim">ROLE: REVIEWER • 64×88px</div>
+          <div class="sprite-desc">Cardigan rajut amber hangat, kacamata bulat, review checklist.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../characters/human-publisher.svg" alt="Publisher"></div>
+          <div class="sprite-name">Publisher</div>
+          <div class="sprite-dim">ROLE: PUBLISHER • 64×88px</div>
+          <div class="sprite-desc">Tech bomber sky-blue, studio lanyard ID, launch console tablet.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 2: WORKSTATIONS & FURNITURE -->
+    <div>
+      <h2 class="section-title">🪑 2. Perabot Studio (Workstations & Furniture)</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="sprite-box"><img src="../furniture/desk-wood-left.svg" alt="Desk Left"></div>
+          <div class="sprite-name">Meja Oak Isometrik (Kiri)</div>
+          <div class="sprite-dim">64×56px • 2:1 Dimetric</div>
+          <div class="sprite-desc">Meja kayu warm oak sudut kiri dengan lubang kabel.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../furniture/desk-wood-right.svg" alt="Desk Right"></div>
+          <div class="sprite-name">Meja Oak Isometrik (Kanan)</div>
+          <div class="sprite-dim">64×56px • 2:1 Dimetric</div>
+          <div class="sprite-desc">Meja kayu warm oak sudut kanan untuk layout modular.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../furniture/office-chair-cozy.svg" alt="Office Chair"></div>
+          <div class="sprite-name">Kursi Putar Ergonomis</div>
+          <div class="sprite-dim">32×40px • Swivel Castors</div>
+          <div class="sprite-desc">Kursi mesh studio warna navy-teal dengan roda putar.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../furniture/bookshelf-wood.svg" alt="Bookshelf"></div>
+          <div class="sprite-name">Rak Buku & Manual 3-Tingkat</div>
+          <div class="sprite-dim">48×72px • Wood Storage</div>
+          <div class="sprite-desc">Rak kayu diisi buku panduan arsitektur dan kotak game.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 3: TECH EQUIPMENT -->
+    <div>
+      <h2 class="section-title">💻 3. Peralatan Teknologi (Tech & Equipment)</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="sprite-box"><img src="../equipment/dual-monitors.svg" alt="Dual Monitors"></div>
+          <div class="sprite-name">Dual Monitor Workstation</div>
+          <div class="sprite-dim">48×36px • Glowing IDE</div>
+          <div class="sprite-desc">Layar editor kode dan visual grafik telemetri live.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../equipment/server-rack-retro.svg" alt="Server Rack"></div>
+          <div class="sprite-name">Server Cluster Rack</div>
+          <div class="sprite-dim">36×64px • Retro LED</div>
+          <div class="sprite-desc">Kabinet server CI/CD dengan lampu indikator status.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../equipment/coffee-machine.svg" alt="Coffee Machine"></div>
+          <div class="sprite-name">Espresso Coffee Machine</div>
+          <div class="sprite-dim">24×28px • Steam Vapor</div>
+          <div class="sprite-desc">Mesin kopi espresso break-room dengan uap hangat.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../equipment/test-phone-stand.svg" alt="Test Stand"></div>
+          <div class="sprite-name">Android QA Test Stand</div>
+          <div class="sprite-dim">32×28px • Multi-Device</div>
+          <div class="sprite-desc">Dudukan smartphone dan tablet untuk validasi rilis.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION 4: TILES & DECOR -->
+    <div>
+      <h2 class="section-title">🪴 4. Ubin Lantai, Dinding & Dekorasi Cozy</h2>
+      <div class="grid">
+        <div class="card">
+          <div class="sprite-box"><img src="../floor-tiles/floor-parquet-tile.svg" alt="Parquet Floor"></div>
+          <div class="sprite-name">Lantai Kayu Parquet</div>
+          <div class="sprite-dim">64×32px • 2:1 Diamond</div>
+          <div class="sprite-desc">Ubin lantai parket kayu hangat bergradasi halus.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../decorations/plant-monstera.svg" alt="Monstera Plant"></div>
+          <div class="sprite-name">Tanaman Monstera Pot</div>
+          <div class="sprite-dim">32×48px • Terracotta</div>
+          <div class="sprite-desc">Tanaman hias tropis dalam pot keramik terakota.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../decorations/whiteboard-roadmap.svg" alt="Whiteboard"></div>
+          <div class="sprite-name">Whiteboard Roda Roadmap</div>
+          <div class="sprite-dim">48×54px • Mobile Board</div>
+          <div class="sprite-desc">Papan tulis dengan bagan sprint dan timeline proyek.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../decorations/cozy-rug-teal.svg" alt="Cozy Rug"></div>
+          <div class="sprite-name">Karpet Tenun Studio Teal</div>
+          <div class="sprite-dim">64×32px • Woven Diamond</div>
+          <div class="sprite-desc">Karpet tenun motif berlian dengan rumbai tepian.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../decorations/studio-trophy.svg" alt="Studio Trophy"></div>
+          <div class="sprite-name">Trofi Pencapaian Studio</div>
+          <div class="sprite-dim">20×30px • Golden Award</div>
+          <div class="sprite-desc">Piala emas penghargaan game indie di atas kayu walnut.</div>
+        </div>
+        <div class="card">
+          <div class="sprite-box"><img src="../wall-tiles/wall-cozy-window.svg" alt="Cozy Window"></div>
+          <div class="sprite-name">Jendela Studio Cozy</div>
+          <div class="sprite-dim">48×64px • Daylight Pane</div>
+          <div class="sprite-desc">Jendela kayu berbingkai dengan tanaman sukulen di kusen.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

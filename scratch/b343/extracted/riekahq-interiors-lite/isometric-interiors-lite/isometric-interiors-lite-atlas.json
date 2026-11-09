@@ -1,0 +1,307 @@
+{
+  "name": "Isometric Home Interiors Lite",
+  "tile": 32,
+  "image": "isometric-interiors-lite-sheet.png",
+  "size": {
+    "w": 256,
+    "h": 640
+  },
+  "frames": {
+    "floor_wood": {
+      "x": 0,
+      "y": 16,
+      "w": 32,
+      "h": 16
+    },
+    "floor_parquet": {
+      "x": 32,
+      "y": 16,
+      "w": 32,
+      "h": 16
+    },
+    "floor_carpet_red": {
+      "x": 64,
+      "y": 16,
+      "w": 32,
+      "h": 16
+    },
+    "wall_cream_plain_a": {
+      "x": 101,
+      "y": 28,
+      "w": 21,
+      "h": 68
+    },
+    "wall_cream_plain_b": {
+      "x": 133,
+      "y": 28,
+      "w": 21,
+      "h": 68
+    },
+    "wall_cream_window_a": {
+      "x": 165,
+      "y": 28,
+      "w": 21,
+      "h": 68
+    },
+    "wall_cream_window_b": {
+      "x": 197,
+      "y": 28,
+      "w": 21,
+      "h": 68
+    },
+    "wall_cream_door_a": {
+      "x": 229,
+      "y": 28,
+      "w": 21,
+      "h": 68
+    },
+    "wall_cream_door_b": {
+      "x": 5,
+      "y": 124,
+      "w": 21,
+      "h": 68
+    },
+    "wall_corner_a": {
+      "x": 47,
+      "y": 124,
+      "w": 34,
+      "h": 68
+    },
+    "wall_corner_b": {
+      "x": 111,
+      "y": 124,
+      "w": 34,
+      "h": 68
+    },
+    "bed_red_a": {
+      "x": 167,
+      "y": 112,
+      "w": 50,
+      "h": 48
+    },
+    "bed_red_b": {
+      "x": 7,
+      "y": 208,
+      "w": 50,
+      "h": 48
+    },
+    "sofa_red_a": {
+      "x": 71,
+      "y": 204,
+      "w": 49,
+      "h": 52
+    },
+    "sofa_red_b": {
+      "x": 135,
+      "y": 204,
+      "w": 49,
+      "h": 52
+    },
+    "table_dining_a": {
+      "x": 203,
+      "y": 210,
+      "w": 42,
+      "h": 46
+    },
+    "table_dining_b": {
+      "x": 11,
+      "y": 274,
+      "w": 42,
+      "h": 46
+    },
+    "chair_a": {
+      "x": 71,
+      "y": 278,
+      "w": 18,
+      "h": 42
+    },
+    "chair_b": {
+      "x": 103,
+      "y": 278,
+      "w": 18,
+      "h": 42
+    },
+    "bookshelf_a": {
+      "x": 132,
+      "y": 287,
+      "w": 24,
+      "h": 65
+    },
+    "bookshelf_b": {
+      "x": 164,
+      "y": 287,
+      "w": 24,
+      "h": 65
+    },
+    "desk_pc_anim_a_0": {
+      "x": 205,
+      "y": 261,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_a_1": {
+      "x": 13,
+      "y": 357,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_a_2": {
+      "x": 77,
+      "y": 357,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_a_3": {
+      "x": 141,
+      "y": 357,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_b_0": {
+      "x": 205,
+      "y": 357,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_b_1": {
+      "x": 13,
+      "y": 421,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_b_2": {
+      "x": 77,
+      "y": 421,
+      "w": 38,
+      "h": 59
+    },
+    "desk_pc_anim_b_3": {
+      "x": 141,
+      "y": 421,
+      "w": 38,
+      "h": 59
+    },
+    "lamp_floor_a": {
+      "x": 202,
+      "y": 428,
+      "w": 12,
+      "h": 52
+    },
+    "lamp_floor_b": {
+      "x": 234,
+      "y": 428,
+      "w": 12,
+      "h": 52
+    },
+    "plant_pot_a": {
+      "x": 9,
+      "y": 502,
+      "w": 14,
+      "h": 42
+    },
+    "plant_pot_b": {
+      "x": 41,
+      "y": 502,
+      "w": 14,
+      "h": 42
+    },
+    "clock_grandfather_a": {
+      "x": 73,
+      "y": 510,
+      "w": 13,
+      "h": 66
+    },
+    "clock_grandfather_b": {
+      "x": 105,
+      "y": 510,
+      "w": 13,
+      "h": 66
+    },
+    "rug_red_a": {
+      "x": 139,
+      "y": 489,
+      "w": 42,
+      "h": 23
+    },
+    "rug_red_b": {
+      "x": 203,
+      "y": 489,
+      "w": 42,
+      "h": 23
+    },
+    "fireplace_a_0": {
+      "x": 1,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_a_1": {
+      "x": 33,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_a_2": {
+      "x": 65,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_a_3": {
+      "x": 97,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_b_0": {
+      "x": 129,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_b_1": {
+      "x": 161,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_b_2": {
+      "x": 193,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    },
+    "fireplace_b_3": {
+      "x": 225,
+      "y": 581,
+      "w": 29,
+      "h": 59
+    }
+  },
+  "animations": {
+    "desk_pc_anim_a": [
+      "desk_pc_anim_a_0",
+      "desk_pc_anim_a_1",
+      "desk_pc_anim_a_2",
+      "desk_pc_anim_a_3"
+    ],
+    "desk_pc_anim_b": [
+      "desk_pc_anim_b_0",
+      "desk_pc_anim_b_1",
+      "desk_pc_anim_b_2",
+      "desk_pc_anim_b_3"
+    ],
+    "fireplace_a": [
+      "fireplace_a_0",
+      "fireplace_a_1",
+      "fireplace_a_2",
+      "fireplace_a_3"
+    ],
+    "fireplace_b": [
+      "fireplace_b_0",
+      "fireplace_b_1",
+      "fireplace_b_2",
+      "fireplace_b_3"
+    ]
+  }
+}

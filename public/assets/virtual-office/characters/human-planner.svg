@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" width="64" height="88">
+  <defs>
+    <radialGradient id="plannerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="plannerJacket" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#2563eb" />
+      <stop offset="100%" stopColor="#1e3a8a" />
+    </linearGradient>
+    <linearGradient id="plannerPants" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#334155" />
+      <stop offset="100%" stopColor="#1e293b" />
+    </linearGradient>
+    <linearGradient id="tabletScreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#0284c7" />
+      <stop offset="100%" stopColor="#0369a1" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .human-body {
+        animation: plannerIdle 3.2s ease-in-out infinite;
+        transform-origin: 32px 82px;
+      }
+    }
+    @keyframes plannerIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.5px); }
+    }
+  </style>
+
+  <!-- Ground Contact Shadow -->
+  <ellipse cx="32" cy="83" rx="20" ry="4.5" fill="#000" opacity="0.35" />
+
+  <!-- Animated Character Body Group -->
+  <g class="human-body">
+    <!-- Legs & Shoes -->
+    <!-- Left Leg -->
+    <path d="M 26 54 L 25 76 L 22 78 L 22 81 L 28 81 L 29 76 L 29 54 Z" fill="url(#plannerPants)" />
+    <!-- Left Shoe -->
+    <path d="M 22 78 Q 21 82 28 82 L 29 80 Z" fill="#0f172a" />
+    <rect x="22" y="80" width="7" height="2" rx="0.5" fill="#e2e8f0" />
+
+    <!-- Right Leg -->
+    <path d="M 35 54 L 35 76 L 35 78 L 35 81 L 42 81 L 41 76 L 38 54 Z" fill="url(#plannerPants)" />
+    <!-- Right Shoe -->
+    <path d="M 35 78 Q 36 82 42 82 L 42 80 Z" fill="#0f172a" />
+    <rect x="35" y="80" width="7" height="2" rx="0.5" fill="#e2e8f0" />
+
+    <!-- Torso: Crisp Shirt & Tailored Navy Blazer -->
+    <path d="M 21 34 Q 32 32 43 34 L 41 55 Q 32 57 23 55 Z" fill="url(#plannerJacket)" />
+    <!-- White Collared Shirt V-neck insert -->
+    <polygon points="28,33 36,33 34,44 32,46 30,44" fill="#f8fafc" />
+    <!-- Smart Navy Blue Tie -->
+    <polygon points="31,35 33,35 33.5,45 32,48 30.5,45" fill="#1d4ed8" />
+    <!-- Blazer Lapels -->
+    <path d="M 22 34 L 29 46 L 29 54 L 24 54 Z" fill="#1d4ed8" />
+    <path d="M 42 34 L 35 46 L 35 54 L 40 54 Z" fill="#1e40af" />
+    <!-- Belt with silver buckle -->
+    <rect x="24" y="53" width="16" height="2.5" fill="#0f172a" />
+    <rect x="30.5" y="53" width="3" height="2.5" fill="#cbd5e1" />
+
+    <!-- Left Arm: Down slightly relaxed -->
+    <path d="M 21 35 Q 16 43 18 52 L 21 52 Q 20 44 24 37 Z" fill="#1e3a8a" />
+    <!-- Left Hand -->
+    <circle cx="19" cy="53" r="2.5" fill="#fbcfe8" />
+
+    <!-- Right Arm: Holding Digital Roadmap Tablet -->
+    <path d="M 43 35 Q 49 42 45 50 L 41 49 Q 44 43 40 37 Z" fill="#1e3a8a" />
+    <!-- Right Hand holding tablet -->
+    <circle cx="43" cy="50" r="2.5" fill="#fbcfe8" />
+
+    <!-- Planning Tablet Device -->
+    <g transform="translate(37, 43) rotate(-12)">
+      <rect x="0" y="0" width="16" height="20" rx="2" fill="#0f172a" stroke="#475569" stroke-width="0.8" />
+      <rect x="1.5" y="1.5" width="13" height="17" rx="1" fill="url(#tabletScreen)" />
+      <!-- Roadmap Gantt / Milestone Bars on screen -->
+      <line x1="3" y1="4" x2="8" y2="4" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" />
+      <line x1="3" y1="7" x2="12" y2="7" stroke="#38bdf8" stroke-width="1.2" stroke-linecap="round" />
+      <line x1="5" y1="10" x2="13" y2="10" stroke="#fde047" stroke-width="1.2" stroke-linecap="round" />
+      <line x1="3" y1="13" x2="9" y2="13" stroke="#4ade80" stroke-width="1.2" stroke-linecap="round" />
+      <!-- Status dot -->
+      <circle cx="12" cy="4" r="1" fill="#4ade80" />
+    </g>
+
+    <!-- Head & Neck -->
+    <!-- Neck -->
+    <rect x="29" y="27" width="6" height="7" rx="1" fill="#fbcfe8" />
+
+    <!-- Head Shape -->
+    <ellipse cx="32" cy="21" rx="8" ry="9" fill="#fbcfe8" />
+
+    <!-- Facial Features -->
+    <!-- Friendly smiling eyes -->
+    <path d="M 28 20 Q 30 19 31 20" stroke="#1e293b" stroke-width="1" stroke-linecap="round" fill="none" />
+    <path d="M 33 20 Q 34 19 36 20" stroke="#1e293b" stroke-width="1" stroke-linecap="round" fill="none" />
+    <!-- Glasses Frames (Smart Planner Look) -->
+    <rect x="27" y="18" width="4.5" height="4" rx="1" fill="none" stroke="#2563eb" stroke-width="0.8" />
+    <rect x="32.5" y="18" width="4.5" height="4" rx="1" fill="none" stroke="#2563eb" stroke-width="0.8" />
+    <line x1="31.5" y1="19.5" x2="32.5" y2="19.5" stroke="#2563eb" stroke-width="0.8" />
+    <!-- Nose & Smile -->
+    <circle cx="32" cy="23" r="0.6" fill="#f472b6" />
+    <path d="M 30 25 Q 32 27 34 25" stroke="#be185d" stroke-width="0.9" stroke-linecap="round" fill="none" />
+
+    <!-- Ears -->
+    <circle cx="23.5" cy="21" r="1.8" fill="#fbcfe8" />
+    <circle cx="40.5" cy="21" r="1.8" fill="#fbcfe8" />
+
+    <!-- Stylish Professional Hair (Neat dark brown side-part) -->
+    <path d="M 24 19 Q 23 12 30 11 Q 38 10 41 15 Q 41 19 39 21 Q 37 15 31 14 Q 26 15 24 19 Z" fill="#3f2314" />
+    <path d="M 23 18 Q 23 14 27 12 Q 33 13 36 12 Q 40 14 41 18 Q 40 16 38 15 Q 34 14 28 15 Q 24 17 23 18 Z" fill="#58311e" />
+  </g>
+</svg>

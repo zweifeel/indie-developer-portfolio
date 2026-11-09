@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 54" width="48" height="54" shape-rendering="crispEdges">
+  <!-- Wheels & Frame -->
+  <rect x="6" y="46" width="3" height="4" fill="#334155" />
+  <rect x="39" y="46" width="3" height="4" fill="#334155" />
+  <line x1="7" y1="46" x2="7" y2="12" stroke="#475569" stroke-width="2" />
+  <line x1="41" y1="46" x2="41" y2="12" stroke="#475569" stroke-width="2" />
+  <!-- Board Surface -->
+  <polygon points="4,10 44,10 44,40 4,40" fill="#f8fafc" />
+  <rect x="4" y="8" width="40" height="2" fill="#64748b" />
+  <rect x="4" y="40" width="40" height="2" fill="#64748b" />
+  <!-- Diagram Content -->
+  <text x="7" y="18" font-family="monospace" font-size="5" fill="#0284c7" font-weight="bold">ROADMAP</text>
+  <rect x="7" y="21" width="10" height="4" fill="#38bdf8" />
+  <rect x="20" y="21" width="12" height="4" fill="#4ade80" />
+  <rect x="34" y="21" width="7" height="4" fill="#facc15" />
+  <line x1="7" y1="28" x2="24" y2="28" stroke="#94a3b8" stroke-width="1" />
+  <line x1="7" y1="32" x2="38" y2="32" stroke="#94a3b8" stroke-width="1" />
+  <line x1="7" y1="36" x2="19" y2="36" stroke="#94a3b8" stroke-width="1" />
+</svg>

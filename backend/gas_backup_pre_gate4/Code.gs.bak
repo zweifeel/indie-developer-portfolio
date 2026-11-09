@@ -1,0 +1,410 @@
+/**
+ * ============================================================================
+ * SLEEPYKOALA STUDIO — CLOSED TESTING REGISTRATION BACKEND
+ * Google Apps Script Web App
+ * Target Project: Mobile Kasir (and future Google Play apps)
+ * 
+ * Free Forever Architecture:
+ * - Google Sheets (Database)
+ * - Gmail MailApp (Owner Notification)
+ * - Cloudflare Pages Functions (Same-Origin Proxy Handshake)
+ * ============================================================================
+ */
+
+// Konfigurasi Default (Dapat ditimpa via Script Properties)
+var DEFAULT_CONFIG = {
+  SHEET_NAME: "TesterRegistrations",
+  NOTIFICATION_EMAIL: "zweifeel@gmail.com",
+  STUDIO_NAME: "SleepyKoala Studio",
+  TESTING_DAYS_REQUIREMENT: 14,
+  MAX_PAYLOAD_BYTES: 50000 // 50 KB
+};
+
+/**
+ * Health check endpoint (GET)
+ */
+function doGet(e) {
+  var responseData = {
+    status: "ONLINE",
+    service: "SleepyKoala Closed Testing Registration API",
+    studio: DEFAULT_CONFIG.STUDIO_NAME,
+    timestamp: new Date().toISOString(),
+    version: "2.0.0"
+  };
+
+  return ContentService.createTextOutput(JSON.stringify(responseData))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Main registration handler (POST)
+ */
+function doPost(e) {
+  var lock = LockService.getScriptLock();
+  var lockAcquired = false;
+
+  try {
+    // 1. Verifikasi Data Masuk
+    if (!e || !e.postData || !e.postData.contents) {
+      return createJsonResponse(false, "BAD_REQUEST", "Tidak ada payload data yang diterima.");
+    }
+
+    if (e.postData.contents.length > DEFAULT_CONFIG.MAX_PAYLOAD_BYTES) {
+      return createJsonResponse(false, "PAYLOAD_TOO_LARGE", "Ukuran payload melebihi batas 50KB.");
+    }
+
+    // 2. Parse JSON Payload
+    var payload;
+    try {
+      payload = JSON.parse(e.postData.contents);
+    } catch (parseErr) {
+      return createJsonResponse(false, "INVALID_JSON", "Format JSON tidak valid.");
+    }
+
+    // 3. Verifikasi Shared Secret Handshake (Satu-satunya mekanisme: payload.secretToken)
+    var scriptProperties = PropertiesService.getScriptProperties();
+    var expectedSecret = scriptProperties.getProperty("APPS_SCRIPT_SECRET");
+
+    if (!expectedSecret || expectedSecret.trim() === "") {
+      console.error("[Security Configuration] APPS_SCRIPT_SECRET belum diatur di Script Properties.");
+      return createJsonResponse(false, "SERVER_CONFIG_ERROR", "Konfigurasi keamanan server backend belum lengkap.");
+    }
+
+    var incomingSecret = typeof payload.secretToken === "string" ? payload.secretToken.trim() : "";
+
+    if (!incomingSecret || incomingSecret !== expectedSecret.trim()) {
+      // Log audit keamanan tanpa mencatat nilai secret token apa pun
+      console.warn("[Security] Autentikasi handshake ditolak: secretToken kosong, tidak tersedia, atau tidak cocok.");
+      return createJsonResponse(false, "UNAUTHORIZED", "Autentikasi handshake tidak valid.");
+    }
+
+    // 4. Perlindungan Honeypot (Anti-Bot)
+    if (payload.honeypot && String(payload.honeypot).trim().length > 0) {
+      console.warn("[Spam Protection] Bot terdeteksi via honeypot field. Silent reject.");
+      // Berikan respons sukses palsu agar bot tidak mengulang request
+      return createJsonResponse(true, null, "Pendaftaran berhasil diterima.");
+    }
+
+    // 5. Validasi & Normalisasi Field Pendaftaran
+    var testerName = cleanString(payload.testerName || "", 100);
+    var testerEmail = cleanString(payload.testerEmail || "", 120).toLowerCase();
+    var projectId = cleanString(payload.projectId || "mobile-kasir", 50).toLowerCase();
+    var projectName = cleanString(payload.projectName || "Mobile Kasir", 100);
+    var appVersion = cleanString(payload.appVersion || "-", 30);
+    var clientIpMasked = cleanString(payload.clientIpMasked || "CLIENT_PROXY", 50);
+    var userAgent = cleanString(payload.userAgent || "-", 200);
+
+    if (!testerName || testerName.length < 2) {
+      return createJsonResponse(false, "VALIDATION_ERROR", "Nama lengkap penguji wajib diisi (minimal 2 karakter).");
+    }
+
+    var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!testerEmail || !emailRegex.test(testerEmail)) {
+      return createJsonResponse(false, "VALIDATION_ERROR", "Format alamat email Google Play tidak valid.");
+    }
+
+    // 6. Ambil Kunci Lock (Concurrency Protection)
+    // Tunggu maksimal 10 detik agar tidak ada race condition saat memeriksa duplikat & append
+    lockAcquired = lock.tryLock(10000);
+    if (!lockAcquired) {
+      console.warn("[Concurrency] Gagal mendapatkan script lock dalam 10 detik.");
+      return createJsonResponse(false, "SERVER_BUSY", "Server sedang memproses antrean pendaftaran. Silakan coba kembali dalam beberapa detik.");
+    }
+
+    // 7. Akses Google Sheets (Database)
+    var spreadsheet = getTargetSpreadsheet();
+    var sheet = getOrCreateSheet(spreadsheet, DEFAULT_CONFIG.SHEET_NAME);
+
+    // 8. Cek Duplikasi Registrasi (ProjectId + TesterEmail)
+    var isDuplicate = checkIfDuplicate(sheet, projectId, testerEmail);
+    if (isDuplicate) {
+      console.info("[Duplicate] Email sudah terdaftar untuk proyek ini: " + maskEmail(testerEmail));
+      return createJsonResponse(true, null, "Email Anda sudah terdaftar dalam daftar antrean closed testing " + projectName + ". Anda akan dihubungi melalui email saat akses dibuka.", {
+        isDuplicate: true,
+        projectId: projectId,
+        maskedEmail: maskEmail(testerEmail)
+      });
+    }
+
+    // 9. Append Data ke Google Sheets
+    // Catatan Arsitektur: Penyimpanan Sheets & Pengiriman Email BUKAN transaksi atomik.
+    // Kami simpan baris pendaftaran terlebih dahulu dengan status 'PENDING_NOTIFICATION'.
+    var timestampStr = Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss");
+    var rowData = [
+      timestampStr,
+      projectId,
+      projectName,
+      testerName,
+      testerEmail,
+      "PENDING_INVITE",
+      appVersion,
+      clientIpMasked,
+      userAgent,
+      "Tersimpan di database (Memproses notifikasi)"
+    ];
+
+    sheet.appendRow(rowData);
+    var lastRow = sheet.getLastRow();
+
+    // 10. Pengiriman Notifikasi Email ke Pemilik (zweifeel@gmail.com)
+    var targetOwnerEmail = scriptProperties.getProperty("NOTIFICATION_EMAIL") || DEFAULT_CONFIG.NOTIFICATION_EMAIL;
+    var emailNotificationSuccess = false;
+    var emailErrorNote = "";
+
+    try {
+      var remainingQuota = MailApp.getRemainingDailyQuota();
+      if (remainingQuota > 0) {
+        sendOwnerNotificationEmail(targetOwnerEmail, {
+          timestamp: timestampStr,
+          projectName: projectName,
+          projectId: projectId,
+          testerName: testerName,
+          testerEmail: testerEmail,
+          appVersion: appVersion
+        });
+        emailNotificationSuccess = true;
+      } else {
+        emailErrorNote = "Email kuota harian habis (" + remainingQuota + " tersisa)";
+        console.warn("[MailApp Quota] " + emailErrorNote);
+      }
+    } catch (mailErr) {
+      emailErrorNote = "Gagal kirim email: " + mailErr.message;
+      console.error("[MailApp Error] " + emailErrorNote);
+    }
+
+    // Perbarui kolom Catatan (Kolom ke-10) di Google Sheets dengan status email aktual
+    var finalNote = emailNotificationSuccess 
+      ? "Notifikasi email terkirim ke " + targetOwnerEmail
+      : "Registrasi tersimpan di database. Catatan: " + emailErrorNote;
+
+    sheet.getRange(lastRow, 10).setValue(finalNote);
+
+    console.info("[Success] Pendaftaran berhasil dicatat untuk: " + maskEmail(testerEmail));
+
+    return createJsonResponse(true, null, "Pendaftaran closed testing berhasil diterima! Terima kasih telah bersedia menguji " + projectName + ".", {
+      projectId: projectId,
+      maskedEmail: maskEmail(testerEmail),
+      timestamp: timestampStr
+    });
+
+  } catch (globalErr) {
+    console.error("[Unhandled Exception] " + globalErr.toString());
+    return createJsonResponse(false, "INTERNAL_ERROR", "Terjadi kendala pada server backend. Silakan coba kembali nanti.");
+  } finally {
+    if (lockAcquired) {
+      try {
+        lock.releaseLock();
+      } catch (e) {
+        // Abaikan
+      }
+    }
+  }
+}
+
+/**
+ * Mendapatkan Spreadsheet yang aktif atau via SPREADSHEET_ID script property
+ */
+function getTargetSpreadsheet() {
+  var scriptProperties = PropertiesService.getScriptProperties();
+  var customSpreadsheetId = scriptProperties.getProperty("SPREADSHEET_ID");
+
+  if (customSpreadsheetId && customSpreadsheetId.trim() !== "") {
+    return SpreadsheetApp.openById(customSpreadsheetId.trim());
+  }
+
+  // Jika script ditempel langsung pada Google Sheets (Container-Bound)
+  try {
+    var activeSheet = SpreadsheetApp.getActiveSpreadsheet();
+    if (activeSheet) return activeSheet;
+  } catch (e) {
+    // Abaikan jika standalone
+  }
+
+  throw new Error("ID Google Sheets belum diatur. Silakan atur SPREADSHEET_ID di Script Properties atau pasang script pada container sheet.");
+}
+
+/**
+ * Mengambil atau membuat sheet tab baru jika belum ada, lengkap dengan header & format
+ */
+function getOrCreateSheet(spreadsheet, sheetName) {
+  var sheet = spreadsheet.getSheetByName(sheetName);
+  if (!sheet) {
+    sheet = spreadsheet.insertSheet(sheetName);
+  }
+
+  // Jika sheet baru dibuat atau sheet yang sudah ada masih kosong (belum ada header baris 1)
+  if (sheet.getLastRow() === 0) {
+    var headers = [
+      "Timestamp (WIB)",
+      "Project ID",
+      "Project Name",
+      "Tester Name",
+      "Tester Email (Google Play)",
+      "Status",
+      "App Version",
+      "Client IP (Masked)",
+      "User Agent",
+      "System & Delivery Notes"
+    ];
+
+    sheet.appendRow(headers);
+
+    // Format Header Baris 1
+    var headerRange = sheet.getRange(1, 1, 1, headers.length);
+    headerRange.setBackground("#0F172A");
+    headerRange.setFontColor("#38BDF8");
+    headerRange.setFontWeight("bold");
+    headerRange.setFontFamily("Consolas");
+    headerRange.setHorizontalAlignment("center");
+    sheet.setFrozenRows(1);
+
+    // Auto-fit column widths
+    for (var i = 1; i <= headers.length; i++) {
+      sheet.autoResizeColumn(i);
+    }
+  }
+  return sheet;
+}
+
+/**
+ * Memeriksa apakah Project ID + Email sudah terdaftar sebelumnya
+ */
+function checkIfDuplicate(sheet, projectId, testerEmail) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return false;
+
+  // Baca Kolom 2 (Project ID) dan Kolom 5 (Tester Email)
+  // getRange(row, col, numRows, numCols)
+  var projectIds = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  var testerEmails = sheet.getRange(2, 5, lastRow - 1, 1).getValues();
+
+  for (var i = 0; i < projectIds.length; i++) {
+    var existingProjectId = String(projectIds[i][0]).toLowerCase().trim();
+    var existingEmail = String(testerEmails[i][0]).toLowerCase().trim();
+
+    if (existingProjectId === projectId && existingEmail === testerEmail) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+/**
+ * Mengirim notifikasi email berformat HTML profesional ke developer
+ */
+function sendOwnerNotificationEmail(ownerEmail, data) {
+  var subject = "[SleepyKoala] Pendaftaran Tester Baru: " + data.projectName + " — " + data.testerName;
+
+  var htmlBody = "" +
+    "<div style='background-color:#090B11; color:#FAFAF9; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif; padding:24px; border-radius:12px; max-width:600px; margin:0 auto; border:1px solid #1E293B;'>" +
+      "<div style='border-bottom:1px solid #1E293B; padding-bottom:16px; margin-bottom:20px;'>" +
+        "<h2 style='color:#38BDF8; margin:0 0 4px 0; font-size:20px; font-weight:700;'>SleepyKoala Studio — Closed Testing</h2>" +
+        "<p style='color:#94A3B8; font-size:12px; margin:0;'>Pendaftaran Penguji Baru untuk Google Play Console</p>" +
+      "</div>" +
+
+      "<div style='background-color:#0F172A; border:1px solid #1E293B; border-radius:8px; padding:16px; margin-bottom:20px;'>" +
+        "<table style='width:100%; border-collapse:collapse; font-size:13px; color:#E2E8F0;'>" +
+          "<tr><td style='color:#94A3B8; padding:6px 0; width:140px;'>Proyek Target:</td><td style='font-weight:600; color:#38BDF8;'>" + data.projectName + " (" + data.projectId + ")</td></tr>" +
+          "<tr><td style='color:#94A3B8; padding:6px 0;'>Nama Penguji:</td><td style='font-weight:600; color:#FAFAF9;'>" + data.testerName + "</td></tr>" +
+          "<tr><td style='color:#94A3B8; padding:6px 0;'>Email Google Play:</td><td style='font-family:monospace; color:#34D399; font-weight:bold;'>" + data.testerEmail + "</td></tr>" +
+          "<tr><td style='color:#94A3B8; padding:6px 0;'>Versi Aplikasi:</td><td>" + data.appVersion + "</td></tr>" +
+          "<tr><td style='color:#94A3B8; padding:6px 0;'>Waktu Registrasi:</td><td>" + data.timestamp + " WIB</td></tr>" +
+        "</table>" +
+      "</div>" +
+
+      "<div style='background-color:#131B2E; border-left:4px solid #38BDF8; padding:12px 16px; border-radius:4px; margin-bottom:24px;'>" +
+        "<p style='font-size:12px; color:#CBD5E1; margin:0; line-height:1.5;'>" +
+          "<strong>Tindakan yang Perlu Dilakukan:</strong><br/>" +
+          "1. Buka <strong>Google Play Console</strong> &rarr; Pilih aplikasi <strong>" + data.projectName + "</strong>.<br/>" +
+          "2. Masuk ke menu <strong>Pengujian &rarr; Pengujian Tertutup (Closed Testing)</strong>.<br/>" +
+          "3. Masukkan email <code>" + data.testerEmail + "</code> ke daftar email penguji.<br/>" +
+          "4. Kirim tautan instalasi (web/opt-in link) kepada penguji untuk memulai periode uji 14 hari." +
+        "</p>" +
+      "</div>" +
+
+      "<div style='border-top:1px solid #1E293B; padding-top:16px; font-size:11px; color:#64748B; text-align:center;'>" +
+        "Sistem Otomatis SleepyKoala Studio &bull; Google Apps Script &bull; Cloudflare Pages Functions" +
+      "</div>" +
+    "</div>";
+
+  MailApp.sendEmail({
+    to: ownerEmail,
+    subject: subject,
+    htmlBody: htmlBody
+  });
+}
+
+/**
+ * Utility Sanitasi String
+ */
+function cleanString(str, maxLen) {
+  if (typeof str !== "string") str = String(str || "");
+  var cleaned = str.replace(/[\x00-\x1F\x7F]/g, "").trim();
+  if (cleaned.length > maxLen) {
+    cleaned = cleaned.substring(0, maxLen);
+  }
+  return cleaned;
+}
+
+/**
+ * Mask email untuk keamanan log dan response
+ */
+function maskEmail(email) {
+  var parts = email.split("@");
+  if (parts.length !== 2) return "***@***";
+  var name = parts[0];
+  var domain = parts[1];
+  var maskedName = name.length > 2 
+    ? name.substring(0, 2) + "***" 
+    : name.substring(0, 1) + "***";
+  return maskedName + "@" + domain;
+}
+
+/**
+ * Helper pembuat TextOutput JSON standar
+ */
+function createJsonResponse(success, error, message, extraData) {
+  var out = {
+    success: success,
+    error: error || null,
+    message: message || ""
+  };
+
+  if (extraData) {
+    for (var key in extraData) {
+      if (extraData.hasOwnProperty(key)) {
+        out[key] = extraData[key];
+      }
+    }
+  }
+
+  return ContentService.createTextOutput(JSON.stringify(out))
+    .setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Fungsi Pengujian Mandiri (Dapat dijalankan langsung di Apps Script Editor)
+ */
+function testSetupAndPermissions() {
+  console.log("=== Memulai Uji Mandiri SleepyKoala Backend ===");
+
+  var spreadsheet = getTargetSpreadsheet();
+  console.log("Spreadsheet terhubung: " + spreadsheet.getName() + " (ID: " + spreadsheet.getId() + ")");
+
+  var sheet = getOrCreateSheet(spreadsheet, DEFAULT_CONFIG.SHEET_NAME);
+  console.log("Sheet tab siap: " + sheet.getName() + ", Total baris: " + sheet.getLastRow());
+
+  var quota = MailApp.getRemainingDailyQuota();
+  console.log("Sisa kuota harian Gmail MailApp: " + quota);
+
+  var scriptProperties = PropertiesService.getScriptProperties();
+  var secretConfigured = scriptProperties.getProperty("APPS_SCRIPT_SECRET");
+  if (secretConfigured && secretConfigured.trim().length > 0) {
+    console.log("Status APPS_SCRIPT_SECRET: Terkonfigurasi dengan aman.");
+  } else {
+    console.warn("Peringatan: APPS_SCRIPT_SECRET belum diatur di Script Properties!");
+  }
+
+  console.log("=== Uji Mandiri Selesai — Backend Siap Digunakan ===");
+}

@@ -1,0 +1,77 @@
+name: SleepyKoala CI Quality Gates
+
+# ============================================================================
+# SLEEPYKOALA STUDIO — CONTINUOUS INTEGRATION QUALITY GATES (STAGE 4)
+# 
+# Guarantees:
+# 1. CI-Only execution: ZERO deployments, ZERO automated pushes to remote.
+# 2. Strict least privilege: permissions: contents: read.
+# 3. Clean, reproducible dependencies: npm ci using package-lock.json.
+# 4. Comprehensive quality gates:
+#    - File Policy & Denylist verification (Default Deny).
+#    - Privacy & PII scanning.
+#    - Secret & credential scanning.
+#    - Full test suite execution (vitest).
+#    - TypeScript static typecheck (tsc -b).
+#    - Production bundle build (vite build).
+#    - Code linter (oxlint / eslint).
+# 5. Zero-cost infrastructure: Runs on standard GitHub-hosted runner ($0.00).
+# ============================================================================
+
+on:
+  push:
+    branches:
+      - master
+      - main
+  pull_request:
+    branches:
+      - master
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    name: Quality Gates & Security Verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js runtime
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install dependencies (clean lockfile)
+        run: npm ci
+
+      - name: 1. Repository File Policy Check (Default Deny)
+        run: npm run security:files
+
+      - name: 2. Local Privacy & PII Scanner
+        run: npm run security:privacy
+
+      - name: 3. Local Secret Scanner
+        run: npm run security:scan
+
+      - name: 4. Unit & Integration Tests
+        run: npm test
+
+      - name: 5. TypeScript Compilation & Typecheck
+        run: npx tsc -b
+
+      - name: 6. Production Application Build
+        run: npm run build
+
+      - name: 7. Code Quality Linter
+        run: npm run lint

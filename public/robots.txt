@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Disallow: /admin
+Disallow: /api/admin/
 
-Sitemap: https://indie-developer-portfolio.pages.dev/sitemap.xml
+Sitemap: https://sleepykoala.pages.dev/sitemap.xml

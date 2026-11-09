@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 36" width="48" height="36" shape-rendering="crispEdges">
+  <!-- Stands -->
+  <rect x="14" y="22" width="6" height="6" fill="#334155" />
+  <rect x="28" y="22" width="6" height="6" fill="#334155" />
+  <!-- Left Monitor (Code Editor Screen) -->
+  <polygon points="4,6 22,2 22,20 4,24" fill="#0f172a" />
+  <polygon points="5,7 21,3 21,19 5,23" fill="#0284c7" />
+  <!-- Code Lines Visual -->
+  <line x1="7" y1="9" x2="15" y2="7" stroke="#38bdf8" stroke-width="1" />
+  <line x1="9" y1="12" x2="19" y2="10" stroke="#f1f5f9" stroke-width="1" />
+  <line x1="9" y1="15" x2="17" y2="13" stroke="#4ade80" stroke-width="1" />
+  <line x1="7" y1="18" x2="13" y2="17" stroke="#f472b6" stroke-width="1" />
+  <!-- Right Monitor (Preview / Telemetry Screen) -->
+  <polygon points="24,2 42,6 42,24 24,20" fill="#0f172a" />
+  <polygon points="25,3 41,7 41,23 25,19" fill="#1e1b4b" />
+  <!-- Telemetry Graph Visual -->
+  <polyline points="27,16 31,12 35,15 39,9" fill="none" stroke="#22d3ee" stroke-width="1.5" />
+  <rect x="27" y="6" width="4" height="2" fill="#a7f3d0" />
+  <rect x="33" y="6" width="6" height="2" fill="#fed7aa" />
+  <!-- Keyboard & Mouse Pad -->
+  <polygon points="12,27 24,24 36,27 24,30" fill="#1e293b" />
+  <polygon points="14,27 24,25 34,27 24,29" fill="#334155" />
+  <rect x="37" y="27" width="3" height="4" rx="1" fill="#64748b" />
+</svg>

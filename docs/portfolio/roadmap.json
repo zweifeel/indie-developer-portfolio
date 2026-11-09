@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-07T00:00:00.000Z",
+  "projects": {
+    "dompetnalar": {
+      "projectSlug": "dompetnalar",
+      "projectName": "DompetNalar",
+      "roadmap": [
+        {
+          "id": "ms_dn_core",
+          "title": "Arsitektur Inti & Manajemen Anggaran",
+          "description": "Pencatatan transaksi multi-akun offline-first dan kalkulasi anggaran bulanan.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "targetQuarter": "Q4 2025",
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "ms_dn_compliance",
+          "title": "Google Play Compliance & AdMob app-ads.txt",
+          "description": "Integrasi Kebijakan Privasi mandatori, alur hapus akun, dan app-ads.txt AdMob.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 2,
+          "updatedAt": "2026-11-05T00:00:00.000Z"
+        },
+        {
+          "id": "ms_dn_analytics",
+          "title": "Grafik Analisis Pengeluaran & Ekspor CSV",
+          "description": "Visualisasi tren keuangan dan ekspor laporan ke format spreadsheet.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "draft",
+          "targetQuarter": "Q2 2026",
+          "order": 3,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        }
+      ]
+    },
+    "mobile-kasir": {
+      "projectSlug": "mobile-kasir",
+      "projectName": "Mobile Kasir",
+      "roadmap": [
+        {
+          "id": "ms_mk_pos_core",
+          "title": "Sistem POS Kasir & Transaksi Cepat",
+          "description": "Katalog produk, keranjang belanja, dan cetak struk via thermal printer Bluetooth.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "targetQuarter": "Q4 2025",
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "ms_mk_testing",
+          "title": "Closed Testing 14 Hari Google Play",
+          "description": "Perekrutan 20 tester untuk memenuhi persyaratan rilis produksi Google Play Console.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 2,
+          "updatedAt": "2026-11-02T00:00:00.000Z"
+        }
+      ]
+    },
+    "idle-master": {
+      "projectSlug": "idle-master",
+      "projectName": "IDLE MASTER",
+      "roadmap": [
+        {
+          "id": "ms_im_loop",
+          "title": "Sistem Game Loop & Offline Progression",
+          "description": "Kalkulasi pendapatan idle offline dan kurva upgrade bertingkat.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "ms_im_prestige",
+          "title": "Sistem Prestise & Artefak Kuno",
+          "description": "Reset kemajuan untuk memperoleh multiplier pendapatan permanen.",
+          "implementationStatus": "planned",
+          "publicationStatus": "draft",
+          "targetQuarter": "Q2 2026",
+          "order": 2,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        }
+      ]
+    },
+    "idle-mining": {
+      "projectSlug": "idle-mining",
+      "projectName": "Idle Mining",
+      "roadmap": [
+        {
+          "id": "ms_in_mine_depth",
+          "title": "Eksplorasi Kedalaman Tambang & Mineral Baru",
+          "description": "Tingkat tambang prosedural dengan mineral langka dan penambang otomatis.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ]
+    },
+    "the-broken-origin": {
+      "projectSlug": "the-broken-origin",
+      "projectName": "The Broken Origin",
+      "roadmap": [
+        {
+          "id": "ms_tbo_world",
+          "title": "Pondasi Dunia 2.5D Isometrik & ProfileStore",
+          "description": "Integrasi arsitektur penyimpanan data pemain aman dan prototipe area kota.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 1,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        },
+        {
+          "id": "ms_tbo_combat",
+          "title": "Sistem Pertempuran Realtime & Co-op Dungeon",
+          "description": "Sinkronisasi pertempuran multipemain dan instanced dungeon raid.",
+          "implementationStatus": "planned",
+          "publicationStatus": "draft",
+          "targetQuarter": "Q3 2026",
+          "order": 2,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        }
+      ]
+    },
+    "worklume": {
+      "projectSlug": "worklume",
+      "projectName": "Worklume",
+      "roadmap": [
+        {
+          "id": "ms_wl_workspace",
+          "title": "Arsitektur Workspace & Task Kanonikal",
+          "description": "Pengorganisasian tugas lokal terfokus dan timer pomodoro terintegrasi.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "targetQuarter": "Q1 2026",
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ]
+    }
+  }
+}

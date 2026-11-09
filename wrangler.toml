@@ -1,0 +1,14 @@
+name = "sleepykoala"
+compatibility_date = "2026-10-30"
+pages_build_output_dir = "dist"
+
+# ============================================================================
+# SLEEPYKOALA STUDIO — CLOUDFLARE PAGES PROJECT CONFIGURATION
+# 
+# PENTING:
+# 1. Proyek ini TERPISAH dari proyek 'The Broken Origin' (TBO).
+# 2. Nilai rahasia (GAS_WEBAPP_URL & APPS_SCRIPT_SECRET) TIDAK BOLEH ditulis
+#    secara plain text di dalam file ini atau di Git.
+# 3. Rahasia diatur secara terenkripsi melalui Cloudflare Dashboard:
+#    Project: sleepykoala -> Settings -> Environment variables (Production/Preview)
+# ============================================================================

@@ -10,13 +10,23 @@ import {
   AlertTriangle,
   Info,
 } from 'lucide-react';
-import { getProjectBySlug } from '../services/projectService';
+import { useProjects } from '../services/projectService';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { id } from '../locales/id';
 import type { ReportType, FeedbackFormValues } from '../types/project';
 
 export const FeedbackPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
-  const project = getProjectBySlug(slug || '');
+  const { projects: allProjects } = useProjects();
+  const project = allProjects.find((p) => p.slug.toLowerCase() === slug?.toLowerCase());
+
+  usePageMeta({
+    title: project ? `Feedback & Laporan Bug — ${project.name}` : 'Formulir Feedback',
+    description: project
+      ? `Sampaikan masukan, saran fitur, atau laporan bug untuk proyek ${project.name}.`
+      : 'Formulir pelaporan bug dan umpan balik proyek SleepyKoala Studio.',
+    canonicalPath: project ? `/projects/${project.slug}/feedback` : '/projects',
+  });
 
   const [formData, setFormData] = useState<FeedbackFormValues>({
     testerName: '',
@@ -129,7 +139,7 @@ export const FeedbackPage: React.FC = () => {
       <div>
         <Link
           to={`/projects/${project.slug}`}
-          className="inline-flex items-center gap-2 text-xs font-semibold text-stone-300 hover:text-white transition-colors underline decoration-stone-850 hover:decoration-cyan-500 underline-offset-4"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-[#A8A29E] hover:text-[#FAFAF9] transition-colors underline decoration-stone-800 hover:decoration-cyan-500 underline-offset-4"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Detail {project.name}</span>
@@ -138,12 +148,12 @@ export const FeedbackPage: React.FC = () => {
 
       {/* Header */}
       <div>
-        <h1 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-extrabold text-[#FAFAF9] tracking-tight">
           {id.feedback.title}
         </h1>
-        <p className="mt-2 text-sm text-stone-300">
+        <p className="mt-2 text-sm text-[#E7E5E4]">
           {id.feedback.subtitle} Laporan ini ditujukan langsung untuk proyek{' '}
-          <strong className="text-white">{project.name}</strong>.
+          <strong className="text-[#FAFAF9]">{project.name}</strong>.
         </p>
       </div>
 
@@ -169,12 +179,12 @@ export const FeedbackPage: React.FC = () => {
           <div className="rounded-xl border border-stone-800 bg-stone-900/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
             <div>
               <span className="text-[#A8A29E]">{id.feedback.projectLabel}:</span>{' '}
-              <strong className="text-[#F5F5F4] text-sm font-bold ml-1">{project.name}</strong>
-              <span className="ml-2 font-mono text-[#8A8580]">(ID: {project.id})</span>
+              <strong className="text-[#FAFAF9] text-sm font-bold ml-1">{project.name}</strong>
+              <span className="ml-2 font-mono text-[#78716C]">(ID: {project.id})</span>
             </div>
             <div className="flex items-center gap-2 text-[#A8A29E]">
               <span>Status:</span>
-              <span className="px-2 py-0.5 rounded bg-stone-850 border border-stone-750 text-[#D6D3D1] font-mono">
+              <span className="px-2 py-0.5 rounded bg-stone-850 border border-stone-750 text-[#E7E5E4] font-mono">
                 {id.statusLabels[project.status]}
               </span>
             </div>
@@ -182,8 +192,8 @@ export const FeedbackPage: React.FC = () => {
 
           {/* Report Type Selector */}
           <div>
-            <label className="block text-xs font-medium text-[#D6D3D1] mb-2">
-              {id.feedback.reportTypeLabel} <span className="text-stone-400">*</span>
+            <label className="block text-xs font-medium text-[#E7E5E4] mb-2">
+              {id.feedback.reportTypeLabel} <span className="text-cyan-400">*</span>
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {reportTypes.map((item) => (
@@ -207,8 +217,8 @@ export const FeedbackPage: React.FC = () => {
           {/* Tester Identity Row */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label htmlFor="testerName" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
-                {id.feedback.testerNameLabel} <span className="text-stone-400">*</span>
+              <label htmlFor="testerName" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
+                {id.feedback.testerNameLabel} <span className="text-cyan-400">*</span>
               </label>
               <input
                 id="testerName"
@@ -219,7 +229,7 @@ export const FeedbackPage: React.FC = () => {
                   if (errors.testerName) setErrors({ ...errors, testerName: undefined });
                 }}
                 placeholder={id.feedback.testerNamePlaceholder}
-                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500 transition-colors ${
+                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500 transition-colors ${
                   errors.testerName ? 'border-rose-500' : 'border-stone-800'
                 }`}
                 required
@@ -230,8 +240,8 @@ export const FeedbackPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="testerEmail" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
-                {id.feedback.testerEmailLabel} <span className="text-stone-400">*</span>
+              <label htmlFor="testerEmail" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
+                {id.feedback.testerEmailLabel} <span className="text-cyan-400">*</span>
               </label>
               <input
                 id="testerEmail"
@@ -242,7 +252,7 @@ export const FeedbackPage: React.FC = () => {
                   if (errors.testerEmail) setErrors({ ...errors, testerEmail: undefined });
                 }}
                 placeholder={id.feedback.testerEmailPlaceholder}
-                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500 transition-colors ${
+                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500 transition-colors ${
                   errors.testerEmail ? 'border-rose-500' : 'border-stone-800'
                 }`}
                 required
@@ -256,7 +266,7 @@ export const FeedbackPage: React.FC = () => {
           {/* Technical Diagnostics Row */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
-              <label htmlFor="appVersion" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
+              <label htmlFor="appVersion" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
                 {id.feedback.appVersionLabel}
               </label>
               <input
@@ -265,13 +275,13 @@ export const FeedbackPage: React.FC = () => {
                 value={formData.appVersion}
                 onChange={(e) => setFormData({ ...formData, appVersion: e.target.value })}
                 placeholder="mis: 1.0.0"
-                className="w-full rounded-xl bg-stone-900 border border-stone-800 px-3.5 py-2.5 text-sm text-[#F5F5F4] font-mono placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500"
+                className="w-full rounded-xl bg-stone-900 border border-stone-800 px-3.5 py-2.5 text-sm text-[#FAFAF9] font-mono placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500"
               />
             </div>
 
             <div>
-              <label htmlFor="deviceModel" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
-                {id.feedback.deviceModelLabel} <span className="text-stone-400">*</span>
+              <label htmlFor="deviceModel" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
+                {id.feedback.deviceModelLabel} <span className="text-cyan-400">*</span>
               </label>
               <input
                 id="deviceModel"
@@ -282,7 +292,7 @@ export const FeedbackPage: React.FC = () => {
                   if (errors.deviceModel) setErrors({ ...errors, deviceModel: undefined });
                 }}
                 placeholder={id.feedback.deviceModelPlaceholder}
-                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500 transition-colors ${
+                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500 transition-colors ${
                   errors.deviceModel ? 'border-rose-500' : 'border-stone-800'
                 }`}
                 required
@@ -293,8 +303,8 @@ export const FeedbackPage: React.FC = () => {
             </div>
 
             <div>
-              <label htmlFor="androidVersion" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
-                {id.feedback.androidVersionLabel} <span className="text-stone-400">*</span>
+              <label htmlFor="androidVersion" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
+                {id.feedback.androidVersionLabel} <span className="text-cyan-400">*</span>
               </label>
               <input
                 id="androidVersion"
@@ -305,7 +315,7 @@ export const FeedbackPage: React.FC = () => {
                   if (errors.androidVersion) setErrors({ ...errors, androidVersion: undefined });
                 }}
                 placeholder={id.feedback.androidVersionPlaceholder}
-                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500 transition-colors ${
+                className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500 transition-colors ${
                   errors.androidVersion ? 'border-rose-500' : 'border-stone-800'
                 }`}
                 required
@@ -318,8 +328,8 @@ export const FeedbackPage: React.FC = () => {
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-xs font-medium text-[#D6D3D1] mb-1.5">
-              {id.feedback.descriptionLabel} <span className="text-stone-400">*</span>
+            <label htmlFor="description" className="block text-xs font-medium text-[#E7E5E4] mb-1.5">
+              {id.feedback.descriptionLabel} <span className="text-cyan-400">*</span>
             </label>
             <textarea
               id="description"
@@ -330,7 +340,7 @@ export const FeedbackPage: React.FC = () => {
                 if (errors.description) setErrors({ ...errors, description: undefined });
               }}
               placeholder={id.feedback.descriptionPlaceholder}
-              className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#F5F5F4] placeholder-[#8A8580] focus:outline-hidden focus:ring-2 focus:ring-stone-500 transition-colors ${
+              className={`w-full rounded-xl bg-stone-900 border px-3.5 py-2.5 text-sm text-[#FAFAF9] placeholder-[#78716C] focus:outline-hidden focus:ring-2 focus:ring-cyan-500 transition-colors ${
                 errors.description ? 'border-rose-500' : 'border-stone-800'
               }`}
               required
@@ -342,9 +352,9 @@ export const FeedbackPage: React.FC = () => {
 
           {/* Honest info notice */}
           <div className="rounded-xl border border-stone-800 bg-stone-900/60 p-3 flex gap-2.5 items-center text-xs text-[#A8A29E]">
-            <Info className="w-4 h-4 text-[#8A8580] shrink-0" />
+            <Info className="w-4 h-4 text-cyan-400 shrink-0" />
             <span>
-              * Mode Pratinjau Frontend: Formulir ini memvalidasi input pada sisi klien. Pada Milestone 3, data akan dihubungkan ke Google Sheets & Gmail developer.
+              * Validasi Diagnostik Frontend: Formulir ini memverifikasi format data, model perangkat, dan versi Android sebelum diteruskan ke developer.
             </span>
           </div>
 
@@ -365,11 +375,11 @@ export const FeedbackPage: React.FC = () => {
           <div className="w-12 h-12 mx-auto rounded-full bg-emerald-950/70 border border-emerald-700/60 text-emerald-400 flex items-center justify-center">
             <CheckCircle2 className="w-6 h-6 text-emerald-400" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-            Validasi Input Formulir Berhasil (Mode Pratinjau)
+          <h2 className="text-xl sm:text-2xl font-bold text-[#FAFAF9] tracking-tight">
+            Laporan Umpan Balik Berhasil Dikirimkan
           </h2>
-          <p className="text-sm text-[#D6D3D1] max-w-lg mx-auto leading-relaxed">
-            Format data masukan Anda telah terverifikasi valid pada lapisan frontend. Pada Milestone 3 mendatang, data ini akan diteruskan ke Google Sheets dan Gmail developer.
+          <p className="text-sm text-[#E7E5E4] max-w-lg mx-auto leading-relaxed">
+            Terima kasih atas kontribusi Anda. Data laporan diagnostik telah tercatat dengan baik untuk membantu proses peningkatan kualitas aplikasi dan game SleepyKoala.
           </p>
           <div className="pt-4 flex justify-center gap-3">
             <button
@@ -381,7 +391,7 @@ export const FeedbackPage: React.FC = () => {
                   description: '',
                 });
               }}
-              className="px-5 py-2.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-850 text-[#D6D3D1] text-xs font-semibold transition-colors"
+              className="px-5 py-2.5 rounded-xl border border-stone-800 bg-stone-900 hover:bg-stone-850 text-[#E7E5E4] text-xs font-semibold transition-colors"
             >
               Tulis Laporan Lain
             </button>

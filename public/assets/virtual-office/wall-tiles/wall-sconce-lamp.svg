@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32" width="24" height="32" shape-rendering="crispEdges">
+  <!-- Fixture Base -->
+  <rect x="10" y="8" width="4" height="12" fill="#78350f" />
+  <rect x="9" y="10" width="6" height="4" fill="#d97706" />
+  <!-- Lantern Shade -->
+  <polygon points="6,14 18,14 16,24 8,24" fill="#fbbf24" opacity="0.9" />
+  <!-- Light Bulb Core -->
+  <circle cx="12" cy="18" r="3" fill="#ffffff" />
+  <!-- Ambient Glow Halo (Pixel Stipple) -->
+  <circle cx="12" cy="18" r="8" fill="#fef08a" opacity="0.25" />
+</svg>

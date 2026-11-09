@@ -1,13 +1,32 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import { StatusBadge } from '../components/StatusBadge';
 import { RegistrationModal } from '../components/RegistrationModal';
 import { ProjectDetailPage } from '../pages/ProjectDetailPage';
 import { ProjectsPage } from '../pages/ProjectsPage';
-import { getProjectBySlug } from '../services/projectService';
+import { getProjectBySlug, resetProjectsCache } from '../services/projectService';
+import rawProjects from '../data/projects.json';
 
 describe('UI Component Unit Tests with Official Projects', () => {
+  beforeEach(() => {
+    resetProjectsCache();
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url) => {
+      if (String(url).includes('/api/projects')) {
+        return new Response(JSON.stringify({
+          success: true,
+          data: (rawProjects as any[]).map((p) => ({ ...p, publishState: 'PUBLISHED' })),
+          source: 'cms-live',
+        }), { status: 200, headers: { 'Content-Type': 'application/json' } });
+      }
+      return new Response('Not Found', { status: 404 });
+    });
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+    resetProjectsCache();
+  });
   it('renders StatusBadge with Indonesian label for READY_FOR_RELEASE', () => {
     render(<StatusBadge status="READY_FOR_RELEASE" />);
     expect(screen.getByText('Siap Rilis')).toBeInTheDocument();
@@ -147,5 +166,30 @@ describe('UI Component Unit Tests with Official Projects', () => {
     );
 
     expect(screen.getByText('Proyek tidak ditemukan')).toBeInTheDocument();
+  });
+
+  describe('AdMob app-ads.txt Static Asset Verification', () => {
+    it('verifies public/app-ads.txt exists with exact Google AdMob snippet', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve(process.cwd(), 'public', 'app-ads.txt');
+      expect(fs.existsSync(filePath)).toBe(true);
+
+      const content = fs.readFileSync(filePath, 'utf-8').trim();
+      expect(content).toBe('google.com, pub-2539100802088383, DIRECT, f08c47fec0942fa0');
+      expect(content).not.toContain('<html');
+      expect(content).not.toContain('<!DOCTYPE');
+    });
+
+    it('verifies dist/app-ads.txt exists after build with identical content', async () => {
+      const fs = await import('node:fs');
+      const path = await import('node:path');
+      const filePath = path.resolve(process.cwd(), 'dist', 'app-ads.txt');
+      if (fs.existsSync(filePath)) {
+        const content = fs.readFileSync(filePath, 'utf-8').trim();
+        expect(content).toBe('google.com, pub-2539100802088383, DIRECT, f08c47fec0942fa0');
+        expect(content).not.toContain('<html');
+      }
+    });
   });
 });

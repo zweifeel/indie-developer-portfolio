@@ -1,0 +1,28 @@
+{
+  "spreadsheetName": "SleepyKoala — Closed Testing Database",
+  "tabs": [
+    {
+      "name": "TesterRegistrations",
+      "description": "Database pendaftaran penguji closed testing Google Play Console",
+      "columns": [
+        { "index": 1, "name": "Timestamp (WIB)", "type": "DATETIME", "example": "2026-10-31 14:05:22" },
+        { "index": 2, "name": "Project ID", "type": "STRING", "example": "mobile-kasir" },
+        { "index": 3, "name": "Project Name", "type": "STRING", "example": "Mobile Kasir" },
+        { "index": 4, "name": "Tester Name", "type": "STRING", "example": "Ahmad Fauzi" },
+        { "index": 5, "name": "Tester Email (Google Play)", "type": "EMAIL", "example": "ahmad.fauzi@gmail.com" },
+        { "index": 6, "name": "Status", "type": "ENUM", "values": ["PENDING_INVITE", "INVITED", "ACTIVE_14_DAYS", "REJECTED"], "default": "PENDING_INVITE" },
+        { "index": 7, "name": "App Version", "type": "STRING", "example": "0.9.2-beta" },
+        { "index": 8, "name": "Client IP (Masked)", "type": "STRING", "example": "180.252.xxx.xxx" },
+        { "index": 9, "name": "User Agent", "type": "STRING", "example": "Mozilla/5.0 (Android 14; Mobile; ...)" },
+        { "index": 10, "name": "System & Delivery Notes", "type": "STRING", "example": "Notifikasi email terkirim ke zweifeel@gmail.com" }
+      ],
+      "indexes": [
+        { "fields": ["Project ID", "Tester Email (Google Play)"], "unique": true, "note": "Mencegah duplikasi entri penguji pada proyek yang sama" }
+      ]
+    }
+  ],
+  "security": {
+    "nonAtomicTransactionNotice": "Penyimpanan Google Sheets dan pengiriman email Gmail MailApp bukan transaksi atomik. Jika kuota email habis atau jaringan Gmail mengalami kendala sesaat, data tetap tersimpan di Sheets dengan catatan kegagalan notifikasi agar data tester tidak hilang.",
+    "privacyCompliance": "Alamat IP client dimasking sebelum disimpan di database. Email tester hanya digunakan untuk perizinan akses Google Play Console Closed Testing."
+  }
+}

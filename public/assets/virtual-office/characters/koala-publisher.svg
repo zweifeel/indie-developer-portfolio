@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 56" width="48" height="56" shape-rendering="crispEdges">
+  <!-- Shadow -->
+  <ellipse cx="24" cy="50" rx="14" ry="4" fill="#000000" opacity="0.3" />
+
+  <!-- KOALA EARS (Fluffy round with white tufts) -->
+  <!-- Left Ear -->
+  <circle cx="13" cy="16" r="7" fill="#64748b" />
+  <circle cx="13" cy="16" r="4" fill="#f1f5f9" />
+  <!-- Right Ear -->
+  <circle cx="35" cy="16" r="7" fill="#64748b" />
+  <circle cx="35" cy="16" r="4" fill="#f1f5f9" />
+
+  <!-- HEAD (Warm Gray Koala) -->
+  <ellipse cx="24" cy="22" rx="13" ry="11" fill="#64748b" />
+  <ellipse cx="24" cy="23" rx="11" ry="9" fill="#94a3b8" />
+
+  <!-- BIG NOSE (Characteristic Koala Oval) -->
+  <ellipse cx="24" cy="25" rx="3.5" ry="5" fill="#1e293b" />
+  <ellipse cx="23" cy="23" rx="1" ry="1.5" fill="#ffffff" opacity="0.6" />
+
+  <!-- EXPRESSIVE EYES -->
+  <circle cx="19" cy="21" r="1.8" fill="#0f172a" />
+  <circle cx="29" cy="21" r="1.8" fill="#0f172a" />
+  <circle cx="18.5" cy="20.5" r="0.6" fill="#ffffff" />
+  <circle cx="28.5" cy="20.5" r="0.6" fill="#ffffff" />
+
+  <!-- BODY & COZY SWEATER / UNIFORM -->
+  <polygon points="16,32 32,32 36,46 12,46" fill="#1e3a8a" />
+  <!-- Collar / Trim -->
+  <polygon points="20,32 24,36 28,32" fill="#bfdbfe" />
+  <!-- Arms resting forward -->
+  <ellipse cx="14" cy="38" rx="3" ry="5" fill="#64748b" />
+  <ellipse cx="34" cy="38" rx="3" ry="5" fill="#64748b" />
+  <ellipse cx="16" cy="42" rx="2.5" ry="2.5" fill="#94a3b8" />
+  <ellipse cx="32" cy="42" rx="2.5" ry="2.5" fill="#94a3b8" />
+
+  
+    <!-- Release Pilot Cap -->
+    <polygon points="15,14 33,14 35,11 13,11" fill="#1e293b" />
+    <rect x="17" y="11" width="14" height="4" fill="#1e3a8a" />
+    <!-- Golden Wing Badge -->
+    <polygon points="22,12 26,12 24,14" fill="#fbbf24" />
+  
+  
+    <!-- Studio ID Badge with Lanyard -->
+    <line x1="24" y1="32" x2="24" y2="40" stroke="#f59e0b" stroke-width="1" />
+    <rect x="22" y="39" width="4" height="5" fill="#f8fafc" />
+    <rect x="23" y="40" width="2" height="2" fill="#0284c7" />
+  
+  
+    <!-- Launch Controller Screen with Rocket Graphic -->
+    <polygon points="18,40 28,35 32,43 22,48" fill="#0f172a" />
+    <polygon points="19,41 27,37 30,42 22,46" fill="#38bdf8" />
+    <!-- Tiny Rocket Shape -->
+    <polygon points="25,39 27,41 23,43" fill="#ffffff" />
+  
+</svg>

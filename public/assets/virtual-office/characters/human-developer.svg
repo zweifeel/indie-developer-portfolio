@@ -1,0 +1,131 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" width="64" height="88">
+  <defs>
+    <radialGradient id="devGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#14b8a6" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="devHoodie" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#14b8a6" />
+      <stop offset="100%" stopColor="#0f766e" />
+    </linearGradient>
+    <linearGradient id="devJeans" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#1e293b" />
+      <stop offset="100%" stopColor="#0f172a" />
+    </linearGradient>
+    <linearGradient id="laptopScreen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#042f2e" />
+      <stop offset="100%" stopColor="#111827" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .dev-body {
+        animation: devTypingIdle 3s ease-in-out infinite;
+        transform-origin: 32px 82px;
+      }
+      .code-blink {
+        animation: devCodeBlink 1.5s steps(2, start) infinite;
+      }
+    }
+    @keyframes devTypingIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.8px); }
+    }
+    @keyframes devCodeBlink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+  </style>
+
+  <!-- Ground Contact Shadow -->
+  <ellipse cx="32" cy="83" rx="20" ry="4.5" fill="#000" opacity="0.35" />
+
+  <!-- Animated Character Body Group -->
+  <g class="dev-body">
+    <!-- Legs & Sneakers -->
+    <!-- Left Leg (Casual dark jeans) -->
+    <path d="M 26 53 L 25 76 L 22 78 L 22 81 L 28 81 L 29 76 L 29 53 Z" fill="url(#devJeans)" />
+    <!-- Left White Sneaker with teal accent -->
+    <path d="M 22 78 Q 20 82 28 82 L 29 80 Z" fill="#f8fafc" />
+    <path d="M 23 80 L 27 79 L 28 81 Z" fill="#0d9488" />
+    <rect x="22" y="80.5" width="7" height="1.5" rx="0.5" fill="#cbd5e1" />
+
+    <!-- Right Leg -->
+    <path d="M 35 53 L 35 76 L 35 78 L 35 81 L 42 81 L 41 76 L 38 53 Z" fill="url(#devJeans)" />
+    <!-- Right White Sneaker -->
+    <path d="M 35 78 Q 36 82 43 82 L 43 80 Z" fill="#f8fafc" />
+    <path d="M 36 80 L 40 79 L 41 81 Z" fill="#0d9488" />
+    <rect x="35" y="80.5" width="7" height="1.5" rx="0.5" fill="#cbd5e1" />
+
+    <!-- Torso: Modern Cozy Developer Hoodie (Teal) -->
+    <path d="M 21 34 Q 32 32 43 34 L 41 54 Q 32 56 23 54 Z" fill="url(#devHoodie)" />
+    <!-- Kangaroo Pocket on Hoodie -->
+    <path d="M 25 45 L 39 45 L 37 52 L 27 52 Z" fill="#0d9488" opacity="0.8" />
+    <path d="M 27 45 L 25 49 L 27 52 Z" fill="#0f766e" />
+    <path d="M 37 45 L 39 49 L 37 52 Z" fill="#0f766e" />
+    <!-- Hoodie Drawstrings -->
+    <line x1="30" y1="36" x2="29" y2="43" stroke="#e2e8f0" stroke-width="0.9" stroke-linecap="round" />
+    <line x1="34" y1="36" x2="35" y2="43" stroke="#e2e8f0" stroke-width="0.9" stroke-linecap="round" />
+    <circle cx="29" cy="43.5" r="0.7" fill="#94a3b8" />
+    <circle cx="35" cy="43.5" r="0.7" fill="#94a3b8" />
+
+    <!-- Arms Holding Laptop in Front -->
+    <!-- Left Arm -->
+    <path d="M 21 35 Q 17 44 24 48 L 26 45 Q 21 42 24 37 Z" fill="#0d9488" />
+    <circle cx="25" cy="48" r="2.3" fill="#fde68a" />
+
+    <!-- Right Arm -->
+    <path d="M 43 35 Q 47 44 40 48 L 38 45 Q 43 42 40 37 Z" fill="#0f766e" />
+    <circle cx="39" cy="48" r="2.3" fill="#fde68a" />
+
+    <!-- Sleek Silver Laptop with Code Screen -->
+    <g transform="translate(23, 42)">
+      <!-- Laptop Base & Keyboard -->
+      <polygon points="1,11 17,11 16,14 2,14" fill="#94a3b8" />
+      <rect x="3" y="11.5" width="12" height="2" rx="0.3" fill="#334155" />
+      <!-- Laptop Open Screen -->
+      <polygon points="0,0 18,0 17,11 1,11" fill="#475569" stroke="#64748b" stroke-width="0.6" />
+      <rect x="1.5" y="1.2" width="15" height="9" rx="0.5" fill="url(#laptopScreen)" />
+      <!-- Lines of Code in IDE -->
+      <line x1="3" y1="3" x2="8" y2="3" stroke="#2dd4bf" stroke-width="0.8" stroke-linecap="round" />
+      <line x1="3" y1="5" x2="14" y2="5" stroke="#38bdf8" stroke-width="0.8" stroke-linecap="round" />
+      <line x1="5" y1="7" x2="11" y2="7" stroke="#fbbf24" stroke-width="0.8" stroke-linecap="round" />
+      <line x1="3" y1="9" x2="9" y2="9" stroke="#4ade80" stroke-width="0.8" stroke-linecap="round" />
+      <!-- Blinking cursor -->
+      <line x1="10" y1="9" x2="11.5" y2="9" stroke="#f43f5e" stroke-width="0.9" class="code-blink" />
+    </g>
+
+    <!-- Headphones resting around neck -->
+    <path d="M 24 31 Q 32 36 40 31" stroke="#334155" stroke-width="2.5" fill="none" stroke-linecap="round" />
+    <rect x="23" y="29" width="3" height="5" rx="1.5" fill="#14b8a6" />
+    <rect x="38" y="29" width="3" height="5" rx="1.5" fill="#14b8a6" />
+
+    <!-- Head & Neck -->
+    <rect x="29" y="27" width="6" height="6" rx="1" fill="#fde68a" />
+    <!-- Head Shape (Warm tan tone) -->
+    <ellipse cx="32" cy="21" rx="8" ry="9" fill="#fde68a" />
+
+    <!-- Facial Features -->
+    <!-- Friendly smiling eyes -->
+    <circle cx="29" cy="20" r="1.1" fill="#1e293b" />
+    <circle cx="35" cy="20" r="1.1" fill="#1e293b" />
+    <circle cx="28.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <circle cx="34.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <path d="M 27.5 18 Q 29 17.2 30.5 18" stroke="#451a03" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <path d="M 33.5 18 Q 35 17.2 36.5 18" stroke="#451a03" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <!-- Nose & Smile -->
+    <circle cx="32" cy="23" r="0.6" fill="#f59e0b" />
+    <path d="M 30" y1="24.8" d="M 30 25 Q 32 27.5 34 25" stroke="#b45309" stroke-width="1" stroke-linecap="round" fill="none" />
+
+    <!-- Ears -->
+    <circle cx="23.5" cy="21" r="1.8" fill="#fde68a" />
+    <circle cx="40.5" cy="21" r="1.8" fill="#fde68a" />
+
+    <!-- Stylized Wavy Voluminous Developer Hair (Dark brown/black) -->
+    <path d="M 23 19 Q 22 11 31 10 Q 42 9 42 16 Q 42 20 40 22 Q 38 14 30 14 Q 25 15 23 19 Z" fill="#1c1917" />
+    <!-- Wavy Hair Locks -->
+    <path d="M 22 18 Q 24 13 29 12 Q 34 11 38 14 Q 41 16 41 19 Q 39 17 36 16 Q 30 15 26 18 Z" fill="#292524" />
+    <path d="M 27 12 Q 32 9 37 12" stroke="#44403c" stroke-width="1" fill="none" stroke-linecap="round" />
+  </g>
+</svg>

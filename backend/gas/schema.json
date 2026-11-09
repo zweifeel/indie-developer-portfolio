@@ -1,0 +1,136 @@
+{
+  "spreadsheetName": "SleepyKoala — Closed Testing Database",
+  "tabs": [
+    {
+      "name": "TesterRegistrations",
+      "description": "Database pendaftaran penguji closed testing Google Play Console",
+      "columns": [
+        { "index": 1, "name": "Timestamp (WIB)", "type": "DATETIME", "example": "2026-10-31 14:05:22" },
+        { "index": 2, "name": "Project ID", "type": "STRING", "example": "mobile-kasir" },
+        { "index": 3, "name": "Project Name", "type": "STRING", "example": "Mobile Kasir" },
+        { "index": 4, "name": "Tester Name", "type": "STRING", "example": "Ahmad Fauzi" },
+        { "index": 5, "name": "Tester Email (Google Play)", "type": "EMAIL", "example": "ahmad.fauzi@gmail.com" },
+        { "index": 6, "name": "Status", "type": "ENUM", "values": ["PENDING_INVITE", "INVITED", "ACTIVE_14_DAYS", "REJECTED"], "default": "PENDING_INVITE" },
+        { "index": 7, "name": "App Version", "type": "STRING", "example": "0.9.2-beta" },
+        { "index": 8, "name": "Client IP (Masked)", "type": "STRING", "example": "180.252.xxx.xxx" },
+        { "index": 9, "name": "User Agent", "type": "STRING", "example": "Mozilla/5.0 (Android 14; Mobile; ...)" },
+        { "index": 10, "name": "System & Delivery Notes", "type": "STRING", "example": "Notifikasi email terkirim ke zweifeel@gmail.com" }
+      ],
+      "indexes": [
+        { "fields": ["Project ID", "Tester Email (Google Play)"], "unique": true, "note": "Mencegah duplikasi entri penguji pada proyek yang sama" }
+      ]
+    },
+    {
+      "name": "CMS_Projects",
+      "description": "Dynamic CMS projects store tracking lifecycle, media, and published project catalog",
+      "columns": [
+        { "index": 1, "name": "ID", "type": "STRING", "example": "proj_website" },
+        { "index": 2, "name": "Slug", "type": "STRING", "example": "indie-developer-portfolio" },
+        { "index": 3, "name": "Name", "type": "STRING", "example": "SleepyKoala Studio Website" },
+        { "index": 4, "name": "Category", "type": "ENUM", "values": ["APPLICATION", "GAME"], "default": "APPLICATION" },
+        { "index": 5, "name": "Status", "type": "ENUM", "values": ["READY_FOR_RELEASE", "RELEASED", "PRE_REGISTRATION", "CLOSED_TESTING", "INTERNAL_TESTING", "WORK_IN_PROGRESS", "COMING_SOON"], "default": "WORK_IN_PROGRESS" },
+        { "index": 6, "name": "Short Description", "type": "STRING", "example": "Indie portfolio website" },
+        { "index": 7, "name": "Full Description", "type": "STRING", "example": "Full description prose" },
+        { "index": 8, "name": "Tagline", "type": "STRING", "example": "Studio showcase" },
+        { "index": 9, "name": "Icon URL", "type": "STRING", "example": "https://..." },
+        { "index": 10, "name": "Feature Graphic URL", "type": "STRING", "example": "https://..." },
+        { "index": 11, "name": "Screenshots JSON", "type": "JSON", "example": "[]" },
+        { "index": 12, "name": "Version", "type": "STRING", "example": "1.0.0" },
+        { "index": 13, "name": "Last Updated", "type": "DATETIME", "example": "2026-11-08 14:00:00" },
+        { "index": 14, "name": "Play Store URL", "type": "STRING", "example": "" },
+        { "index": 15, "name": "Testing URL", "type": "STRING", "example": "" },
+        { "index": 16, "name": "Registration Open", "type": "BOOLEAN", "example": false },
+        { "index": 17, "name": "Tester Requirement Days", "type": "INTEGER", "example": 14 },
+        { "index": 18, "name": "Featured", "type": "BOOLEAN", "example": true },
+        { "index": 19, "name": "Tags JSON", "type": "JSON", "example": "[\"Web\",\"Portfolio\"]" },
+        { "index": 20, "name": "Technical Highlights JSON", "type": "JSON", "example": "[]" },
+        { "index": 21, "name": "Capabilities JSON", "type": "JSON", "example": "[]" },
+        { "index": 22, "name": "Vision", "type": "STRING", "example": "Studio vision statement" },
+        { "index": 23, "name": "Publish State", "type": "ENUM", "values": ["DRAFT", "PUBLISHED", "ARCHIVED"], "default": "DRAFT" },
+        { "index": 24, "name": "Updated At", "type": "DATETIME", "example": "2026-11-08 14:00:00" },
+        { "index": 25, "name": "Updated By", "type": "STRING", "example": "system:github-webhook" }
+      ],
+      "indexes": [
+        { "fields": ["ID"], "unique": true, "note": "Primary key for project record" },
+        { "fields": ["Slug"], "unique": true, "note": "Routing slug for public web and API lookups" }
+      ]
+    },
+    {
+      "name": "CMS_AuditLogs",
+      "description": "Audit trails for administrative and automated backend modifications",
+      "columns": [
+        { "index": 1, "name": "Timestamp (WIB)", "type": "DATETIME", "example": "2026-11-08 14:00:00" },
+        { "index": 2, "name": "Action", "type": "STRING", "example": "GITHUB_SYNC_PROGRESS" },
+        { "index": 3, "name": "Target ID", "type": "STRING", "example": "indie-developer-portfolio" },
+        { "index": 4, "name": "Admin Email", "type": "STRING", "example": "system:github-webhook" },
+        { "index": 5, "name": "Client IP (Masked)", "type": "STRING", "example": "GITHUB_WEBHOOK" },
+        { "index": 6, "name": "Details JSON", "type": "JSON", "example": "{\"eventTitle\":\"Push to master\",\"publicationStatus\":\"draft\"}" }
+      ]
+    },
+    {
+      "sheetName": "CMS_Progress",
+      "stage": "Stage 5",
+      "purpose": "Penyimpanan Canonical Progress Metadata v2 (Roadmap Milestones, Features, Screenshots, Events)",
+      "columns": [
+        { "index": 1, "name": "Project Slug", "type": "STRING", "example": "dompetnalar" },
+        { "index": 2, "name": "Project Name", "type": "STRING", "example": "DompetNalar" },
+        { "index": 3, "name": "Project Type", "type": "ENUM", "values": ["APPLICATION", "GAME", "WEBSITE", "TOOL", "OTHER"], "default": "APPLICATION" },
+        { "index": 4, "name": "Schema Version", "type": "NUMBER", "example": 2 },
+        { "index": 5, "name": "Document JSON", "type": "JSON", "example": "{\"schemaVersion\":2,\"projectSlug\":\"dompetnalar\",...}" },
+        { "index": 6, "name": "Updated At", "type": "DATETIME", "example": "2026-11-08 19:30:00" },
+        { "index": 7, "name": "Updated By", "type": "STRING", "example": "zweifeel@gmail.com" }
+      ]
+    }
+  ],
+  "contracts": {
+    "SYNC_PROGRESS_METADATA": {
+      "stage": "Stage 4",
+      "source": "GitHub Webhook (/api/webhook/github)",
+      "targetTab": "CMS_Projects",
+      "auditAction": "GITHUB_SYNC_PROGRESS",
+      "rules": [
+        "Requires valid signed M2M authentication with anti-replay protection.",
+        "projectSlug must match approved allowlist format.",
+        "publicationStatus of synced events is strictly 'draft' (editorial gate required).",
+        "implementationStatus (Status) and Publish State are never automatically altered to COMPLETED or PUBLISHED.",
+        "Updates Last Updated timestamp and logs audit record non-destructively."
+      ]
+    },
+    "CMS_GET_PROJECT_PROGRESS": {
+      "stage": "Stage 5",
+      "source": "Public & Admin API (/api/projects/:slug/progress)",
+      "targetTab": "CMS_Progress",
+      "rules": [
+        "isPublicOnly returns ONLY public projection (draft/review/hidden strictly excluded).",
+        "Whitelist field projection: zero internal keys or status leaked.",
+        "Fail-closed: returns 404 if not found, 503 if backend unavailable."
+      ]
+    },
+    "ADMIN_SAVE_PROGRESS": {
+      "stage": "Stage 5",
+      "source": "Web Admin (/api/admin/progress/:slug)",
+      "targetTab": "CMS_Progress",
+      "auditAction": "UPDATE_PROGRESS_DOCUMENT",
+      "rules": [
+        "Requires valid authenticated admin session and CSRF verification.",
+        "Performs non-destructive update; never wipes missing arrays.",
+        "Migrates legacy v1 schema to canonical v2.",
+        "Blocks modifications to STRICT_FREEZE projects (the-broken-origin)."
+      ]
+    },
+    "ADMIN_SET_PROGRESS_STATUS": {
+      "stage": "Stage 5",
+      "source": "Web Admin Editorial Workflow",
+      "targetTab": "CMS_Progress",
+      "auditAction": "UPDATE_ITEM_STATUS / APPROVE_PUBLICATION / HIDE_ITEM",
+      "rules": [
+        "Enforces editorial state machine: draft -> review -> public -> hidden / draft.",
+        "Screenshots require verifiedRealApp && sanitized before public transition."
+      ]
+    }
+  },
+  "security": {
+    "nonAtomicTransactionNotice": "Penyimpanan Google Sheets dan pengiriman email Gmail MailApp bukan transaksi atomik. Jika kuota email habis atau jaringan Gmail mengalami kendala sesaat, data tetap tersimpan di Sheets dengan catatan kegagalan notifikasi agar data tester tidak hilang.",
+    "privacyCompliance": "Alamat IP client dimasking sebelum disimpan di database. Email tester hanya digunakan untuk perizinan akses Google Play Console Closed Testing."
+  }
+}

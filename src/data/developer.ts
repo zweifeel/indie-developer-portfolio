@@ -1,9 +1,9 @@
 export interface DeveloperProfile {
   readonly name: string;
   readonly role: string;
-  readonly email: string;
   readonly location: string;
   readonly bio: string;
+  readonly contactNote: string;
   readonly philosophy: readonly string[];
   readonly coreInterests: readonly string[];
   readonly techStack: readonly {
@@ -18,11 +18,11 @@ export interface DeveloperProfile {
 }
 
 export const developerProfile: DeveloperProfile = {
-  name: 'Indie Developer',
-  role: 'Android Game & Application Developer',
-  email: 'lunachroc01@gmail.com',
+  name: 'SleepyKoala',
+  role: 'Android Game & Application Studio',
   location: 'Indonesia',
-  bio: 'Pengembang independen yang berfokus pada game mobile retro, utilitas berdaya guna tinggi, dan aplikasi Android berarsitektur bersih yang dirilis melalui Google Play Console.',
+  bio: 'SleepyKoala adalah studio pengembang independen yang berfokus pada game mobile retro, utilitas berdaya guna tinggi, dan aplikasi Android berarsitektur bersih yang dirilis melalui Google Play Console.',
+  contactNote: 'Gunakan formulir Feedback pada masing-masing halaman proyek untuk mengirim laporan bug, masukan, atau usulan fitur.',
   philosophy: [
     'Zero Bloatware: Aplikasi harus berukuran efisien, hemat daya baterai, dan tidak membebani memori perangkat pengguna.',
     'Offline-First: Pengalaman utama harus dapat dinikmati tanpa ketergantungan koneksi internet konstan.',
@@ -50,11 +50,6 @@ export const developerProfile: DeveloperProfile = {
     },
   ],
   socialLinks: [
-    {
-      label: 'Email',
-      url: 'mailto:lunachroc01@gmail.com',
-      icon: 'Mail',
-    },
     {
       label: 'Google Play Console',
       url: '#',

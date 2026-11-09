@@ -3,6 +3,7 @@ export type ProjectCategory = 'GAME' | 'APPLICATION';
 export type ProjectStatus =
   | 'READY_FOR_RELEASE'
   | 'RELEASED'
+  | 'PRE_REGISTRATION'
   | 'CLOSED_TESTING'
   | 'INTERNAL_TESTING'
   | 'WORK_IN_PROGRESS'

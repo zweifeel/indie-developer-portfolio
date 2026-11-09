@@ -8,6 +8,17 @@
     "build": "tsc -b && vite build",
     "test": "vitest run",
     "lint": "oxlint",
+    "scan": "node scripts/security-scan.js",
+    "security:scan": "node scripts/security-scan.js",
+    "security:privacy": "node scripts/privacy-scan.js",
+    "security:files": "node scripts/check-file-policy.js",
+    "security:precommit": "node scripts/pre-commit-check.js",
+    "security:prepush": "node scripts/pre-push-check.js",
+    "security:test": "vitest run src/test/securityPhase1.test.ts src/test/securityScanner.test.ts",
+    "git:status": "node scripts/git-automation/cli.js --mode STATUS --all",
+    "git:dry-run": "node scripts/git-automation/cli.js --mode DRY-RUN",
+    "git:commit": "node scripts/git-automation/cli.js --mode COMMIT",
+    "git:push": "node scripts/git-automation/cli.js --mode PUSH",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -19,6 +30,7 @@
     "tailwind-merge": "^3.7.0"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261030.1",
     "@tailwindcss/vite": "^4.3.3",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.3.3",

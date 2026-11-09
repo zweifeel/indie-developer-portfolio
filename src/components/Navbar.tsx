@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Menu, X, Terminal, Radio } from 'lucide-react';
+import { Menu, X, Radio } from 'lucide-react';
 import { id } from '../locales/id';
 import { calculateProjectStatistics } from '../services/projectService';
+import { useSiteSettings } from '../services/cmsSettingsService';
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
   const stats = calculateProjectStatistics();
+  const { settings } = useSiteSettings();
 
-  const navLinks = [
-    { path: '/', label: id.nav.home },
-    { path: '/projects', label: id.nav.projects },
-    { path: '/about', label: id.nav.about },
-  ];
+  const navLinks = settings.navigation && settings.navigation.length > 0
+    ? settings.navigation.map((item) => ({ path: item.path, label: item.label, isExternal: item.isExternal }))
+    : [
+        { path: '/', label: id.nav.home },
+        { path: '/projects', label: id.nav.projects },
+        { path: '/about', label: id.nav.about },
+      ];
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -23,22 +27,18 @@ export const Navbar: React.FC = () => {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-stone-800 bg-[#090b11]/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-        {/* Brand */}
+        {/* Brand: SleepyKoala Logo */}
         <Link
           to="/"
-          className="flex items-center gap-2.5 text-[#F5F5F4] hover:text-white transition-colors focus:outline-hidden focus:ring-2 focus:ring-stone-400 rounded-lg p-1"
+          className="flex items-center gap-3 text-[#FAFAF9] hover:opacity-90 transition-opacity focus:outline-hidden focus:ring-2 focus:ring-cyan-500 rounded-lg p-1 min-h-[44px]"
+          aria-label="SleepyKoala Studio"
         >
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-stone-900 border border-stone-800 text-cyan-400 shadow-xs">
-            <Terminal className="h-4.5 w-4.5" />
-          </div>
-          <div>
-            <span className="font-bold tracking-tight text-sm sm:text-base text-stone-100 block">
-              INDIE DEV
-            </span>
-            <span className="text-[10px] font-mono uppercase tracking-widest text-cyan-400/80 block -mt-1">
-              STUDIO PORTFOLIO
-            </span>
-          </div>
+          <img
+            src="/assets/branding/sleepykoala-logo.png"
+            alt="SleepyKoala Logo"
+            className="h-10 sm:h-11 w-auto object-contain"
+            loading="eager"
+          />
         </Link>
 
         {/* Desktop Navigation */}
@@ -49,8 +49,8 @@ export const Navbar: React.FC = () => {
               to={link.path}
               className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all ${
                 isActive(link.path)
-                  ? 'bg-cyan-950/40 text-cyan-300 border border-cyan-800/50 shadow-xs'
-                  : 'text-stone-400 hover:text-stone-200 hover:bg-stone-900'
+                  ? 'bg-stone-850 text-[#FAFAF9] border border-stone-700 shadow-xs'
+                  : 'text-[#A8A29E] hover:text-[#FAFAF9] hover:bg-stone-900'
               }`}
             >
               {link.label}
@@ -63,13 +63,13 @@ export const Navbar: React.FC = () => {
           {stats.activeRecruitmentCount > 0 ? (
             <Link
               to="/projects?status=CLOSED_TESTING"
-              className="inline-flex items-center gap-2 rounded-full border border-cyan-800/60 bg-cyan-950/40 px-3 py-1 text-xs font-medium text-cyan-200 hover:bg-cyan-900/50 hover:border-cyan-700 transition-all shadow-xs"
+              className="inline-flex items-center gap-2 rounded-full border border-cyan-800/60 bg-cyan-950/60 px-3 py-1 text-xs font-semibold text-cyan-200 hover:bg-cyan-900/60 transition-all hover:scale-[1.02] shadow-xs"
             >
               <Radio className="h-3 w-3 text-cyan-400 animate-pulse" />
               <span>{stats.activeRecruitmentCount} Butuh Penguji</span>
             </Link>
           ) : (
-            <span className="text-xs font-mono text-[#8A8580]">Google Play Ready</span>
+            <span className="text-xs font-mono text-[#78716C]">Google Play Ready</span>
           )}
         </div>
 
@@ -78,7 +78,7 @@ export const Navbar: React.FC = () => {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg text-[#A8A29E] hover:text-[#F5F5F4] hover:bg-stone-850 focus:outline-hidden focus:ring-2 focus:ring-stone-400"
+            className="min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg text-[#A8A29E] hover:text-[#F5F5F4] hover:bg-stone-850 focus:outline-hidden focus:ring-2 focus:ring-stone-400"
             aria-expanded={mobileMenuOpen}
             aria-label="Buka menu navigasi"
           >

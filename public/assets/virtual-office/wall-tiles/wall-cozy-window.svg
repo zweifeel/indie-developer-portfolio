@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 64" width="48" height="64" shape-rendering="crispEdges">
+  <!-- Outer Window Frame -->
+  <polygon points="4,10 44,30 44,58 4,38" fill="#5c3a1e" />
+  <polygon points="6,12 42,30 42,56 6,38" fill="#8b5a2b" />
+  <!-- Glass Pane with Sky Blue & Daylight Gradient -->
+  <polygon points="8,15 40,31 40,53 8,37" fill="#bae6fd" />
+  <!-- Window Panes Grid -->
+  <line x1="24" y1="23" x2="24" y2="45" stroke="#8b5a2b" stroke-width="2" />
+  <line x1="8" y1="26" x2="40" y2="42" stroke="#8b5a2b" stroke-width="2" />
+  <!-- Sunlight Reflection Streak -->
+  <polygon points="12,19 18,22 14,38 8,35" fill="#ffffff" opacity="0.6" />
+  <!-- Cute Plant on Window Sill -->
+  <rect x="22" y="38" width="6" height="4" fill="#b45309" />
+  <circle cx="25" cy="36" r="3" fill="#22c55e" />
+</svg>

@@ -6,11 +6,11 @@ export const id = {
     closedTestingBadge: 'Closed Testing Aktif',
   },
   hero: {
-    badge: 'Indie Android Game & App Studio',
+    badge: 'SleepyKoala — Android Game & App Studio',
     titleLine1: 'Membangun Karya Digital',
     titleHighlight: 'Presisi & Berkarakter',
     subtitle:
-      'Portofolio resmi dan pusat pengujian tertutup (Closed Testing) untuk aplikasi dan game Android independen yang dipersiapkan untuk Google Play Console.',
+      'Portofolio resmi dan pusat pengujian tertutup (Closed Testing) untuk aplikasi dan game Android independen SleepyKoala yang dipersiapkan untuk Google Play Console.',
     ctaProjects: 'Jelajahi Proyek',
     ctaTesting: 'Gabung Penguji Tertutup',
   },
@@ -47,6 +47,7 @@ export const id = {
     statusAll: 'Semua Status',
     statusReadyForRelease: 'Siap Rilis',
     statusReleased: 'Sudah Dirilis',
+    statusPreRegistration: 'Pre-Registration',
     statusClosedTesting: 'Closed Testing',
     statusInternalTesting: 'Internal Testing',
     statusWip: 'Dalam Pengembangan',
@@ -55,6 +56,7 @@ export const id = {
   statusLabels: {
     READY_FOR_RELEASE: 'Siap Rilis',
     RELEASED: 'Sudah Dirilis',
+    PRE_REGISTRATION: 'Pre-Registration',
     CLOSED_TESTING: 'Closed Testing',
     INTERNAL_TESTING: 'Internal Testing',
     WORK_IN_PROGRESS: 'Dalam Pengembangan',
@@ -74,7 +76,9 @@ export const id = {
     highlights: 'Sorotan Teknis',
     playStoreAction: 'Unduh di Google Play',
     joinTestingAction: 'Daftar Jadi Penguji (Closed Testing)',
+    preRegistrationAction: 'Pra-Registrasi Minat',
     readyForReleaseInfo: 'Closed testing telah selesai. Aplikasi sedang dipersiapkan untuk rilis publik.',
+    preRegistrationInfo: 'Proyek sedang membuka pendaftaran minat awal sebelum peluncuran resmi.',
     registrationClosed: 'Pendaftaran Ditutup',
     internalTestingInfo: 'Versi ini sedang diuji oleh tim inti internal.',
     wipInfo: 'Proyek masih dalam tahap pengembangan aktif.',
@@ -127,9 +131,9 @@ export const id = {
     emailPlaceholder: 'akun.playstore@gmail.com',
     submitBtn: 'Kirim Pendaftaran',
     cancelBtn: 'Batal',
-    successTitle: 'Pendaftaran Diterima (Mode Pratinjau UI)',
+    successTitle: 'Pendaftaran Berhasil Diterima',
     successDesc:
-      'Data formulir Anda valid. Pada Milestone 1, UI modal dan validasi berjalan sempurna. Backend Google Sheets akan dihubungkan pada Milestone 2.',
+      'Data pendaftaran Anda telah berhasil dicatat ke antrean closed testing studio. Kami akan memproses penambahan email Anda ke Google Play Console.',
     nextStepsTitle: 'Langkah Berikutnya Setelah Pendaftaran:',
     nextSteps: [
       'Developer akan meninjau email dan mendaftarkannya ke daftar Closed Testers di Google Play Console.',
@@ -149,9 +153,9 @@ export const id = {
       'Terbuka untuk diskusi teknis, pelaporan isu, atau pertanyaan seputar pengujian aplikasi.',
   },
   footer: {
-    tagline: 'Indie Developer Studio — Dibangun dengan ketelitian, dipersiapkan untuk Google Play.',
+    tagline: 'SleepyKoala Studio — Dibangun dengan ketelitian, dipersiapkan untuk Google Play.',
     zeroCostPolicy: '100% Free Forever Architecture — Cloudflare Pages & Google Workspace.',
-    copyright: '© 2026 Indie Developer Portfolio. Hak cipta dilindungi undang-undang.',
+    copyright: '© 2026 SleepyKoala Studio. Hak cipta dilindungi undang-undang.',
   },
   errors: {
     projectNotFound: 'Proyek tidak ditemukan',

@@ -17,7 +17,14 @@ export const ProjectIcon: React.FC<ProjectIconProps> = ({
   category,
   className = 'w-12 h-12',
 }) => {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
+
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setHasError(false);
+  }
+
   const initials = name
     .split(' ')
     .map((word) => word[0])
@@ -54,7 +61,13 @@ interface ScreenshotImageProps {
 }
 
 export const ScreenshotImage: React.FC<ScreenshotImageProps> = ({ src, alt, index }) => {
+  const [prevSrc, setPrevSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
+
+  if (prevSrc !== src) {
+    setPrevSrc(src);
+    setHasError(false);
+  }
 
   if (hasError || !src) {
     return (
@@ -67,13 +80,13 @@ export const ScreenshotImage: React.FC<ScreenshotImageProps> = ({ src, alt, inde
   }
 
   return (
-    <div className="overflow-hidden rounded-xl border border-stone-800 bg-stone-900/60">
+    <div className="overflow-hidden rounded-xl border border-stone-800 bg-stone-900/60 aspect-16/9 flex items-center justify-center">
       <img
         src={src}
         alt={alt}
         loading="lazy"
         onError={() => setHasError(true)}
-        className="w-full h-auto object-cover hover:scale-[1.02] transition-transform duration-300"
+        className="w-full h-full object-cover hover:scale-[1.02] transition-transform duration-300"
       />
     </div>
   );

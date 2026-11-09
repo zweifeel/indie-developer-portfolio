@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" width="64" height="88">
+  <defs>
+    <radialGradient id="pubGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#0ea5e9" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#0ea5e9" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="pubJacket" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#0284c7" />
+      <stop offset="100%" stopColor="#0369a1" />
+    </linearGradient>
+    <linearGradient id="pubPants" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#334155" />
+      <stop offset="100%" stopColor="#1e293b" />
+    </linearGradient>
+    <linearGradient id="pubScreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#0369a1" />
+      <stop offset="100%" stopColor="#0c4a6e" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .pub-body {
+        animation: pubIdle 3.3s ease-in-out infinite;
+        transform-origin: 32px 82px;
+      }
+      .rocket-glow {
+        animation: rocketPulse 1.8s ease-in-out infinite;
+      }
+    }
+    @keyframes pubIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.7px); }
+    }
+    @keyframes rocketPulse {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1px); }
+    }
+  </style>
+
+  <!-- Ground Contact Shadow -->
+  <ellipse cx="32" cy="83" rx="20" ry="4.5" fill="#000" opacity="0.35" />
+
+  <!-- Animated Character Body Group -->
+  <g class="pub-body">
+    <!-- Legs & Sneakers -->
+    <!-- Left Leg (Slim-fit navy chinos) -->
+    <path d="M 26 53 L 25 76 L 22 78 L 22 81 L 28 81 L 29 76 L 29 53 Z" fill="url(#pubPants)" />
+    <!-- Left Sporty Sneaker (White & Sky Blue) -->
+    <path d="M 22 78 Q 20 82 28 82 L 29 80 Z" fill="#f8fafc" />
+    <path d="M 23 80 L 27 79.5 L 28 81 Z" fill="#0284c7" />
+    <rect x="22" y="80.5" width="7" height="1.5" rx="0.5" fill="#94a3b8" />
+
+    <!-- Right Leg -->
+    <path d="M 35 53 L 35 76 L 35 78 L 35 81 L 42 81 L 41 76 L 38 53 Z" fill="url(#pubPants)" />
+    <!-- Right Sporty Sneaker -->
+    <path d="M 35 78 Q 36 82 43 82 L 43 80 Z" fill="#f8fafc" />
+    <path d="M 36 80 L 40 79.5 L 41 81 Z" fill="#0284c7" />
+    <rect x="35" y="80.5" width="7" height="1.5" rx="0.5" fill="#94a3b8" />
+
+    <!-- Torso: Sky-Blue Tech Bomber Jacket with White T-Shirt -->
+    <path d="M 21 34 Q 32 32 43 34 L 41 54 Q 32 56 23 54 Z" fill="url(#pubJacket)" />
+    <!-- White T-shirt Center Line -->
+    <polygon points="30,34 34,34 33,52 31,52" fill="#ffffff" />
+    <!-- Bomber Zipper Details -->
+    <line x1="30" y1="34" x2="31" y2="52" stroke="#bae6fd" stroke-width="0.8" />
+    <line x1="34" y1="34" x2="33" y2="52" stroke="#0284c7" stroke-width="0.8" />
+    <!-- Bomber Ribbed Waistband -->
+    <rect x="23" y="52" width="18" height="2.5" rx="0.5" fill="#0369a1" />
+
+    <!-- Studio Lanyard with ID Card -->
+    <path d="M 29 33 Q 32 43 32 44 Q 32 43 35 33" stroke="#38bdf8" stroke-width="0.8" fill="none" />
+    <rect x="30.5" y="44" width="3" height="4.5" rx="0.5" fill="#ffffff" stroke="#0284c7" stroke-width="0.5" />
+    <rect x="31" y="44.8" width="2" height="1.5" fill="#0284c7" />
+    <line x1="31" y1="47" x2="32.5" y2="47" stroke="#64748b" stroke-width="0.4" />
+
+    <!-- Left Arm: Relaxed at side -->
+    <path d="M 21 35 Q 16 43 18 51 L 21 51 Q 20 44 24 37 Z" fill="#0284c7" />
+    <circle cx="19" cy="51" r="2.4" fill="#fde047" />
+
+    <!-- Right Arm: Holding Launch Console Tablet -->
+    <path d="M 43 35 Q 49 42 45 49 L 41 48 Q 44 42 40 37 Z" fill="#0369a1" />
+    <circle cx="43" cy="49" r="2.4" fill="#fde047" />
+
+    <!-- Release Launch Console Tablet -->
+    <g transform="translate(36, 42) rotate(-8)">
+      <rect x="0" y="0" width="16" height="20" rx="2" fill="#0f172a" stroke="#38bdf8" stroke-width="0.8" />
+      <rect x="1.5" y="1.5" width="13" height="17" rx="1" fill="url(#pubScreen)" />
+      <!-- Cloud Upload / Release Rocket Icon -->
+      <g transform="translate(8, 8)" class="rocket-glow">
+        <circle cx="0" cy="0" r="4.5" fill="#0284c7" />
+        <path d="M 0 -3.5 L 2.5 0 L 1.2 0 L 1.2 3 L -1.2 3 L -1.2 0 L -2.5 0 Z" fill="#f8fafc" />
+        <circle cx="0" cy="4" r="0.8" fill="#fde047" />
+      </g>
+      <!-- "100% READY" status bar -->
+      <rect x="3" y="14" width="10" height="2" rx="1" fill="#075985" />
+      <rect x="3" y="14" width="8" height="2" rx="1" fill="#4ade80" />
+    </g>
+
+    <!-- Head & Neck -->
+    <rect x="29" y="27" width="6" height="7" rx="1" fill="#fde047" />
+    <!-- Head Shape (Golden-tan tone) -->
+    <ellipse cx="32" cy="21" rx="8" ry="9" fill="#fde047" />
+
+    <!-- Facial Features -->
+    <!-- Confident smiling eyes -->
+    <circle cx="29" cy="20" r="1.1" fill="#0f172a" />
+    <circle cx="35" cy="20" r="1.1" fill="#0f172a" />
+    <circle cx="28.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <circle cx="34.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <!-- Eyebrows -->
+    <path d="M 27.5 17.8 Q 29 16.8 30.5 17.5" stroke="#1e293b" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <path d="M 33.5 17.5 Q 35 16.8 36.5 17.8" stroke="#1e293b" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <!-- Nose & Confident Smile -->
+    <circle cx="32" cy="23.2" r="0.5" fill="#ca8a04" />
+    <path d="M 29.8 25 Q 32 27.8 34.2 25" stroke="#a16207" stroke-width="1" stroke-linecap="round" fill="none" />
+
+    <!-- Ears -->
+    <circle cx="23.5" cy="21" r="1.8" fill="#fde047" />
+    <circle cx="40.5" cy="21" r="1.8" fill="#fde047" />
+
+    <!-- Stylized Side-Swept Dark Hair (Modern professional) -->
+    <path d="M 23 19 Q 21 11 31 10 Q 42 9 41 17 Q 41 21 39 22 Q 37 14 30 14 Q 25 15 23 19 Z" fill="#18181b" />
+    <!-- Side-swept strand -->
+    <path d="M 23 17 Q 28 11 36 12 Q 41 14 41 18 Q 39 16 35 15 Q 29 14 25 17 Z" fill="#27272a" />
+    <path d="M 24 18 Q 26 14 31 13" stroke="#52525b" stroke-width="0.8" fill="none" stroke-linecap="round" />
+  </g>
+</svg>

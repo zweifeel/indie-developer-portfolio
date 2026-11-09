@@ -32,6 +32,13 @@ export const StatusBadge: React.FC<StatusBadgeProps> = ({ status, showDot = true
           border: 'border-sky-700/60',
           dot: 'bg-sky-400',
         };
+      case 'PRE_REGISTRATION':
+        return {
+          bg: 'bg-indigo-950/70',
+          text: 'text-indigo-300',
+          border: 'border-indigo-700/60',
+          dot: 'bg-indigo-400 animate-pulse',
+        };
       case 'INTERNAL_TESTING':
         return {
           bg: 'bg-amber-950/70',

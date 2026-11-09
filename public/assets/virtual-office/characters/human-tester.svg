@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 88" width="64" height="88">
+  <defs>
+    <radialGradient id="testerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stopColor="#10b981" stopOpacity="0.3" />
+      <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+    </radialGradient>
+    <linearGradient id="testerShirt" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stopColor="#10b981" />
+      <stop offset="100%" stopColor="#047857" />
+    </linearGradient>
+    <linearGradient id="testerPants" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#374151" />
+      <stop offset="100%" stopColor="#1f2937" />
+    </linearGradient>
+    <linearGradient id="phoneScreen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stopColor="#064e3b" />
+      <stop offset="100%" stopColor="#022c22" />
+    </linearGradient>
+  </defs>
+
+  <style>
+    @media (prefers-reduced-motion: no-preference) {
+      .tester-body {
+        animation: testerIdle 3.4s ease-in-out infinite;
+        transform-origin: 32px 82px;
+      }
+      .test-pulse {
+        animation: testPulse 2s ease-in-out infinite;
+      }
+    }
+    @keyframes testerIdle {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-1.6px); }
+    }
+    @keyframes testPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+    }
+  </style>
+
+  <!-- Ground Contact Shadow -->
+  <ellipse cx="32" cy="83" rx="20" ry="4.5" fill="#000" opacity="0.35" />
+
+  <!-- Animated Character Body Group -->
+  <g class="tester-body">
+    <!-- Legs & Loafers -->
+    <!-- Left Leg (Tailored charcoal slacks) -->
+    <path d="M 26 53 L 25 76 L 22 78 L 22 81 L 28 81 L 29 76 L 29 53 Z" fill="url(#testerPants)" />
+    <!-- Left Smart Loafer -->
+    <path d="M 22 78 Q 20 82 28 82 L 29 80 Z" fill="#18181b" />
+    <rect x="22" y="80.5" width="7" height="1.5" rx="0.5" fill="#52525b" />
+
+    <!-- Right Leg -->
+    <path d="M 35 53 L 35 76 L 35 78 L 35 81 L 42 81 L 41 76 L 38 53 Z" fill="url(#testerPants)" />
+    <!-- Right Smart Loafer -->
+    <path d="M 35 78 Q 36 82 43 82 L 43 80 Z" fill="#18181b" />
+    <rect x="35" y="80.5" width="7" height="1.5" rx="0.5" fill="#52525b" />
+
+    <!-- Torso: Crisp Emerald Button-Up Shirt with Roll-Up Sleeves -->
+    <path d="M 21 34 Q 32 32 43 34 L 41 54 Q 32 56 23 54 Z" fill="url(#testerShirt)" />
+    <!-- Shirt Placket & Buttons -->
+    <line x1="32" y1="34" x2="32" y2="54" stroke="#065f46" stroke-width="1.2" />
+    <circle cx="32" cy="38" r="0.7" fill="#ffffff" />
+    <circle cx="32" cy="43" r="0.7" fill="#ffffff" />
+    <circle cx="32" cy="48" r="0.7" fill="#ffffff" />
+    <!-- Shirt Collar -->
+    <polygon points="28,34 32,38 30,34" fill="#34d399" />
+    <polygon points="36,34 32,38 34,34" fill="#34d399" />
+    <!-- Belt with brass buckle -->
+    <rect x="24" y="52" width="16" height="2.5" fill="#27272a" />
+    <rect x="30.5" y="52" width="3" height="2.5" fill="#fbbf24" />
+
+    <!-- Left Arm: Holding QA Test Device / Phone -->
+    <path d="M 21 35 Q 16 42 20 50 L 23 48 Q 20 42 24 37 Z" fill="#059669" />
+    <circle cx="21" cy="50" r="2.4" fill="#fed7aa" />
+
+    <!-- Mobile Test Phone Device -->
+    <g transform="translate(13, 42) rotate(10)">
+      <rect x="0" y="0" width="10" height="18" rx="2" fill="#09090b" stroke="#34d399" stroke-width="0.8" />
+      <rect x="1" y="1.5" width="8" height="15" rx="1" fill="url(#phoneScreen)" />
+      <!-- Top Speaker Notch -->
+      <line x1="3.5" y1="2.2" x2="6.5" y2="2.2" stroke="#27272a" stroke-width="0.6" />
+      <!-- Green QA Pass Checkmark Badge -->
+      <circle cx="5" cy="8" r="3" fill="#059669" />
+      <path d="M 3.8 8 L 4.6 9 L 6.2 7" stroke="#ffffff" stroke-width="0.9" stroke-linecap="round" stroke-linejoin="round" fill="none" class="test-pulse" />
+      <!-- Test matrix bars -->
+      <line x1="2.5" y1="12" x2="7.5" y2="12" stroke="#6ee7b7" stroke-width="0.8" stroke-linecap="round" />
+      <line x1="2.5" y1="14" x2="6" y2="14" stroke="#a7f3d0" stroke-width="0.8" stroke-linecap="round" />
+    </g>
+
+    <!-- Right Arm: Holding checklist folder / stylus -->
+    <path d="M 43 35 Q 48 43 44 51 L 41 50 Q 44 43 40 37 Z" fill="#047857" />
+    <circle cx="43" cy="51" r="2.4" fill="#fed7aa" />
+    <!-- Stylus / Testing Pen -->
+    <line x1="43" y1="49" x2="47" y2="44" stroke="#fbbf24" stroke-width="1.2" stroke-linecap="round" />
+
+    <!-- Head & Neck -->
+    <rect x="29" y="27" width="6" height="7" rx="1" fill="#fed7aa" />
+    <!-- Head Shape (Fair warm tone) -->
+    <ellipse cx="32" cy="21" rx="8" ry="9" fill="#fed7aa" />
+
+    <!-- Facial Features -->
+    <!-- Attentive friendly eyes with eyelashes -->
+    <circle cx="29" cy="20" r="1.1" fill="#1f2937" />
+    <circle cx="35" cy="20" r="1.1" fill="#1f2937" />
+    <circle cx="28.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <circle cx="34.7" cy="19.7" r="0.4" fill="#ffffff" />
+    <!-- Eyebrows -->
+    <path d="M 27.5 18 Q 29 17 30.5 18" stroke="#7c2d12" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <path d="M 33.5 18 Q 35 17 36.5 18" stroke="#7c2d12" stroke-width="0.8" stroke-linecap="round" fill="none" />
+    <!-- Nose & Smile -->
+    <circle cx="32" cy="23" r="0.5" fill="#f87171" />
+    <path d="M 30 25 Q 32 27.2 34 25" stroke="#dc2626" stroke-width="1" stroke-linecap="round" fill="none" />
+
+    <!-- Ears -->
+    <circle cx="23.5" cy="21" r="1.8" fill="#fed7aa" />
+    <circle cx="40.5" cy="21" r="1.8" fill="#fed7aa" />
+
+    <!-- Stylized Auburn/Chestnut Hair with Side Ponytail -->
+    <path d="M 24 19 Q 22 12 30 11 Q 40 10 41 16 Q 41 21 39 22 Q 38 14 31 14 Q 26 15 24 19 Z" fill="#9a3412" />
+    <!-- Auburn Hair Bangs -->
+    <path d="M 24 17 Q 27 13 32 14 Q 37 13 40 17 Q 38 15 33 15 Q 28 15 24 17 Z" fill="#c2410c" />
+    <!-- Ponytail / High Bun on side -->
+    <circle cx="42" cy="13" r="4.5" fill="#9a3412" />
+    <circle cx="43" cy="12" r="3.5" fill="#c2410c" />
+    <rect x="39" y="14" width="3" height="2" rx="0.5" fill="#10b981" />
+  </g>
+</svg>

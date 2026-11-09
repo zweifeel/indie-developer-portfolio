@@ -1,0 +1,167 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-07T00:00:00.000Z",
+  "projects": {
+    "dompetnalar": {
+      "projectSlug": "dompetnalar",
+      "projectName": "DompetNalar",
+      "features": [
+        {
+          "id": "feat_dn_01",
+          "milestoneId": "ms_dn_core",
+          "title": "Pencatatan Pemasukan & Pengeluaran",
+          "description": "Form input cepat dengan kategori kustom dan multi-mata uang lokal.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "category": "Core Finance",
+          "screenshotIds": ["shot_dn_home"],
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "feat_dn_02",
+          "milestoneId": "ms_dn_core",
+          "title": "Penyimpanan Lokal Terenkripsi (Room DB)",
+          "description": "Semua data finansial tersimpan aman di perangkat pengguna tanpa server eksternal.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "category": "Storage & Privacy",
+          "screenshotIds": [],
+          "order": 2,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "feat_dn_03",
+          "milestoneId": "ms_dn_analytics",
+          "title": "Laporan Visual Distribusi Pengeluaran",
+          "description": "Diagram donat interaktif pengeluaran per kategori bulanan.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "draft",
+          "category": "Analytics",
+          "screenshotIds": [],
+          "order": 3,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        }
+      ],
+      "screenshots": [
+        {
+          "id": "shot_dn_home",
+          "featureId": "feat_dn_01",
+          "caption": "Tampilan dashboard ringkasan anggaran DompetNalar",
+          "path": "docs/portfolio/screenshots/dompetnalar-overview.png",
+          "publicationStatus": "public",
+          "verifiedRealApp": true,
+          "sanitized": true,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ]
+    },
+    "mobile-kasir": {
+      "projectSlug": "mobile-kasir",
+      "projectName": "Mobile Kasir",
+      "features": [
+        {
+          "id": "feat_mk_01",
+          "milestoneId": "ms_mk_pos_core",
+          "title": "Katalog Produk & Barcode Scanner",
+          "description": "Pencarian instan produk dan pemindaian barcode menggunakan kamera.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "category": "POS",
+          "screenshotIds": [],
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        },
+        {
+          "id": "feat_mk_02",
+          "milestoneId": "ms_mk_pos_core",
+          "title": "Cetak Struk Bluetooth Thermal",
+          "description": "Integrasi printer thermal 58mm untuk bukti transaksi pelanggan.",
+          "implementationStatus": "completed",
+          "publicationStatus": "public",
+          "category": "Hardware Integration",
+          "screenshotIds": [],
+          "order": 2,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ],
+      "screenshots": []
+    },
+    "idle-master": {
+      "projectSlug": "idle-master",
+      "projectName": "IDLE MASTER",
+      "features": [
+        {
+          "id": "feat_im_01",
+          "milestoneId": "ms_im_loop",
+          "title": "Generator Koin Otomatis Bertingkat",
+          "description": "Mesin produksi koin otomatis dengan upgrade multiplier eksponensial.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "category": "Gameplay",
+          "screenshotIds": [],
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ],
+      "screenshots": []
+    },
+    "idle-mining": {
+      "projectSlug": "idle-mining",
+      "projectName": "Idle Mining",
+      "features": [
+        {
+          "id": "feat_in_01",
+          "milestoneId": "ms_in_mine_depth",
+          "title": "Ekskavasi Tambang Bawah Tanah",
+          "description": "Penggalian otomatis lapis demi lapis dengan hadiah batuan mulia.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "category": "Gameplay",
+          "screenshotIds": [],
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ],
+      "screenshots": []
+    },
+    "the-broken-origin": {
+      "projectSlug": "the-broken-origin",
+      "projectName": "The Broken Origin",
+      "features": [
+        {
+          "id": "feat_tbo_01",
+          "milestoneId": "ms_tbo_world",
+          "title": "ProfileStore State Persistence",
+          "description": "Sistem penyimpanan data inventaris dan atribut karakter berkredensial cloud aman.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "category": "Architecture & Persistence",
+          "screenshotIds": [],
+          "order": 1,
+          "updatedAt": "2026-11-07T00:00:00.000Z"
+        }
+      ],
+      "screenshots": []
+    },
+    "worklume": {
+      "projectSlug": "worklume",
+      "projectName": "Worklume",
+      "features": [
+        {
+          "id": "feat_wl_01",
+          "milestoneId": "ms_wl_workspace",
+          "title": "Fokus Pomodoro & Pelacak Sesi Kerja",
+          "description": "Timer siklus kerja interval 25 menit dengan notifikasi audio lembut.",
+          "implementationStatus": "in_progress",
+          "publicationStatus": "public",
+          "category": "Productivity",
+          "screenshotIds": [],
+          "order": 1,
+          "updatedAt": "2026-11-01T00:00:00.000Z"
+        }
+      ],
+      "screenshots": []
+    }
+  }
+}

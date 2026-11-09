@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 48" width="32" height="48" shape-rendering="crispEdges">
+  <!-- Shadow -->
+  <ellipse cx="16" cy="44" rx="10" ry="3" fill="#000000" opacity="0.25" />
+  <!-- Terracotta Planter -->
+  <polygon points="8,32 16,28 24,32 24,42 16,46 8,42" fill="#c2410c" />
+  <polygon points="9,33 16,29 23,33 23,41 16,45 9,41" fill="#ea580c" />
+  <polygon points="8,32 16,28 24,32 16,35" fill="#7c2d12" />
+  <!-- Stems -->
+  <line x1="16" y1="31" x2="16" y2="18" stroke="#15803d" stroke-width="2" />
+  <line x1="16" y1="24" x2="9" y2="16" stroke="#15803d" stroke-width="1.5" />
+  <line x1="16" y1="22" x2="23" y2="14" stroke="#15803d" stroke-width="1.5" />
+  <!-- Lush Pixel Leaves -->
+  <!-- Top Center Leaf -->
+  <polygon points="12,12 16,6 20,12 16,18" fill="#22c55e" />
+  <polygon points="13,12 16,8 19,12 16,16" fill="#4ade80" />
+  <!-- Left Leaf -->
+  <polygon points="4,16 9,10 14,16 9,22" fill="#16a34a" />
+  <!-- Right Leaf -->
+  <polygon points="18,14 23,8 28,14 23,20" fill="#22c55e" />
+</svg>

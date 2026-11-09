@@ -1,5 +1,12 @@
-# Logs
-logs
+# ==============================================================================
+# SLEEPYKOALA STUDIO — REPOSITORY .gitignore SPECIFICATION (PHASE 1)
+# Standardized Local Security & Git Hygiene Policy
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Logs & Runtime Debug Traces
+# ------------------------------------------------------------------------------
+logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -7,22 +14,99 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
+# ------------------------------------------------------------------------------
+# 2. Build Outputs, Transpilation & Caches
+# ------------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+coverage/
+.cache/
+.turbo/
+.vite/
+*.tsbuildinfo
+
+# ------------------------------------------------------------------------------
+# 3. Environment & Local Configuration Files
+# ------------------------------------------------------------------------------
 *.local
 .env
+.env.local
+.env.*.local
 .env.*
 !.env.example
+.dev.vars
+.dev.vars.*
+.wrangler/
+.clasp.json
+.clasprc.json
+.test_secret
+
+# ------------------------------------------------------------------------------
+# 4. Secrets, Credentials, Tokens & Protected Material
+# ------------------------------------------------------------------------------
+*credential*
+webcredential.txt
+*.text
+*service-account*.json
+*service_account*.json
+play-*.json
+client_secret*.json
+oauth*.json
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+*.pk8
+*.der
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+signing.properties
+release.keystore
+
+# ------------------------------------------------------------------------------
+# 5. Database Dumps, Backups & User Data
+# ------------------------------------------------------------------------------
+*.dump
+*.sql
+*.sqlite
+*.db
+*.rdb
+*.backup
+testers-export*.json
+tester-*.csv
+
+# ------------------------------------------------------------------------------
+# 6. Testing Temporary Fixtures & Local Artifacts
+# ------------------------------------------------------------------------------
+*.fixture.tmp
+*.dummy.tmp
+test-fixtures/temp/
 screenshots/
 
-# Editor directories and files
+# ------------------------------------------------------------------------------
+# 7. Editor & Operating System Metadata
+# ------------------------------------------------------------------------------
 .vscode/*
 !.vscode/extensions.json
-.idea
+.idea/
 .DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.sublime-workspace
+*.sublime-project
+
+# ------------------------------------------------------------------------------
+# 8. Whitelisted Safe Source Code Files
+# ------------------------------------------------------------------------------
+!src/styles/tokens.ts

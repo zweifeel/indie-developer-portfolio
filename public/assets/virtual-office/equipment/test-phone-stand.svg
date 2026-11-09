@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 28" width="32" height="28" shape-rendering="crispEdges">
+  <!-- Wooden Stand Block -->
+  <polygon points="2,14 16,7 30,14 16,21" fill="#8b5a2b" />
+  <polygon points="2,14 16,21 30,14 30,18 16,25 2,18" fill="#5c3a1e" />
+  <!-- Phone 1 (Left) -->
+  <polygon points="6,6 12,3 12,16 6,19" fill="#0f172a" />
+  <polygon points="7,7 11,5 11,15 7,17" fill="#38bdf8" />
+  <!-- Tablet 2 (Center) -->
+  <polygon points="14,4 24,9 24,19 14,14" fill="#0f172a" />
+  <polygon points="15,6 23,10 23,18 15,14" fill="#34d399" />
+</svg>

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32" width="64" height="32" shape-rendering="crispEdges">
+  <polygon points="32,2 62,16 32,30 2,16" fill="#134e4a" />
+  <polygon points="32,4 58,16 32,28 6,16" fill="#115e59" />
+  <!-- Woven Diamond Ornament -->
+  <polygon points="32,8 48,16 32,24 16,16" fill="#2dd4bf" opacity="0.7" />
+  <polygon points="32,11 42,16 32,21 22,16" fill="#f0fdfa" opacity="0.8" />
+  <!-- Fringe Tassels -->
+  <line x1="2" y1="16" x2="0" y2="15" stroke="#f0fdfa" stroke-width="1" />
+  <line x1="62" y1="16" x2="64" y2="17" stroke="#f0fdfa" stroke-width="1" />
+</svg>

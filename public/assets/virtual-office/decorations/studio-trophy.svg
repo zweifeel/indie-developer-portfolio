@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 30" width="20" height="30" shape-rendering="crispEdges">
+  <!-- Wooden Pedestal -->
+  <polygon points="4,22 10,19 16,22 16,27 10,29 4,27" fill="#5c3a1e" />
+  <polygon points="4,22 10,19 16,22 10,24" fill="#8b5a2b" />
+  <!-- Golden Cup Stem -->
+  <rect x="9" y="15" width="2" height="6" fill="#d97706" />
+  <!-- Cup Body -->
+  <polygon points="5,6 15,6 13,15 7,15" fill="#f59e0b" />
+  <polygon points="6,7 14,7 12,14 8,14" fill="#fbbf24" />
+  <!-- Handles -->
+  <line x1="4" y1="8" x2="4" y2="12" stroke="#d97706" stroke-width="1.5" />
+  <line x1="16" y1="8" x2="16" y2="12" stroke="#d97706" stroke-width="1.5" />
+  <!-- Star on Cup -->
+  <circle cx="10" cy="10" r="1.5" fill="#ffffff" />
+</svg>

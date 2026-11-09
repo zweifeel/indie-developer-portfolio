@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 80" width="64" height="80" shape-rendering="crispEdges">
+  <!-- Isometric Left Wall Plane -->
+  <polygon points="0,0 64,32 64,80 0,48" fill="#e2ddd5" />
+  <polygon points="1,2 63,33 63,77 1,46" fill="#f0ede6" />
+  <!-- Baseboard Wood Trim -->
+  <polygon points="0,42 64,74 64,80 0,48" fill="#5c3a1e" />
+  <polygon points="0,43 64,75 64,78 0,46" fill="#8b5a2b" />
+  <!-- Top Molding Trim -->
+  <polygon points="0,0 64,32 64,36 0,4" fill="#8b5a2b" />
+</svg>

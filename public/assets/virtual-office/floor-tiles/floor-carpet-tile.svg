@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 32" width="64" height="32" shape-rendering="crispEdges">
+  <polygon points="32,0 64,16 32,32 0,16" fill="#2d3748" />
+  <polygon points="32,1 62,16 32,31 2,16" fill="#3a4a5e" />
+  <!-- Subtle Textile Pixel Stipple -->
+  <rect x="20" y="10" width="2" height="1" fill="#4a5d75" />
+  <rect x="42" y="10" width="2" height="1" fill="#4a5d75" />
+  <rect x="31" y="15" width="2" height="2" fill="#5a708c" />
+  <rect x="20" y="21" width="2" height="1" fill="#4a5d75" />
+  <rect x="42" y="21" width="2" height="1" fill="#4a5d75" />
+  <polyline points="0,16 32,0 64,16" fill="none" stroke="#5a708c" stroke-width="1" opacity="0.3" />
+  <polyline points="0,16 32,32 64,16" fill="none" stroke="#1a202c" stroke-width="1" opacity="0.6" />
+</svg>
