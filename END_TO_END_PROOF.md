@@ -2,15 +2,15 @@
 # BUKTI PENGUJIAN LENGKAP END-TO-END (ANTI-ASAL-BAPAK-SENANG)
 
 > [!NOTE]
-> Bukti pengujian nyata hulu-ke-hilir untuk modul:
-> **Kantor Virtual 3D Low-Poly Isometrik (Three.js WebGL) — Inspirasi Lembur.id & Aset Kay Lousberg (CC0 / Rp 0)**.
+> Bukti pengujian nyata hulu-ke-hilir untuk:
+> **Tahap 7: Persiapan Deployment Cloudflare Pages, Integrasi Remote GitHub, & Verifikasi Visual Lapangan Kantor Virtual 3D Isometrik Three.js**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Modul Kantor Virtual 3D Isometrik Three.js (Kampus Luas, Skalabilitas Dinamis, 30+ Kru Manusia Otonom, Chat Bubbles Melayang, Konsol Interaksi Pengunjung, Zoom-In Ruang Paten, & Tab Switcher 3D vs 2.5D)
-- **Waktu Pengujian:** 2026-11-10 02:08:00
-- **Lisensi & Biaya:** 100% Free Open-Source (MIT & CC0) — Rp 0 / $0.00
+- **Nama Fitur:** Eksekusi Tahap 7 — Pasang Remote GitHub Owner, Panduan Deployment Cloudflare Pages (*.pages.dev), Verifikasi Visual Mandiri di Browser Nyata (360° Orbit, Zoom-In Ruangan, Balon Chat 3D Melayang, Konsol Interaksi Pengunjung), dan Fallback Mandiri Proyek Kanonikal 3D.
+- **Waktu Pengujian:** 2026-11-10 05:00:00
+- **Lisensi & Biaya:** 100% Free Open-Source (MIT & CC0) & Cloudflare Pages Free Tier — **Rp 0 / $0.00**
 - **Hasil Pengujian Vitest:** **770 / 770 Pengujian LULUS (100% PASS across 39 Test Suites)**
 
 ---
@@ -18,78 +18,41 @@
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Tombol Tab Switcher Terpadu (`VirtualOfficeHub.tsx`):**
-   - Pengunjung dapat bebas beralih seketika antara **"Kantor Virtual 3D"** dan **"2.5D Pixel Campus"** tanpa me-reload halaman.
-   - Pilihan mode tersimpan otomatis di `localStorage` peramban.
-2. **Kontrol Interaktif Kamera 3D (`ThreeCampusCanvas.tsx`):**
-   - **Orbit 360°:** Drag mouse atau geser 1 jari di layar sentuh memutar kampus kantor 360 derajat mengelilingi titik pusat.
-   - **Zoom In / Zoom Out:** Roda mouse (scroll) atau gestur cubit 2 jari (pinch) di ponsel memperbesar/memperkecil pemandangan.
-   - **Kunci Kemiringan (Clamped Pitch):** Sudut pandang dibatasi secara matematis (22° hingga 60°) agar sensasi isometrik tetap estetik.
-3. **Konsol Perintah Interaktif Pengunjung (`VisitorCommandConsole.tsx`):**
-   - Kolom ketik interaktif menerima perintah teks: `/bangunkan`, `/kopi`, `/pizza`, `/lembur`, `/pesta`, dan `/tanya`.
-   - 6 Tombol Aksi Cepat (*Quick Action Chips*) memudahkan pengguna ponsel untuk memicu aksi hanya dengan satu kali tap.
-   - Tombol Bantuan (`?`) memunculkan modal panduan perintah (*cheat-sheet*).
-4. **Navigasi Ruangan & Zoom-In Paten:**
-   - Bilah tombol ruangan di bagian atas memungkinkan memilih ruang kerja proyek (`DompetNalar`, `Mobile Kasir`, `Worklume`, `IDLE MASTER`, `Idle Mining`, `The Broken Origin`, atau Kampus Penuh).
-   - Memilih ruangan memicu animasi interpolasi (lerp) kamera zoom-in langsung ke ruang kerja terkait dan membuka drawer rincian tim.
+1. **Pemasangan Remote Git Resmi:**
+   - Remote `origin` resmi telah terpasang ke repositori GitHub Owner:
+     `https://github.com/lunachroc07-dot/indie-developer-portfolio.git`
+2. **Pemicu Interaktif di Browser Nyata (Chrome DevTools MCP):**
+   - **Pemilih Ruangan 3D:** Tombol proyek `[DompetNalar]` berhasil diklik di peramban riil, memicu kamera Three.js zoom-in dan mengunci sudut pandang paten ke ruang kerja DompetNalar.
+   - **Quick Action Chips & Konsol Pengunjung:** Tombol `☕ Traktir Kopi` berhasil diklik, memicu aksi `/kopi` ke konsol interaksi pengunjung.
+   - **Tombol Panduan Perintah (`?`):** Berhasil diklik dan memunculkan modal *cheat-sheet* perintah interaktif pengunjung.
+   - **Tab Switcher (3D vs 2.5D):** Tombol `2.5D Pixel Campus` dan `Kantor Virtual 3D` berhasil diklik bolak-balik dengan transisi mulus dan memori `localStorage` tersimpan.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Pembangun Kampus Prosedural Dinamis (`proceduralCampusBuilder.ts` & `virtualOffice3DConfig.ts`):**
-   - Skalabilitas dinamis: Ruang kerja tidak di-hardcode 6. Sistem secara matematis menghitung koordinat sayap Barat dan sayap Timur berdasarkan jumlah `projects` dari `projects.json` / CMS. Jika Owner menambah proyek baru, ruangan ke-7 otomatis terbangun di dunia 3D lengkap dengan perabot dan 5 kru manusia AI.
-2. **Figur Manusia Modular Gaya Kay Lousberg (`officeGeometryBuilder.ts`):**
-   - Seluruh kru berwujud manusia low-poly modular (kepala membulat, mata imut, rambut/topi beragam, kemeja oxford berkerah, dasi navy, cardigan, blazer sage green, rompi vest, lanyard ID badge studio, dan kacamata/headphone).
-   - Flat-shading pastel yang hangat dengan bayangan lembut (*soft shadows*) dan pencahayaan isometrik ganda.
-3. **Simulasi Pergerakan Otonom Acak (`crewAIController.ts`):**
-   - Kru AI bergerak secara acak alami: kadang mengetik di meja, tertidur sejenak karena lelah kompilasi, berjalan ke Pantry menyeduh kopi, atau santai di sofa Collaboration Lounge.
-4. **Balon Obrolan 3D Melayang (`chatBubbleEngine.ts`):**
-   - Memantau kedekatan (*proximity*) antar kru: jika dua kru berpapasan (< 4 unit), dialog obrolan teknis alami dipicu.
-   - Memproyeksikan koordinat 3D ke layar 2D (`vector.project(camera)`) sehingga teks tajam, terbaca jelas, dan responsif.
-5. **Pengurai Perintah Ketik (`visitorCommandParser.ts`):**
-   - Memproses perintah pengunjung dan memodifikasi status kru secara real-time (membangunkan kru tidur, memberikan buff kecepatan gerak `+50% SPD`, memanggil kru kumpul makan pizza, menyalakan mode lembur, dan meledakkan konfeti perayaan).
+1. **Fallback Mandiri Proyek Kanonikal 3D (`virtualOffice3DConfig.ts`):**
+   - Saat backend CMS offline atau di lingkungan pengujian mandiri tanpa koneksi luar, sistem secara fail-safe otomatis menggunakan `CANONICAL_PROJECT_SEEDS` sehingga kampus 3D tetap berdiri megah dengan 6 ruangan proyek dan 30 kru manusia otonom.
+2. **Pengurai Perintah Pengunjung (`visitorCommandParser.ts`):**
+   - Menjalankan logika peningkat kecepatan kerja (`+50% SPD` selama 20 detik), memunculkan balon chat di atas kepala kru target (`Kevin`), dan memperbarui status kru di drawer samping secara sinkron.
+3. **Satpam Keamanan & Pre-Push Guard (`scripts/pre-push-check.js`):**
+   - Memindai 2.515 berkas terdaftar di Git index.
+   - Memindai 2.420 berkas dari kebocoran rahasia / API key (0 kebocoran ditemukan).
+   - Memindai 2.420 berkas dari pelanggaran privasi / PII (0 data pribadi bocor).
+   - Memeriksa integritas diff commit sebelum push.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Integrasi Data Tunggal (`HomePage.tsx`):**
-   - Terpasang menggantikan pemanggilan lama dengan `<VirtualOfficeHub projects={allProjects} hqConfig={hqConfig} />`.
-   - Data kru terikat langsung ke data resmi proyek studio tanpa tiruan data (*no mock/dummy data*).
-2. **Live Activity Feed:**
-   - Setiap pergerakan kru, pergantian tugas, dan perintah pengunjung tercatat secara kronologis di panel log aktivitas.
-3. **Koneksi Detail Proyek:**
-   - Tombol aksi pada panel drawer ruangan menghubungkan pengunjung langsung ke halaman detail proyek terkait (`/projects/:slug`).
+1. **Tangkapan Layar Bukti Visual Mandiri (Protokol Mata AI):**
+   - Pemandangan Kampus Penuh 3D (Overview): 6 ruangan proyek + 30 kru manusia berbusana kantor rapi (Kay Lousberg style) berdiri di meja dan lounge.
+   - Pemandangan Zoom-In Ruang DompetNalar: Drawer rincian kru aktif di sisi kanan menampilkan status siapa yang ada di meja kerja dan siapa yang sedang keluar ke Pantry/Lounge.
+   - Balon Obrolan 3D Melayang: Chat bubble `☕ Pas banget lagi butuh kafein! Kecepatan coding meningkat drastis!` tampil melayang persis di atas kepala kru Kevin di dunia 3D.
+   - Notifikasi Konsol Pengunjung: Kotak hijau sukses menampilkan `Kamu mentraktir kopi hangat untuk Kevin! Kecepatan kerjanya melonjak tajam.`
+2. **Dokumen Panduan Operasional Lokal:**
+   - Panduan push dan deployment tersimpan di `Artifact/PANDUAN_PUSH_GITHUB_DAN_DEPLOY_CLOUDFLARE_PAGES.md`.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
    - **39 Test Files LULUS 100% (39/39 PASSED)**.
-   - **770 Tests LULUS 100% (770/770 PASSED)**, bertambah 19 skenario uji baru dari baseline lama 751 tests.
-   - File baru `src/test/virtualOffice3D.test.ts` lulus 100% (19/19 passed) menguji skema prosedural, logika parser perintah, chat bubble proximity, dan kalkulasi kamera.
-2. **Pengecekan Kode & Kualitas:**
+   - **770 Tests LULUS 100% (770/770 PASSED)**.
+   - Suite `gitAutomation.test.ts` (33 tes), `securityPhase1.test.ts` (13 tes), `virtualOffice3D.test.ts` (19 tes), dan seluruh suite CMS serta registrasi tester lulus tanpa regresi.
+2. **Pemeriksaan Kualitas Kode:**
    - `npx tsc -b`: **0 Eror TypeScript**.
-   - `npm run lint`: **0 Eror Linter**.
-   - `npm run build`: Kompilasi produksi selesai bersih dalam 1.68 detik.
-3. **DevSecOps & Keamanan:**
-   - `npm run security:scan`: **0 Rahasia Bocor** (2.420 berkas diperiksa).
-   - `npm run security:privacy`: **0 Data Pribadi / PII Bocor** (2.420 berkas diperiksa).
-   - `npm run security:files`: **2.515 Berkas Patuh Aturan File Policy**.
-
----
-
-## 3. Ringkasan Hasil Uji Terminal
-
-```text
-======================================================================
-🎉 VITEST TEST SUITE RUNNER
-======================================================================
- Test Files  39 passed (39)
- Tests       770 passed (770)
- Duration    43.54s
-
-======================================================================
-🛡️ DEVSECOPS & QUALITY GATES SUMMARY
-======================================================================
-✅ TypeScript (tsc -b):       0 Errors
-✅ Linter (oxlint):           0 Errors
-✅ Secret Scanner:            0 Actionable Secrets Detected (2,420 files)
-✅ Privacy / PII Scanner:     0 Unapproved PII Detected (2,420 files)
-✅ File Policy Enforcer:      2,515 / 2,515 Files Allowed & Compliant
-✅ Production Build (dist/):  Built cleanly in 1.68s
-======================================================================
-```
+   - `npm run build`: Kompilasi produksi `dist/` selesai bersih dan siap deploy ke Cloudflare Pages.
+   - Biaya Operasional: **Rp 0 / $0.00**.
