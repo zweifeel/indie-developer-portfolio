@@ -15,6 +15,7 @@ import {
   CoreCrewRole,
 } from '../types/virtualOffice3D';
 import type { Project } from '../types/project';
+import { CANONICAL_PROJECT_SEEDS } from './virtualOfficePresets';
 
 /**
  * 3 Shared Facilities in Center & Amenities Wings
@@ -186,16 +187,17 @@ export function calculateRoomCoordinates(index: number): {
  * Generate dynamic rooms and their 5 assigned human crew members
  * based on ANY list of projects (from projects.json or CMS).
  */
-export function provisionProcedural3DCampus(projects: readonly Project[] | Project[]): {
+export function provisionProcedural3DCampus(projects?: readonly Project[] | Project[]): {
   rooms: DynamicProjectRoom3D[];
   crew: ProjectCrewMember3D[];
 } {
+  const effectiveProjects = (projects && projects.length > 0) ? projects : (CANONICAL_PROJECT_SEEDS as unknown as Project[]);
   const rooms: DynamicProjectRoom3D[] = [];
   const crew: ProjectCrewMember3D[] = [];
 
   const roles: CoreCrewRole[] = ['PLANNER', 'DEVELOPER', 'TESTER', 'REVIEWER', 'PUBLISHER'];
 
-  projects.forEach((proj, pIndex) => {
+  effectiveProjects.forEach((proj, pIndex) => {
     const { wing, centerPos, bounds, cameraFocusPos } = calculateRoomCoordinates(pIndex);
     const assignedCrewIds: string[] = [];
 

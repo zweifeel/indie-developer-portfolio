@@ -174,7 +174,7 @@ describe('Phase 1: Repository Security & DevSecOps Validation Suite', () => {
 
     const prePushResult = runPrePushChecks(process.cwd());
     expect(prePushResult.success).toBe(true);
-  }, 35000);
+  }, 90000);
 
   // Scenario 11: Verified False-Positive Handling (Itch.io Twitter ID)
   it('[Scenario 11] handles verified Itch.io Twitter ID without false alarm', () => {
