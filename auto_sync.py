@@ -55,16 +55,19 @@ def print_banner(text, border="="):
     line = border * 75
     print(f"\n{line}\n{text}\n{line}")
 
-def run_git_cmd(args):
+def run_git_cmd(args, timeout=None):
     try:
         res = subprocess.run(
             ["git"] + args,
             capture_output=True,
             text=True,
             encoding="utf-8",
-            errors="replace"
+            errors="replace",
+            timeout=timeout
         )
         return res.returncode == 0, res.stdout.strip(), res.stderr.strip()
+    except subprocess.TimeoutExpired:
+        return False, "", "Perintah Git melampaui batas waktu (mungkin memerlukan otorisasi dialog kredensial di layar)."
     except Exception as e:
         return False, "", str(e)
 
@@ -336,7 +339,7 @@ def save_progress(summary):
     if not current_branch:
         current_branch = "main"
 
-    ok_push, out_p, err_p = run_git_cmd(["push", "origin", current_branch])
+    ok_push, out_p, err_p = run_git_cmd(["push", "origin", current_branch], timeout=8)
     if ok_push:
         print(f"  + Git push ke origin/{current_branch} berhasil!")
     else:
