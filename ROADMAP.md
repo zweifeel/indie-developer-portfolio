@@ -62,10 +62,21 @@ Fitur-fitur di bawah ini telah selesai dibangun, teruji nyata dari hulu ke hilir
 ## 🚀 TAHAP AKTIF SELANJUTNYA (EKSEKUSI DI PERANGKAT / SESI BARU)
 
 ### 🎨 Modul Kantor Virtual 3D Low-Poly Isometrik (Three.js WebGL)
-Sesuai inspirasi dari video TikTok `@cinematicbyaccident`:
-- [ ] **Modul 3D Low-Poly Isometrik Studio (`LowPoly3DStudioCanvas.tsx`):**
-  - Kantor 3D interaktif berbasis Three.js WebGL (100% Gratis / Open-Source).
-  - Karakter 3D hewan imut duduk di meja kerja dengan laptop (Ruang Ide, Ruang Visual, Ruang Produksi, dan Ruang Didi/Pemilik).
-  - Kontrol interaktif: Seret mouse/layar sentuh untuk memutar sudut pandang (rotate) dan cubit/scroll untuk zoom.
-  - Ringan dan responsif di laptop maupun smartphone (target 60 FPS stabil).
-  - Terintegrasi dengan pemilih tab di website mendampingi versi 2.5D Pixel Campus.
+Sesuai inspirasi dari video lembur.id & gaya karakter manusia ramah Kay Lousberg (CC0):
+- [x] **Modul 3D Low-Poly Isometrik Studio (`ThreeCampusCanvas.tsx` & `VirtualOfficeHub.tsx`):**
+  - Kantor 3D interaktif berbasis Three.js WebGL (100% Gratis / Open-Source — Rp 0).
+  - Skalabilitas prosedural dinamis mengikuti daftar proyek studio di `projects.json` / CMS.
+  - 30+ Kru manusia berbusana kantor rapi (Kay Lousberg style) bergerak mandiri (working, sleeping, walking to pantry, lounge).
+  - Kontrol interaktif: Orbit 360°, zoom in/out, kunci paten ruang proyek via lerp kamera.
+  - Balon obrolan melayang di atas kepala karakter dan konsol interaksi pengunjung (/bangunkan, /kopi, /pizza, /lembur, /pesta).
+  - Terintegrasi dengan tab switcher di beranda mendampingi versi 2.5D Pixel Campus.
+  - 770 / 770 pengujian Vitest lulus 100% (zero regression).
+
+---
+
+## 🚀 TAHAP AKTIF SELANJUTNYA (EKSEKUSI DI NEW CHAT)
+
+### 8. Peluncuran Live Produksi Cloudflare Pages & Pemantauan Tester
+- [ ] **8.1 Push Perdana Repositori ke GitHub Owner:** Jalankan `git push -u origin master` dari PowerShell / GitHub Desktop.
+- [ ] **8.2 Hubungkan Repositori ke Cloudflare Pages:** Pilih repo `indie-developer-portfolio` di dashboard Cloudflare Pages, build preset Vite (`npm run build`, output: `dist`), live di `*.pages.dev` ($0.00 / Rp 0).
+- [ ] **8.3 Uji Coba Formulir Tester Nyata di Alamat Live:** Melakukan pendaftaran tester uji coba langsung di domain publik Cloudflare Pages untuk memastikan data masuk ke Google Sheets.
