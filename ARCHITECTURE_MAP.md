@@ -85,6 +85,7 @@ flowchart TD
 | **Isolasi Proyek Game Roblox (TBO)** | Konfigurasi mapping & sync | Repositori proyek game *The Broken Origin* yang sedang dibekukan | Risiko merusak game Roblox yang terpisah arsitekturnya | 🔒 **BEKU (DILARANG SENTUH)** |
 | **Etalase Tampilan Publik (Website UI)** | `src/pages/HomePage.tsx`<br>`src/pages/ProjectsPage.tsx`<br>`src/pages/ProjectDetailPage.tsx`<br>`src/pages/AboutPage.tsx` | Menampilkan antarmuka website kepada pengunjung umum | Tampilan visual berantakan, tapi data di gudang tetap aman | 🟢 **STABIL (Boleh Dipercantik)** |
 | **Simulasi Kantor Virtual 2.5D** | `src/components/virtual-office/ProductionVirtualHQCampus.tsx`<br>`src/data/virtualOfficeFloorPlan.ts` | Visualisasi interaktif kantor pengembang indie dengan karakter bergerak | Pengunjung tidak bisa melihat animasi kantor virtual | 🟢 **STABIL (Boleh Dipercantik)** |
+| **Kampus Kantor Virtual 3D (Three.js)** | `src/components/virtual-office/ThreeCampusCanvas.tsx`<br>`src/components/virtual-office/VirtualOfficeHub.tsx`<br>`src/components/virtual-office/VisitorCommandConsole.tsx` | Visualisasi 3D WebGL interaktif (360° orbit, zoom, 30+ kru manusia otonom, chat bubbles, konsol perintah interaktif) | Pengunjung beralih otomatis ke mode fallback 2.5D | 🟢 **STABIL (Verified E2E)** |
 
 ---
 
@@ -98,5 +99,5 @@ flowchart TD
    - DILARANG mengirimkan email uji coba massal ke calon tester asli.
 3. **Repositori Proyek Luar (The Broken Origin):**
    - Proyek Roblox ini dikunci dengan status *FROZEN*. Dilarang keras menambahkan kode, commit, atau push ke repositori tersebut dari workspace ini.
-4. **Kumpulan Uji Otomatis (751 Skrip Tes di 38 Test Suites):**
-   - Seluruh 751 skenario uji di folder `src/test/` adalah pelindung sistem. Dilarang menghapus atau melemahkan pengujian agar sebuah bug "kelihatan lulus".
+4. **Kumpulan Uji Otomatis (770 Skrip Tes di 39 Test Suites):**
+   - Seluruh 770 skenario uji di folder `src/test/` adalah pelindung sistem. Dilarang menghapus atau melemahkan pengujian agar sebuah bug "kelihatan lulus".
