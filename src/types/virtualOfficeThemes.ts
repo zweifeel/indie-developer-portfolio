@@ -92,11 +92,11 @@ export const PROJECT_THEMATIC_SPECS: Record<string, ThematicRoomSpec> = {
   },
   'mobile-kasir': {
     style: 'RETAIL_STORE_POS',
-    floorColor: 0x78350f, // Warm terracotta parquet
-    floorBorderColor: 0xf59e0b, // Amber border
-    accentWallColor: 0x451a03,
-    neonAccentColor: 0xf59e0b,
-    ambientWarmth: 1.1,
+    floorColor: 0x334155, // Clean Scandinavian slate/ash parquet
+    floorBorderColor: 0x64748b, // Subtle slate border
+    accentWallColor: 0x1e293b,
+    neonAccentColor: 0x38bdf8,
+    ambientWarmth: 1.05,
     thematicProps: ['pos_cash_register', 'shelf_B_large_decorated', 'cactus_medium_A', 'cabinet_medium_decorated'],
   },
   'idle-mining': {

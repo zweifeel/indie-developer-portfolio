@@ -250,7 +250,7 @@ interface CrewAnimationController {
           const member = assembled.crew[idx];
           const charType = resolveAdventurerForProject(member.projectId, idx);
           try {
-            const kayMesh = await loadKayKitCharacterModel(charType);
+            const kayMesh = await loadKayKitCharacterModel(charType, member.attire);
             const parentGroup = assembled.crewMeshMap.get(member.id);
             if (parentGroup && sceneRef.current) {
               parentGroup.clear(); // remove placeholder
@@ -456,6 +456,39 @@ interface CrewAnimationController {
           const cafeTable = await loadKayKitFurnitureModel('table_round_A_decorated');
           cafeTable.position.set(0, 0, 20);
           assembled.scene.add(cafeTable);
+        } catch {
+          // Safe fallback
+        }
+
+        // 5. Load Corridor Rest Zones & Planters (Lively campus amenities along wide walkway)
+        try {
+          const corridorBenchW1 = await loadKayKitFurnitureModel('bench');
+          corridorBenchW1.position.set(-10, 0, -12);
+          corridorBenchW1.rotation.y = Math.PI / 2;
+          assembled.scene.add(corridorBenchW1);
+
+          const corridorPlantW1 = await loadKenneyFurnitureModel('pottedPlant');
+          corridorPlantW1.position.set(-10, 0, -14);
+          assembled.scene.add(corridorPlantW1);
+
+          const corridorBenchE1 = await loadKayKitFurnitureModel('bench');
+          corridorBenchE1.position.set(10, 0, -12);
+          corridorBenchE1.rotation.y = -Math.PI / 2;
+          assembled.scene.add(corridorBenchE1);
+
+          const corridorPlantE1 = await loadKenneyFurnitureModel('pottedPlant');
+          corridorPlantE1.position.set(10, 0, -14);
+          assembled.scene.add(corridorPlantE1);
+
+          const corridorBenchW2 = await loadKayKitFurnitureModel('bench');
+          corridorBenchW2.position.set(-10, 0, 12);
+          corridorBenchW2.rotation.y = Math.PI / 2;
+          assembled.scene.add(corridorBenchW2);
+
+          const corridorBenchE2 = await loadKayKitFurnitureModel('bench');
+          corridorBenchE2.position.set(10, 0, 12);
+          corridorBenchE2.rotation.y = -Math.PI / 2;
+          assembled.scene.add(corridorBenchE2);
         } catch {
           // Safe fallback
         }

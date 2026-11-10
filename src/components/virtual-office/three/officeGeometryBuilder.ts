@@ -36,9 +36,9 @@ import {
 export const STUDIO_PALETTE = {
   floorWood: 0xd9b382,
   floorTrim: 0xb58b57,
-  campusBaseSlab: 0x1e293b, // Deep modern slate foundation
-  campusBaseBorder: 0x334155, // Clean architectural border
-  corridorRunner: 0x0284c7, // Vibrant sky blue runner carpet
+  campusBaseSlab: 0xf1f5f9, // Light architectural limestone foundation
+  campusBaseBorder: 0x94a3b8, // Clean architectural border
+  corridorRunner: 0x334155, // Refined charcoal runner (replaces vibrant sky blue)
   corridorWood: 0xc49a6c,
   wallPastel: 0xf8fafc,
   wallAccent: 0xe2e8f0,
@@ -57,16 +57,16 @@ export const STUDIO_PALETTE = {
 };
 
 /**
- * Build Unified Campus Ground Platform & Corridors (Zero Blue Void)
+ * Build Unified Campus Ground Platform & Corridors (Zero Blue Void & Light Architectural Pavement)
  */
 export function buildUnifiedCampusGround(): THREE.Group {
   const group = new THREE.Group();
   group.name = 'unified_campus_foundation';
 
-  // 1. Solid Foundation Slab covering the compact campus (width 64m x depth 64m)
-  const slabGeo = new THREE.BoxGeometry(64, 0.4, 64);
-  const slabTex = createOfficeTileTexture('#334155', '#1e293b');
-  const slabMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+  // 1. Solid Foundation Slab covering the wide campus (width 84m x depth 84m)
+  const slabGeo = new THREE.BoxGeometry(84, 0.4, 84);
+  const slabTex = createOfficeTileTexture('#f8fafc', '#cbd5e1');
+  const slabMat = new THREE.MeshLambertMaterial({ color: 0xe2e8f0 });
   if (slabTex) slabMat.map = slabTex;
   const slab = new THREE.Mesh(slabGeo, slabMat);
   slab.position.set(0, -0.3, 0);
@@ -74,25 +74,25 @@ export function buildUnifiedCampusGround(): THREE.Group {
   group.add(slab);
 
   // 1b. Foundation Edge Trim
-  const borderGeo = new THREE.BoxGeometry(65, 0.15, 65);
-  const borderMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
+  const borderGeo = new THREE.BoxGeometry(85, 0.15, 85);
+  const borderMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
   const border = new THREE.Mesh(borderGeo, borderMat);
   border.position.set(0, -0.45, 0);
   group.add(border);
 
   // 2. Central Spine Corridor (North-South connecting Reception, Plaza, Pantry)
-  const spineGeo = new THREE.BoxGeometry(18, 0.04, 58);
+  const spineGeo = new THREE.BoxGeometry(26, 0.04, 76);
   const spineTex = createParquetFloorTexture();
-  const spineMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
+  const spineMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
   if (spineTex) spineMat.map = spineTex;
   const spine = new THREE.Mesh(spineGeo, spineMat);
   spine.position.set(0, -0.08, 0);
   spine.receiveShadow = true;
   group.add(spine);
 
-  // 2b. Central Spine Carpet Runner with edge guide strips
-  const runnerGeo = new THREE.BoxGeometry(4.0, 0.05, 56);
-  const runnerTex = createCorridorRunnerTexture('#0284c7', '#38bdf8');
+  // 2b. Central Spine Inlay Accent (Refined Charcoal with subtle trim, NOT solid blue)
+  const runnerGeo = new THREE.BoxGeometry(8.0, 0.05, 74);
+  const runnerTex = createCorridorRunnerTexture('#334155', '#475569');
   const runnerMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.corridorRunner });
   if (runnerTex) runnerMat.map = runnerTex;
   const runner = new THREE.Mesh(runnerGeo, runnerMat);
@@ -100,18 +100,18 @@ export function buildUnifiedCampusGround(): THREE.Group {
   group.add(runner);
 
   // 3. West & East Wing Connector Walkways (Connecting Spine to Project Rooms)
-  const rows = [-20, 0, 20];
+  const rows = [-24, 0, 24];
   rows.forEach((z) => {
     // West connector
-    const westWalkGeo = new THREE.BoxGeometry(10, 0.04, 5.0);
+    const westWalkGeo = new THREE.BoxGeometry(9.0, 0.04, 6.0);
     const westWalk = new THREE.Mesh(westWalkGeo, spineMat);
-    westWalk.position.set(-13.5, -0.08, z);
+    westWalk.position.set(-17.5, -0.08, z);
     group.add(westWalk);
 
     // East connector
-    const eastWalkGeo = new THREE.BoxGeometry(10, 0.04, 5.0);
+    const eastWalkGeo = new THREE.BoxGeometry(9.0, 0.04, 6.0);
     const eastWalk = new THREE.Mesh(eastWalkGeo, spineMat);
-    eastWalk.position.set(13.5, -0.08, z);
+    eastWalk.position.set(17.5, -0.08, z);
     group.add(eastWalk);
 
     // Guide lights along walkways
@@ -131,10 +131,10 @@ export function buildUnifiedCampusGround(): THREE.Group {
       return bollard;
     };
 
-    group.add(createBollard(-9.2, z - 2.8));
-    group.add(createBollard(-9.2, z + 2.8));
-    group.add(createBollard(9.2, z - 2.8));
-    group.add(createBollard(9.2, z + 2.8));
+    group.add(createBollard(-13.5, z - 3.4));
+    group.add(createBollard(-13.5, z + 3.4));
+    group.add(createBollard(13.5, z - 3.4));
+    group.add(createBollard(13.5, z + 3.4));
   });
 
   return group;

@@ -25,13 +25,13 @@ export const SHARED_FACILITIES: SharedFacility3D[] = [
   {
     facilityId: 'reception',
     name: 'Lobi Utama & Resepsionis',
-    centerPos: [0, 0, -20],
-    bounds: { minX: -6.5, maxX: 6.5, minZ: -26, maxZ: -14 },
+    centerPos: [0, 0, -24],
+    bounds: { minX: -6.5, maxX: 6.5, minZ: -30, maxZ: -18 },
     waypoints: [
-      [0, 0, -22],
-      [-3, 0, -18],
-      [3, 0, -18],
-      [0, 0, -15],
+      [0, 0, -26],
+      [-2.5, 0, -22],
+      [2.5, 0, -22],
+      [0, 0, -20],
     ],
   },
   {
@@ -50,13 +50,13 @@ export const SHARED_FACILITIES: SharedFacility3D[] = [
   {
     facilityId: 'pantry_coffee_bar',
     name: 'Pantry Bersama & Coffee Bar',
-    centerPos: [0, 0, 20],
-    bounds: { minX: -6.5, maxX: 6.5, minZ: 14, maxZ: 26 },
+    centerPos: [0, 0, 24],
+    bounds: { minX: -6.5, maxX: 6.5, minZ: 18, maxZ: 30 },
     waypoints: [
-      [-2.5, 0, 18],
-      [2.5, 0, 18],
       [-2.5, 0, 22],
       [2.5, 0, 22],
+      [-2.5, 0, 26],
+      [2.5, 0, 26],
     ],
   },
 ];
@@ -65,15 +65,15 @@ export const SHARED_FACILITIES: SharedFacility3D[] = [
  * Common Walkway Corridor Waypoints (connecting west rooms, center, and east rooms)
  */
 export const CAMPUS_CORRIDOR_WAYPOINTS: Vector3Tuple[] = [
-  [-9, 0, -20],
-  [-9, 0, 0],
-  [-9, 0, 20],
-  [0, 0, -20],
+  [-12, 0, -24],
+  [-12, 0, 0],
+  [-12, 0, 24],
+  [0, 0, -24],
   [0, 0, 0],
-  [0, 0, 20],
-  [9, 0, -20],
-  [9, 0, 0],
-  [9, 0, 20],
+  [0, 0, 24],
+  [12, 0, -24],
+  [12, 0, 0],
+  [12, 0, 24],
 ];
 
 /**
@@ -137,6 +137,44 @@ export const ROLE_ATTIRES: Record<CoreCrewRole, HumanAttire3D> = {
   },
 };
 
+export const NATURAL_HAIR_COLORS = [
+  '#18181b', // Jet Black
+  '#271c19', // Espresso Dark Brown
+  '#5c3d2e', // Chestnut Brown
+  '#d99b26', // Golden Blonde
+  '#8c3a1e', // Auburn Red-Brown
+  '#71717a', // Silver / Platinum Gray
+];
+
+export const OFFICE_TOP_COLORS = [
+  '#f8fafc', // Crisp White Oxford Shirt
+  '#93c5fd', // Light Blue Business Shirt
+  '#1e3a8a', // Deep Navy Cardigan / Blazer
+  '#334155', // Charcoal Gray Blazer
+  '#e2e8f0', // Minimalist Off-White Tee
+  '#0f172a', // Midnight Black Turtleneck
+  '#166534', // Forest Green Polo
+  '#881337', // Burgundy Cardigan
+  '#c29b68', // Camel Beige Sweater
+  '#64748b', // Slate Gray Tech Hoodie
+];
+
+export const OFFICE_PANTS_COLORS = [
+  '#d4b996', // Khaki Chinos
+  '#1e293b', // Navy Slacks
+  '#374151', // Charcoal Trousers
+  '#0f172a', // Black Slacks
+  '#475569', // Slate Gray Pants
+  '#1e3a8a', // Dark Denim
+];
+
+export const OFFICE_SHOES_COLORS = [
+  '#f1f5f9', // Clean White Sneakers
+  '#451a03', // Classic Brown Leather Loafers
+  '#111827', // Black Oxford Shoes
+  '#78350f', // Tan Dress Shoes
+];
+
 export const PERSONAL_SPACE_RADIUS = 0.9;
 export const PERSONAL_COLLISION_DISTANCE = 1.15;
 
@@ -152,7 +190,7 @@ export function buildCorridorRoute(
   const dx = destPos[0] - startPos[0];
   const dz = destPos[2] - startPos[2];
   const dist = Math.sqrt(dx * dx + dz * dz);
-  if (!room || dist < 3.0) {
+  if (!room || dist < 1.0) {
     return [[destPos[0], 0, destPos[2]]];
   }
 
@@ -162,42 +200,76 @@ export function buildCorridorRoute(
   const insideDoorX = isWest ? cx + 7.5 : cx - 7.5;
   const outsideDoorX = isWest ? cx + 9.5 : cx - 9.5;
 
-  const isInsideRoom = isWest ? startPos[0] < cx + 8.5 : startPos[0] > cx - 8.5;
-  const isDestInsideRoom = (isWest ? destPos[0] < cx + 8.5 : destPos[0] > cx - 8.5) &&
-    Math.abs(destPos[2] - cz) < 7.0;
-
-  if (isInsideRoom && isDestInsideRoom) {
-    return [[destPos[0], 0, destPos[2]]];
-  }
+  const isInsideRoom = isWest ? startPos[0] < cx + 7.8 : startPos[0] > cx - 7.8;
+  const isDestInsideRoom = (isWest ? destPos[0] < cx + 7.8 : destPos[0] > cx - 7.8) &&
+    Math.abs(destPos[2] - cz) < 6.5;
 
   const route: Vector3Tuple[] = [];
 
+  // CASE 1: Navigating entirely inside the same room (e.g. from desk to whiteboard, or returning to chair)
+  if (isInsideRoom && isDestInsideRoom) {
+    // 1. Step into desk/wander aisle
+    const aisleZ = startPos[2] > cz ? cz + 2.5 : cz - 2.5;
+    if (Math.abs(startPos[0] - cx) > 1.0) {
+      route.push([startPos[0], 0, aisleZ]);
+    }
+    // 2. Move to room central aisle
+    route.push([cx, 0, aisleZ]);
+    // 3. Move along central aisle to destination aisle
+    const destAisleZ = destPos[2] > cz ? cz + 2.5 : cz - 2.5;
+    route.push([cx, 0, destAisleZ]);
+    // 4. Approach destination column from aisle
+    if (Math.abs(destPos[0] - cx) > 1.0) {
+      route.push([destPos[0], 0, destAisleZ]);
+    }
+    // 5. Final step into destination (chair or prop)
+    route.push([destPos[0], 0, destPos[2]]);
+    return route;
+  }
+
+  // CASE 2: Leaving room towards common facilities (Lounge, Pantry, Corridor)
   if (isInsideRoom) {
     // 1. Move to doorway inside room
     route.push([insideDoorX, 0, cz]);
     // 2. Step outside door onto the connector walkway
     route.push([outsideDoorX, 0, cz]);
-    // 3. Move towards central spine
+    // 3. Move onto central spine (x = 0)
     route.push([0, 0, cz]);
-    // 4. Move along central spine to destination Z
-    route.push([0, 0, destPos[2]]);
-    // 5. Final step into destination
-    route.push([destPos[0], 0, destPos[2]]);
-  } else {
-    // Returning from shared facility (Lounge/Pantry/Spine) into room
-    // 1. Move along central spine to room connector row Z
-    route.push([0, 0, cz]);
-    // 2. Move along connector walkway to outside doorway
-    route.push([outsideDoorX, 0, cz]);
-    // 3. Step through doorway into room
-    route.push([insideDoorX, 0, cz]);
-    // 4. If destination is chair (behind desk), first approach from aisle
-    if (Math.abs(destPos[0] - cx) > 1.0) {
-      route.push([destPos[0], 0, destPos[2] + 0.65]);
+
+    // Check if dest is Collaboration Lounge (bounds: -6.5 to 6.5)
+    if (Math.abs(destPos[0]) < 6.5 && Math.abs(destPos[2]) < 6.5) {
+      // Enter through the closest of the 4 doors
+      const doorEntry: Vector3Tuple = isWest ? [-6.5, 0, 0] : [6.5, 0, 0];
+      route.push(doorEntry);
+      // Step into lounge inner perimeter
+      route.push([isWest ? -3.0 : 3.0, 0, 0]);
+    } else {
+      // Move along spine towards destination Z
+      route.push([0, 0, destPos[2]]);
     }
-    // 5. Final step into chair / seatedPos
+    // Final step into destination
     route.push([destPos[0], 0, destPos[2]]);
+    return route;
   }
+
+  // CASE 3: Returning from outside facility back into room
+  // 1. If currently inside Collaboration Lounge, exit via nearest door
+  if (Math.abs(startPos[0]) < 6.0 && Math.abs(startPos[2]) < 6.0) {
+    const doorExit: Vector3Tuple = isWest ? [-6.5, 0, 0] : [6.5, 0, 0];
+    route.push(doorExit);
+  }
+  // 2. Move along corridor to room connector row Z
+  route.push([0, 0, cz]);
+  // 3. Move along connector walkway to outside doorway
+  route.push([outsideDoorX, 0, cz]);
+  // 4. Step through doorway into room
+  route.push([insideDoorX, 0, cz]);
+  // 5. Approach chair from aisle
+  if (Math.abs(destPos[0] - cx) > 1.0) {
+    route.push([destPos[0], 0, destPos[2] + 0.65]);
+  }
+  // 6. Step into chair / seatedPos
+  route.push([destPos[0], 0, destPos[2]]);
 
   return route;
 }
@@ -238,9 +310,9 @@ export function generateCampusObstacles(
     });
   });
 
-  // 2. Room Back and Outer Walls
+  // 2. Room Back, Front, and Outer Walls (with doorway opening at center Z)
   rooms.forEach((r) => {
-    const cz = r.centerPos[2];
+    const [cx, , cz] = r.centerPos;
     // Back wall
     obstacles.push({
       id: `wall_back_${r.roomId}`,
@@ -248,6 +320,14 @@ export function generateCampusObstacles(
       maxX: r.bounds.maxX,
       minZ: r.bounds.minZ - 0.3,
       maxZ: r.bounds.minZ + 0.3,
+    });
+    // Front wall
+    obstacles.push({
+      id: `wall_front_${r.roomId}`,
+      minX: r.bounds.minX,
+      maxX: r.bounds.maxX,
+      minZ: r.bounds.maxZ - 0.3,
+      maxZ: r.bounds.maxZ + 0.3,
     });
 
     // Outer side wall
@@ -269,21 +349,47 @@ export function generateCampusObstacles(
       });
     }
 
-    // Inner corridor wall with doorway opening at center Z
+    // Inner corridor wall with doorway opening at cz - 1.8 to cz + 1.8
     const doorX = r.wing === 'west' ? r.bounds.maxX : r.bounds.minX;
     obstacles.push({
       id: `wall_inner_n_${r.roomId}`,
       minX: doorX - 0.3,
       maxX: doorX + 0.3,
       minZ: r.bounds.minZ,
-      maxZ: cz - 1.6,
+      maxZ: cz - 1.8,
     });
     obstacles.push({
       id: `wall_inner_s_${r.roomId}`,
       minX: doorX - 0.3,
       maxX: doorX + 0.3,
-      minZ: cz + 1.6,
+      minZ: cz + 1.8,
       maxZ: r.bounds.maxZ,
+    });
+
+    // In-room Furniture Obstacles:
+    // Bookcase / Credenza (back left)
+    obstacles.push({
+      id: `bookcase_${r.roomId}`,
+      minX: cx - 6.5,
+      maxX: cx - 4.5,
+      minZ: cz - 5.8,
+      maxZ: cz - 4.2,
+    });
+    // Kanban Board / Whiteboard (back right)
+    obstacles.push({
+      id: `kanban_${r.roomId}`,
+      minX: cx + 4.5,
+      maxX: cx + 6.5,
+      minZ: cz - 5.8,
+      maxZ: cz - 4.2,
+    });
+    // Water Dispenser / Cooler (front left)
+    obstacles.push({
+      id: `cooler_${r.roomId}`,
+      minX: cx - 7.2,
+      maxX: cx - 5.8,
+      minZ: cz + 3.8,
+      maxZ: cz + 5.2,
     });
   });
 
@@ -300,6 +406,23 @@ export function generateCampusObstacles(
   // East wall with door opening at z: -1.8 to 1.8
   obstacles.push({ id: 'lounge_wall_e1', minX: 6.3, maxX: 6.7, minZ: -6.5, maxZ: -1.8 });
   obstacles.push({ id: 'lounge_wall_e2', minX: 6.3, maxX: 6.7, minZ: 1.8, maxZ: 6.5 });
+
+  // Lounge Furniture Obstacles:
+  // Coffee Table in center
+  obstacles.push({ id: 'lounge_coffee_table', minX: -1.1, maxX: 1.1, minZ: -0.8, maxZ: 0.8 });
+  // Sofas (North & South)
+  obstacles.push({ id: 'lounge_sofa_n', minX: -1.8, maxX: 1.8, minZ: -3.5, maxZ: -1.7 });
+  obstacles.push({ id: 'lounge_sofa_s', minX: -1.8, maxX: 1.8, minZ: 1.7, maxZ: 3.5 });
+  // Armchairs (West & East)
+  obstacles.push({ id: 'lounge_chair_w', minX: -3.4, maxX: -1.6, minZ: -0.9, maxZ: 0.9 });
+  obstacles.push({ id: 'lounge_chair_e', minX: 1.6, maxX: 3.4, minZ: -0.9, maxZ: 0.9 });
+  // TV unit (North wall)
+  obstacles.push({ id: 'lounge_tv_unit', minX: -1.5, maxX: 1.5, minZ: -5.7, maxZ: -4.7 });
+
+  // 4. Pantry Furniture Obstacles (center: [0, 0, 24])
+  obstacles.push({ id: 'pantry_counter_straight', minX: -3.6, maxX: -0.4, minZ: 23.2, maxZ: 24.8 });
+  obstacles.push({ id: 'pantry_counter_sink', minX: 0.4, maxX: 3.6, minZ: 23.2, maxZ: 24.8 });
+  obstacles.push({ id: 'pantry_table_round', minX: -1.4, maxX: 1.4, minZ: 18.6, maxZ: 21.4 });
 
   return obstacles;
 }
@@ -332,17 +455,17 @@ export function calculateRoomCoordinates(index: number): {
 } {
   const isWest = index % 2 === 0;
   const row = Math.floor(index / 2);
-  const x = isWest ? -18 : 18;
-  const z = -20 + row * 20;
+  const x = isWest ? -22 : 22;
+  const z = -24 + row * 24;
 
   return {
     wing: isWest ? 'west' : 'east',
     centerPos: [x, 0, z],
     bounds: {
-      minX: x - 9,
-      maxX: x + 9,
-      minZ: z - 7.5,
-      maxZ: z + 7.5,
+      minX: x - 8,
+      maxX: x + 8,
+      minZ: z - 6.5,
+      maxZ: z + 6.5,
     },
     cameraFocusPos: [x, 0, z],
   };
@@ -368,11 +491,11 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
 
     // 5 Desks layout inside room: 3 along back wall, 2 in front (generously spaced)
     const deskOffsets: Array<[number, number]> = [
-      [-5.0, -2.5], // Desk 0: Planner
+      [-4.5, -2.5], // Desk 0: Planner
       [0.0, -2.5],  // Desk 1: Developer
-      [5.0, -2.5],  // Desk 2: Tester
-      [-3.2, 2.5],  // Desk 3: Reviewer
-      [3.2, 2.5],   // Desk 4: Publisher
+      [4.5, -2.5],  // Desk 2: Tester
+      [-3.0, 2.5],  // Desk 3: Reviewer
+      [3.0, 2.5],   // Desk 4: Publisher
     ];
 
     roles.forEach((role, rIndex) => {
@@ -396,6 +519,20 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
       const namesPool = CANONICAL_NAMES[role];
       const name = namesPool[pIndex % namesPool.length];
 
+      // Assign diverse natural hair color and office clothing to each individual crew member
+      const hairColor = NATURAL_HAIR_COLORS[(pIndex * 5 + rIndex) % NATURAL_HAIR_COLORS.length];
+      const topColor = OFFICE_TOP_COLORS[(pIndex * 2 + rIndex) % OFFICE_TOP_COLORS.length];
+      const pantsColor = OFFICE_PANTS_COLORS[(pIndex + rIndex) % OFFICE_PANTS_COLORS.length];
+      const shoesColor = OFFICE_SHOES_COLORS[(pIndex * 3 + rIndex) % OFFICE_SHOES_COLORS.length];
+
+      const customAttire: HumanAttire3D = {
+        ...ROLE_ATTIRES[role],
+        hairColor,
+        topColor,
+        pantsColor,
+        shoesColor,
+      };
+
       crew.push({
         id: crewId,
         projectId: proj.id,
@@ -404,7 +541,7 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
         name,
         displayName: `${name} (${role})`,
         role,
-        attire: ROLE_ATTIRES[role],
+        attire: customAttire,
         deskIndex: rIndex,
         homeDeskPos,
         seatedPos: [...seatedPos],

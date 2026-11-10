@@ -228,12 +228,14 @@ export function evaluateRandomDecisions(
           type: 'work',
         });
       } else if (dice < 0.35 && matchingRoom) {
-        // In-room activity (walk to whiteboard, inspect screen, or stretch)
+        // In-room activity (walk to whiteboard, inspect screen, or stretch via structured room aisles)
         const inRoomTargets = getInRoomWanderTargets(matchingRoom);
         const target = inRoomTargets[Math.floor(Math.random() * inRoomTargets.length)];
+        const inRoomRoute = buildCorridorRoute(candidate.currentPos, target, matchingRoom);
 
         candidate.currentState = 'WALKING';
-        candidate.targetPos = [...target];
+        candidate.targetPos = [...inRoomRoute[0]];
+        candidate.pathQueue = inRoomRoute.slice(1);
         candidate.isSleeping = false;
         candidate.currentActivityLog = `Bangkit dari meja untuk berkeliling di ruang ${candidate.projectName}`;
 

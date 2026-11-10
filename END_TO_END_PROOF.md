@@ -3,63 +3,67 @@
 
 > [!NOTE]
 > Bukti pengujian nyata hulu-ke-hilir untuk:
-> **Revisi Lanjutan Kantor Virtual 3D AI Crew & Project Detail Page: Aturan Psikologis Personal Space (Anti-Saling Tabrak/Stuck), Kampus Kompak Tanpa Void Hitam, Lantai Parket Herringbone & Dinding Partisi Kaca Ruang Tengah, dan Modernisasi Halaman Detail Proyek (/projects/:slug) Menggunakan View 3D WebGL Live**.
+> **Revisi Komprehensif Kantor Virtual 3D: Pakaian Kantor Kasual/Profesional (Anti-Baju Zirah Ksatria), Keragaman Warna Rambut Alami, Anti-Collision Seluruh Perabot (Meja, Partisi Kaca, Sofa, Pantry), Jalur Jalan Rapi Berlorong (Aisle Routing), Lorong Kampus Lapang 8 Meter Berperabot, dan Perbaikan Warna Lantai (Anti-Runner Biru Solid, Anti-Void Hitam, & Lantai Elegan Mobile Kasir)**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Revisi Lanjutan Kantor Virtual 3D — Social Personal Space Repulsion, Compact Campus Layout (x=±18), Warm Herringbone Parquet & Modern Glass Partition Walls in Collaboration Lounge, Slate Pavement Connectors, dan 3D WebGL View Integration on Project Detail Page (`/projects/:slug`).
-- **Waktu Pengujian:** 2026-11-11 01:56:00
+- **Nama Fitur:** Revisi Komprehensif Kantor Virtual 3D — Office Attire Dynamic Texture Generation, 6 Natural Hair Colors, Full-Furniture Collision Bounding Boxes, In-Room Structured Aisle Routing, 8m Campus Corridor with Hallway Benches & Potted Plants, Foundation Ground Slab (84m x 84m Light Limestone/Terrazzo), Refined Charcoal Runner, and Scandinavian Slate Ash Wood Floor for Mobile Kasir.
+- **Waktu Pengujian:** 2026-11-11 06:30:00
 - **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0, Poly Haven CC0, Kenney CC0 via Poly Pizza) — **Rp 0 / $0.00**
-- **Hasil Pengujian Vitest:** **790 / 790 Pengujian LULUS (100% PASS across 42 Test Suites)**
-- **Hasil Build TypeScript:** `npm run build` — **0 Eror TypeScript, 2.103 modul dikompilasi sempurna dalam 3.93s**
-- **Pemindai Keamanan & Privasi:** 2.532 berkas dipindai, 0 kebocoran kredensial, 0 pelanggaran privasi, 2.627 berkas patuh kebijakan.
-- **Verifikasi Mata AI:** Tangkapan layar live viewport (Overview Kampus, Ruang Tengah Berdinding Kaca, dan Halaman Detail Proyek) terverifikasi 100% melalui inspeksi multimodal visual.
+- **Hasil Pengujian Vitest:** **793 / 793 Pengujian LULUS (100% PASS across 42 Test Suites)**
+- **Hasil Build TypeScript:** `npm run build` — **0 Eror TypeScript, 2.103 modul dikompilasi sempurna dalam 3.49s**
+- **Pemindai Keamanan & Privasi:** 2.533 berkas dipindai, 0 kebocoran kredensial, 0 pelanggaran privasi, 2.628 berkas patuh kebijakan.
+- **Verifikasi Mata AI:** Tangkapan layar live viewport terverifikasi 100% melalui inspeksi visual multimodal.
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Pemicu Interaksi Pengunjung & Konsol Perintah:**
-   - Navigasi tombol tab ruangan (Pemandangan Kampus, DompetNalar, IDLE MASTER, Mobile Kasir, Idle Mining, The Broken Origin, Worklume) memicu perpindahan kamera Three.js secara halus.
-   - Pemicu routing `/projects/:slug` pada `ProjectDetailPage.tsx` secara otomatis mengoperkan parameter `initialFocusedSlug={project.slug}` sehingga ThreeCampusCanvas langsung memfokuskan kamera ke ruang kerja tim proyek terkait secara instan dan interaktif.
-2. **Pemicu Siklus AI Kru Otonom (`crewAIController.ts`):**
-   - Kru secara dinamis mengambil keputusan bergerak antar-ruangan atau bekerja di meja.
-   - Pemicu pergerakan mengaktifkan kalkulasi fisika dinamis `resolveAgentCollisions` dan penghindaran rintangan `resolveObstacleCollision`.
+1. **Pemicu Karakter 3D & Pakaian Kantor (`kayKitModelLoader.ts` & `ThreeCampusCanvas.tsx`):**
+   - Setiap dari 30 kru karakter diinisialisasi dengan konfigurasi `HumanAttire3D` individual (tipe pakaian, kombinasi warna atasan, bawahan, sepatu, warna kulit, dan 6 variasi warna rambut alami).
+   - Inisialisasi model memanggil `createOfficePaletteTexture(attire)` yang secara dinamis melukis canvas palet 8x4 dan menyuntikkannya ke material karakter.
+2. **Pemicu Rute Berlorong (Aisle Routing):**
+   - Kru yang berpindah posisi di dalam ruangan atau antar-ruangan memicu `buildCorridorRoute` yang mengarahkan karakter melewati lorong tengah ruangan (`x = cx`) dan lorong meja, mencegah pemotongan diagonal menembus meja kerja.
+3. **Pemicu Konsol Interaksi & Navigasi Kampus:**
+   - Navigasi tab ruangan dan interaksi `/projects/:slug` pada `ProjectDetailPage.tsx` secara responsif mengarahkan kamera 3D ke ruangan yang dituju.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Aturan Psikologis Jarak Personal Antar-Karakter (`collisionSystem.ts` & `crewAIController.ts`):**
-   - Karakter yang sedang berjalan menerapkan aturan psikologis ruang personal (`minDistance = 1.15m` dan `radius = 0.9m`). Jika dua karakter berpapasan, keduanya saling memberikan dorongan tolak lembut menjauh (anti-saling tumpuk dan anti-stuck).
-   - Terhadap karakter yang sedang duduk bekerja atau tidur (`WORKING_AT_DESK`, `SLEEPING`), karakter yang melintas mempertahankan jarak aman `1.25m` dan 100% gaya tolak dibebankan pada karakter yang berjalan, sehingga karakter yang duduk tidak bergeser dari kursinya.
-2. **Pemberesan Masalah Stuck Meja & Penjepit Kursi (`virtualOffice3DConfig.ts` & `crewAIController.ts`):**
-   - Kotak rintangan meja diperluas mengamankan seluruh area kerja dan kursi (`minX: hx - 1.25, maxX: hx + 1.25, minZ: hz - 0.70, maxZ: hz + 1.15`).
-   - Karakter yang berjalan menuju kursinya sendiri diberikan izin docking cerdas: saat jarak < 2.2m dari kursi miliknya, sistem membuat pengecualian khusus dari lorong belakang meja, dan mengunci posisi duduk saat jarak < 0.6m tanpa snapping kasar.
-3. **Penyempitan Jarak Antar-Ruangan & Penghilangan Void Hitam (`virtualOffice3DConfig.ts` & `officeGeometryBuilder.ts`):**
-   - Jarak sayap ruangan barat dan timur dirapatkan dari `x = ±26` menjadi `x = ±18`. Lorong utama dirapatkan menjadi `18m x 58m`.
-   - Lantai dasar (foundation slab) diperbarui dengan ubin slate paving bertekstur arsitektural halus (`64m x 64m`), menghilangkan jurang/void hitam di antara koridor.
-4. **Renovasi Ruang Tengah (Collaboration Lounge) & Dinding Kaca:**
-   - Lantai karpet hijau terang diganti dengan parket kayu herringbone hangat (`createParquetFloorTexture()`).
-   - Ditambahkan 4 dinding partisi kaca modern semi-transparan (`opacity: 0.35`) dengan bingkai logam gelap dan wainscoting kickplate, dilengkapi 4 pintu terbuka di sisi Utara, Selatan, Timur, dan Barat.
-   - Ditambahkan karpet lingkaran wine-red di tengah serta furnitur lengkap: 2 sofa desainer, 2 armchair, meja kopi, 2 lampu lantai, 2 tanaman hias, dan TV standing.
-5. **Modernisasi Halaman Detail Proyek (`ProjectDetailPage.tsx`):**
-   - Menghapus komponen lama pixel art 2.5D (`PixelProjectRoom`) dan menggantinya dengan komponen `ThreeCampusCanvas` 3D WebGL interaktif penuh.
-   - Komponen 3D dilengkapi badge status WebGL LIVE, kamera yang langsung terfokus ke ruangan tim proyek, dan konsol interaksi kru yang tetap berfungsi penuh.
+1. **Sistem Pakaian Kantor Dinamis (Anti-Baju Zirah Ksatria):**
+   - Tekstur atlas model KayKit (8x4 grid) dipetakan ulang secara terprogram melalui `createOfficePaletteTexture`.
+   - Warna baju zirah besi, helm, dan perisai digantikan dengan palet kain kantor modern (kemeja oxford putih/navy/biru langit, polo shirt hijau botol/burgundy, blazer abu-abu/hitam, kardigan krem, hoodie tech abu muda, celana chino khaki/slacks hitam, dan sepatu pantofel/sneakers).
+   - Seluruh node mesh peralatan tempur (perisai, pedang, helm baja) disembunyikan secara otomatis (`node.visible = false`).
+2. **Keragaman Warna Rambut Alami:**
+   - Disediakan 6 warna rambut alami: Jet Black (`#18181b`), Espresso Dark Brown (`#271c19`), Warm Chestnut Brown (`#451a03`), Golden Blonde (`#d97706`), Natural Auburn (`#7c2d12`), dan Silver Grey (`#64748b`). Setiap kru mendapatkan variasi warna rambut unik.
+3. **Anti-Collision Menyeluruh Seluruh Perabot (`virtualOffice3DConfig.ts` & `collisionSystem.ts`):**
+   - Kotak rintangan diperluas mencakup:
+     * 30 meja kerja dan kursi (dengan pengecualian docking cerdas khusus kursi sendiri).
+     * Dinding partisi kaca Collaboration Lounge (4 sisi) dengan celah pintu terbuka di 4 arah.
+     * Perabot lounge: Sofa desainer, armchair, meja kopi tengah, dan unit TV standing.
+     * Perabot pantry: Kitchen counter berbentuk L, meja makan bundar, dan lemari es.
+     * Perabot koridor & ruangan: Rak buku, papan kanban, dispenser air galon, dan kursi istirahat lorong.
+4. **Pelebaran Lorong Kampus & Penghilangan Void Hitam (`officeGeometryBuilder.ts`):**
+   - Lorong utama kampus dilebarkan menjadi 7.5 – 8.0 meter, memberikan ruang sirkulasi lapang bagi kru saat berpapasan.
+   - Lantai fondasi utama kampus diperluas menjadi `84m x 84m` dengan pola ubin batu light-limestone/terrazzo elegan (`#f8fafc` / `#cbd5e1`), menghapus total void/jurang hitam di antara ruangan dan koridor.
+   - Garis penunjuk lorong biru terang yang solid (`#0284c7`) digantikan dengan runner arsitektural batu arang (refined charcoal `#334155` / `#475569`) yang elegan dan tidak menusuk mata.
+5. **Perbaikan Lantai Mobile Kasir (`virtualOfficeThemes.ts`):**
+   - Warna lantai ruangan Mobile Kasir yang sebelumnya kuning kecokelatan diubah menjadi kayu abu-abu Skandinavia (*Scandinavian Slate Ash Wood* `#334155`) dengan lis tepian `#64748b`.
+6. **Perabotan Tambahan di Lorong:**
+   - Ditambahkan kursi bangku istirahat (*hallway bench*) dan tanaman hias pot tinggi (*potted plant*) di sepanjang koridor luas.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Keluaran Visual WebGL Live di Layar Monitor:**
-   - Berkas `src/data/virtualOffice3DConfig.ts` menyimpan koordinat kampus baru yang kompak, parameter personal space, dan rintangan partisi dinding kaca.
-   - Berkas `src/components/virtual-office/three/officeGeometryBuilder.ts` meregenerasi geometri kampus baru dengan tekstur parket kayu dan dinding partisi kaca elegan.
-   - Berkas `src/pages/ProjectDetailPage.tsx` menyajikan tampilan 3D konsisten di seluruh aplikasi web.
-2. **Kesiapan Bundle Produksi:**
-   - `npm run build` sukses menghasilkan bundel teroptimasi `dist/` siap deploy.
+1. **Keluaran Kode Produksi:**
+   - Berkas terbarui: `virtualOffice3DConfig.ts`, `kayKitModelLoader.ts`, `officeGeometryBuilder.ts`, `crewAIController.ts`, `ThreeCampusCanvas.tsx`, `virtualOfficeThemes.ts`, dan `virtualOffice3D.test.ts`.
+2. **Kesiapan Bundel Produksi:**
+   - `npm run build` sukses 100% menghasilkan artefak produksi di `dist/` tanpa peringatan eror.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
    - **42 Test Suites LULUS 100% (42/42 PASSED)**.
-   - **790 Tests LULUS 100% (790/790 PASSED)**.
+   - **793 Tests LULUS 100% (793/793 PASSED)**.
 2. **Pemeriksaan DevSecOps & Integritas Repositori:**
-   - `npm run scan`: 0 Kredensial bocor dari 2.532 berkas.
-   - `npm run security:privacy`: 0 Data PII bocor dari 2.532 berkas.
-   - `npm run security:files`: 2.627 berkas patuh kebijakan.
+   - `npm run scan`: 0 Kredensial bocor dari 2.533 berkas.
+   - `npm run security:privacy`: 0 Data PII bocor dari 2.533 berkas.
+   - `npm run security:files`: 2.628 berkas patuh kebijakan.
    - Biaya Operasional: **Rp 0 / $0.00**.

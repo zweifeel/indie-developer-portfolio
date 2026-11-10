@@ -392,6 +392,60 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
         }
       });
     });
+
+    it('provisions office attires with natural hair colors and casual clothing for all crew members', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      expect(crew).toHaveLength(30);
+
+      crew.forEach((c) => {
+        expect(c.attire).toBeDefined();
+        expect(c.attire.skinTone).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(c.attire.hairColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(c.attire.topColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(c.attire.pantsColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+        expect(c.attire.shoesColor).toMatch(/^#[0-9a-fA-F]{6}$/);
+      });
+
+      // Verify diversity of hair colors across the team
+      const hairColors = new Set(crew.map((c) => c.attire.hairColor));
+      expect(hairColors.size).toBeGreaterThanOrEqual(4);
+    });
+
+    it('registers obstacle boxes for collaboration lounge and pantry furniture', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const obstacles = generateCampusObstacles(rooms, crew);
+
+      const requiredObstacleIds = [
+        'lounge_coffee_table',
+        'lounge_sofa_n',
+        'lounge_sofa_s',
+        'lounge_chair_w',
+        'lounge_chair_e',
+        'lounge_tv_unit',
+        'pantry_counter_straight',
+        'pantry_counter_sink',
+        'pantry_table_round',
+      ];
+
+      requiredObstacleIds.forEach((id) => {
+        const obs = obstacles.find((o) => o.id === id);
+        expect(obs, `Missing obstacle ${id}`).toBeDefined();
+      });
+    });
+
+    it('routes in-room movement through room aisles instead of diagonal straight lines', () => {
+      const { rooms } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const room = rooms[0];
+      const start: [number, number, number] = [room.centerPos[0] - 4.5, 0, room.centerPos[2] - 2.5];
+      const target: [number, number, number] = [room.centerPos[0] + 4.5, 0, room.centerPos[2] + 2.5];
+
+      const route = buildCorridorRoute(start, target, room);
+      expect(route.length).toBeGreaterThanOrEqual(3);
+
+      // Intermediate hop should route via room central aisle (x = room.centerPos[0])
+      const hasAisleHop = route.some((pt) => Math.abs(pt[0] - room.centerPos[0]) < 0.1);
+      expect(hasAisleHop).toBe(true);
+    });
   });
 
   describe('5. Camera Transition & Focus Controller', () => {
