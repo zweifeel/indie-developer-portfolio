@@ -417,10 +417,10 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
     );
   } else if (spec.style === 'RETAIL_STORE_POS') {
     floorTexture = getArchitecturalTexture(
-      '/assets/virtual-office/textures/floors/parquet_herringbone.webp',
+      '/assets/virtual-office/textures/floors/wood_laminate_light.webp',
       4,
       4,
-      () => createParquetFloorTexture(hexStr, '#92400e', '#451a03')
+      () => createOfficeTileTexture('#334155', '#475569')
     );
   } else if (spec.style === 'MINING_INDUSTRIAL') {
     floorTexture = getArchitecturalTexture(
@@ -445,7 +445,9 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
     );
   }
 
-  const floorMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  const floorMat = new THREE.MeshLambertMaterial({
+    color: spec.style === 'RETAIL_STORE_POS' ? 0x475569 : 0xffffff,
+  });
   if (floorTexture) floorMat.map = floorTexture;
   else floorMat.color.setHex(spec.floorColor);
 
@@ -631,8 +633,9 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
       facFloorTex = createOfficeTileTexture('#334155', '#1e293b');
       baseCol = 0x334155;
     } else {
-      facFloorTex = createOfficeTileTexture('#1e293b', '#0f172a');
-      baseCol = 0x1e293b;
+      // Reception: bright warm ivory/terrazzo floor (clean aesthetic, no dark void)
+      facFloorTex = createOfficeTileTexture('#f8fafc', '#cbd5e1');
+      baseCol = 0xf8fafc;
     }
 
     const floorMat = new THREE.MeshLambertMaterial({ color: baseCol });
@@ -731,6 +734,29 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
       const machine = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.7), machineMat);
       machine.position.set(0, 1.5, fac.centerPos[2] + 2);
       group.add(machine);
+    }
+
+    // Reception Props (Front Desk & Studio Backboard)
+    if (fac.facilityId === 'reception') {
+      const deskMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+      const deskTopMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
+      const desk = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.15, 1.2), deskMat);
+      desk.position.set(0, 0.58, fac.centerPos[2] - 1);
+      const deskTop = new THREE.Mesh(new THREE.BoxGeometry(4.7, 0.1, 1.35), deskTopMat);
+      deskTop.position.set(0, 1.2, fac.centerPos[2] - 1);
+      group.add(desk);
+      group.add(deskTop);
+
+      // Studio Signboard / Backboard
+      const signBoard = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1.8, 0.15), deskMat);
+      signBoard.position.set(0, 2.0, fac.centerPos[2] - 4.5);
+      group.add(signBoard);
+
+      // Welcome Rug
+      const recRugMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+      const recRug = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.02, 3.5), recRugMat);
+      recRug.position.set(0, 0.01, fac.centerPos[2] + 1.5);
+      group.add(recRug);
     }
   });
 

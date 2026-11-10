@@ -424,6 +424,10 @@ export function generateCampusObstacles(
   obstacles.push({ id: 'pantry_counter_sink', minX: 0.4, maxX: 3.6, minZ: 23.2, maxZ: 24.8 });
   obstacles.push({ id: 'pantry_table_round', minX: -1.4, maxX: 1.4, minZ: 18.6, maxZ: 21.4 });
 
+  // 5. Reception Furniture Obstacles (center: [0, 0, -24])
+  obstacles.push({ id: 'reception_front_desk', minX: -2.4, maxX: 2.4, minZ: -25.8, maxZ: -24.2 });
+  obstacles.push({ id: 'reception_signboard', minX: -2.8, maxX: 2.8, minZ: -28.8, maxZ: -28.2 });
+
   return obstacles;
 }
 
