@@ -431,25 +431,25 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
     );
   } else if (spec.style === 'WORKSPACE_SCANDI') {
     floorTexture = getArchitecturalTexture(
-      '/assets/virtual-office/textures/floors/wood_laminate_light.webp',
+      '/assets/virtual-office/textures/floors/ceramic_tiles_light.webp',
       4,
       4,
-      () => createParquetFloorTexture(hexStr, borderHexStr, '#451a03')
+      () => createOfficeTileTexture('#e2e8f0', '#cbd5e1')
     );
   } else {
     floorTexture = getArchitecturalTexture(
-      '/assets/virtual-office/textures/floors/parquet_herringbone.webp',
+      '/assets/virtual-office/textures/floors/parquet_diagonal.webp',
       4,
       4,
       () => createParquetFloorTexture(hexStr, borderHexStr, '#451a03')
     );
   }
 
+  // Tint texture with room's designated floorColor so no room looks mustard/yellow-brown
   const floorMat = new THREE.MeshLambertMaterial({
-    color: spec.style === 'RETAIL_STORE_POS' ? 0x475569 : 0xffffff,
+    color: spec.floorColor,
   });
   if (floorTexture) floorMat.map = floorTexture;
-  else floorMat.color.setHex(spec.floorColor);
 
   const floorGeo = new THREE.BoxGeometry(w, 0.18, d);
   const floor = new THREE.Mesh(floorGeo, floorMat);
