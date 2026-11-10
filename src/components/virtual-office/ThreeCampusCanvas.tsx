@@ -238,6 +238,7 @@ interface CrewAnimationController {
           loadKayKitCharacterModel,
           getCharacterAnimations,
           loadKayKitFurnitureModel,
+          loadKenneyFurnitureModel,
           resolveAdventurerForProject,
         } = await import('./three/kayKitModelLoader');
 
@@ -287,13 +288,27 @@ interface CrewAnimationController {
           }
         }
 
-        // 2. Load Authentic Thematic KayKit Furniture into Rooms
+        // 2. Load Authentic Thematic KayKit & Kenney CC0 Furniture into Rooms
         for (const room of assembled.rooms) {
           const roomGroup = assembled.roomMeshMap.get(room.projectId);
           if (!roomGroup || !sceneRef.current) continue;
 
           const slug = room.projectSlug.toLowerCase();
+          const isWest = room.wing === 'west';
           try {
+            // General decorative props for every room: Potted plant & Coat rack near door
+            const plant = await loadKenneyFurnitureModel('pottedPlant');
+            plant.position.set(room.bounds.minX + 1.2, 0, room.bounds.minZ + 1.2);
+            roomGroup.add(plant);
+
+            const coatRack = await loadKenneyFurnitureModel('coatRackStanding');
+            coatRack.position.set(isWest ? room.bounds.maxX - 1.2 : room.bounds.minX + 1.2, 0, room.bounds.minZ + 1.2);
+            roomGroup.add(coatRack);
+
+            const trash = await loadKenneyFurnitureModel('trashcan');
+            trash.position.set(room.centerPos[0] + (isWest ? -4.2 : 4.2), 0, room.bounds.maxZ - 1.2);
+            roomGroup.add(trash);
+
             if (slug === 'dompetnalar') {
               const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
               cabinet.position.set(room.centerPos[0] - 6.0, 0, room.bounds.minZ + 1.2);
@@ -303,13 +318,13 @@ interface CrewAnimationController {
               couch.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.5);
               roomGroup.add(couch);
 
-              const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
+              const rug = await loadKenneyFurnitureModel('rugRectangle');
               rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
               roomGroup.add(rug);
 
-              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
-              cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
-              roomGroup.add(cactus);
+              const bookcase = await loadKenneyFurnitureModel('bookcaseOpen');
+              bookcase.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 0.8);
+              roomGroup.add(bookcase);
             } else if (slug === 'idle-master') {
               const armchair = await loadKayKitFurnitureModel('armchair');
               armchair.position.set(room.centerPos[0] + 6.0, 0, room.bounds.minZ + 1.5);
@@ -319,13 +334,17 @@ interface CrewAnimationController {
               shelf.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
               roomGroup.add(shelf);
 
-              const lamp = await loadKayKitFurnitureModel('lamp_standing');
+              const lamp = await loadKenneyFurnitureModel('lampRoundFloor');
               lamp.position.set(room.centerPos[0] + 6.5, 0, room.bounds.minZ + 0.8);
               roomGroup.add(lamp);
 
-              const rug = await loadKayKitFurnitureModel('rug_oval_A');
+              const rug = await loadKenneyFurnitureModel('rugRound');
               rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
               roomGroup.add(rug);
+
+              const speakerL = await loadKenneyFurnitureModel('speaker');
+              speakerL.position.set(room.centerPos[0] - 7.0, 0, room.bounds.maxZ - 2.5);
+              roomGroup.add(speakerL);
             } else if (slug === 'mobile-kasir') {
               const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
               cabinet.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
@@ -339,9 +358,9 @@ interface CrewAnimationController {
               bench.position.set(room.centerPos[0] + 5.5, 0, room.bounds.maxZ - 1.8);
               roomGroup.add(bench);
 
-              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
-              cactus.position.set(room.bounds.minX + 1.2, 0, room.bounds.maxZ - 1.2);
-              roomGroup.add(cactus);
+              const rug = await loadKenneyFurnitureModel('rugRectangle');
+              rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+              roomGroup.add(rug);
             } else if (slug === 'idle-mining') {
               const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
               cabinet.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
@@ -355,29 +374,25 @@ interface CrewAnimationController {
               box.position.set(room.centerPos[0] - 6.5, 0, room.bounds.maxZ - 1.5);
               roomGroup.add(box);
 
-              const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
+              const rug = await loadKenneyFurnitureModel('rugRectangle');
               rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
               roomGroup.add(rug);
             } else if (slug === 'worklume') {
-              const couch = await loadKayKitFurnitureModel('couch');
+              const couch = await loadKenneyFurnitureModel('loungeDesignSofa');
               couch.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.5);
               roomGroup.add(couch);
 
-              const armchair = await loadKayKitFurnitureModel('armchair');
+              const armchair = await loadKenneyFurnitureModel('loungeDesignChair');
               armchair.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.5);
               roomGroup.add(armchair);
 
-              const tableLow = await loadKayKitFurnitureModel('table_low');
-              tableLow.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 3.2);
+              const tableLow = await loadKenneyFurnitureModel('tableCoffee');
+              tableLow.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 3.0);
               roomGroup.add(tableLow);
 
-              const rug = await loadKayKitFurnitureModel('rug_oval_A');
+              const rug = await loadKenneyFurnitureModel('rugRound');
               rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
               roomGroup.add(rug);
-
-              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
-              cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
-              roomGroup.add(cactus);
             } else {
               const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
               shelf.position.set(room.centerPos[0] - 4.2, 0, room.bounds.minZ + 0.8);
@@ -388,7 +403,30 @@ interface CrewAnimationController {
           }
         }
 
-        // 3. Load Pantry Facilities Furniture
+        // 3. Load Collaboration Lounge Furniture (Plaza at center)
+        try {
+          const loungeSofaN = await loadKenneyFurnitureModel('loungeDesignSofa');
+          loungeSofaN.position.set(0, 0, -3.2);
+          assembled.scene.add(loungeSofaN);
+
+          const loungeSofaS = await loadKenneyFurnitureModel('loungeDesignSofa');
+          loungeSofaS.position.set(0, 0, 3.2);
+          loungeSofaS.rotation.y = Math.PI;
+          assembled.scene.add(loungeSofaS);
+
+          const loungeTable = await loadKenneyFurnitureModel('tableCoffee');
+          loungeTable.position.set(0, 0, 0);
+          assembled.scene.add(loungeTable);
+
+          const plazaRug = await loadKenneyFurnitureModel('rugRound');
+          plazaRug.position.set(0, 0.02, 0);
+          plazaRug.scale.set(3.0, 1.0, 3.0);
+          assembled.scene.add(plazaRug);
+        } catch {
+          // Safe fallback
+        }
+
+        // 4. Load Pantry Facilities Furniture
         try {
           const counter = await loadKayKitFurnitureModel('kitchencounter_straight_A_decorated');
           counter.position.set(-2, 0, 24);

@@ -235,6 +235,176 @@ export function createCorridorRunnerTexture(
 }
 
 /**
+ * Creates high-detail architectural wall texture with wood wainscoting paneling
+ * on lower 35%, horizontal chair-rail moulding, and smooth matte plaster on upper 65%.
+ */
+export function createWainscotingWallTexture(
+  upperPlasterColor: string = '#f8fafc',
+  lowerWoodColor: string = '#1e293b',
+  chairRailColor: string = '#334155'
+): THREE.CanvasTexture | null {
+  if (!isCanvasSupported()) return null;
+
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    // 1. Upper plaster wall (top 65%, y: 0 to 330)
+    ctx.fillStyle = upperPlasterColor;
+    ctx.fillRect(0, 0, 512, 330);
+
+    // Subtle plaster stipple/noise
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.03)';
+    for (let i = 0; i < 200; i++) {
+      const rx = (i * 37) % 512;
+      const ry = (i * 43) % 320;
+      ctx.fillRect(rx, ry, 2, 2);
+    }
+
+    // 2. Chair rail trim moulding (y: 326 to 340)
+    ctx.fillStyle = chairRailColor;
+    ctx.fillRect(0, 326, 512, 14);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+    ctx.fillRect(0, 326, 512, 3); // Top highlight
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(0, 338, 512, 3); // Bottom shadow
+
+    // 3. Lower wood paneling / wainscoting (bottom 35%, y: 340 to 512)
+    ctx.fillStyle = lowerWoodColor;
+    ctx.fillRect(0, 340, 512, 172);
+
+    // Vertical wainscoting batten panel slats
+    const panelWidth = 64;
+    for (let x = 0; x < 512; x += panelWidth) {
+      // Recessed panel bevel
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.35)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 4, 348, panelWidth - 8, 156);
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(x + 4, 504);
+      ctx.lineTo(x + 4, 348);
+      ctx.lineTo(x + panelWidth - 4, 348);
+      ctx.stroke();
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(2, 1);
+    return texture;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Creates modern vertical acoustic wood slats wall panel texture
+ */
+export function createAcousticSlatsWallTexture(
+  slatColor: string = '#d4a373',
+  backingColor: string = '#09090b'
+): THREE.CanvasTexture | null {
+  if (!isCanvasSupported()) return null;
+
+  try {
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+
+    // Dark acoustic felt backing
+    ctx.fillStyle = backingColor;
+    ctx.fillRect(0, 0, 512, 512);
+
+    // Vertical oak timber slats
+    const slatW = 20;
+    const gapW = 12;
+    const stride = slatW + gapW;
+
+    for (let x = 0; x < 512; x += stride) {
+      // Wood slat gradient
+      const grad = ctx.createLinearGradient(x, 0, x + slatW, 0);
+      grad.addColorStop(0, slatColor);
+      grad.addColorStop(0.85, slatColor);
+      grad.addColorStop(1, 'rgba(0,0,0,0.25)'); // side shadow
+
+      ctx.fillStyle = grad;
+      ctx.fillRect(x, 0, slatW, 512);
+
+      // Subtle grain lines
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+      ctx.lineWidth = 0.8;
+      for (let g = 0; g < 2; g++) {
+        ctx.beginPath();
+        ctx.moveTo(x + 5 + g * 8, 0);
+        ctx.lineTo(x + 5 + g * 8, 512);
+        ctx.stroke();
+      }
+    }
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set(4, 1);
+    return texture;
+  } catch {
+    return null;
+  }
+}
+
+const loadedTextureCache = new Map<string, THREE.Texture>();
+
+/**
+ * Unified architectural texture loader with graceful procedural fallback
+ */
+export function getArchitecturalTexture(
+  url: string,
+  repeatX: number = 4,
+  repeatY: number = 4,
+  fallback?: () => THREE.CanvasTexture | null
+): THREE.Texture | null {
+  if (typeof window === 'undefined') {
+    return fallback ? fallback() : null;
+  }
+
+  const cacheKey = `${url}_${repeatX}_${repeatY}`;
+  if (loadedTextureCache.has(cacheKey)) {
+    return loadedTextureCache.get(cacheKey)!;
+  }
+
+  try {
+    const loader = new THREE.TextureLoader();
+    const tex = loader.load(
+      url,
+      (t) => {
+        t.wrapS = THREE.RepeatWrapping;
+        t.wrapT = THREE.RepeatWrapping;
+        t.repeat.set(repeatX, repeatY);
+        t.needsUpdate = true;
+      },
+      undefined,
+      () => {
+        // Safe procedural fallback if image fails to load
+      }
+    );
+    tex.wrapS = THREE.RepeatWrapping;
+    tex.wrapT = THREE.RepeatWrapping;
+    tex.repeat.set(repeatX, repeatY);
+    loadedTextureCache.set(cacheKey, tex);
+    return tex;
+  } catch {
+    return fallback ? fallback() : null;
+  }
+}
+
+/**
  * Generates an illuminated 3D Room Signage Board Canvas Texture
  */
 export function createRoomSignageTexture(

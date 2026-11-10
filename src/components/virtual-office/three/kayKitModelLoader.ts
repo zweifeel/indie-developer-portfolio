@@ -26,6 +26,7 @@ import { KAYKIT_FANTASY_NODES_TO_HIDE } from '../../../types/virtualOfficeThemes
 const characterCache = new Map<KayKitCharacterType, THREE.Group>();
 const animationsCache = new Map<KayKitCharacterType, THREE.AnimationClip[]>();
 const furnitureCache = new Map<KayKitFurnitureType, THREE.Group>();
+const kenneyCache = new Map<string, THREE.Group>();
 const pendingLoads = new Map<string, Promise<THREE.Group>>();
 
 let sharedLoader: GLTFLoader | null = null;
@@ -167,6 +168,55 @@ export async function loadKayKitFurnitureModel(type: KayKitFurnitureType): Promi
       undefined,
       (err) => {
         console.warn(`[KayKitLoader] Unable to load furniture ${modelPath}:`, err);
+        reject(err);
+      }
+    );
+  });
+
+  pendingLoads.set(modelPath, loadPromise);
+
+  try {
+    const master = await loadPromise;
+    return cloneModelHierarchy(master);
+  } finally {
+    pendingLoads.delete(modelPath);
+  }
+}
+
+/**
+ * Asynchronously load and cache a Kenney CC0 Furniture / Prop model
+ */
+export async function loadKenneyFurnitureModel(name: string): Promise<THREE.Group> {
+  if (kenneyCache.has(name)) {
+    return cloneModelHierarchy(kenneyCache.get(name)!);
+  }
+
+  const modelPath = `/assets/virtual-office/models/kenney/${name}.glb`;
+  if (pendingLoads.has(modelPath)) {
+    const loaded = await pendingLoads.get(modelPath)!;
+    return cloneModelHierarchy(loaded);
+  }
+
+  const loadPromise = new Promise<THREE.Group>((resolve, reject) => {
+    const loader = getLoader();
+    loader.load(
+      modelPath,
+      (gltf) => {
+        const root = gltf.scene;
+        root.name = `kenney_${name}`;
+        root.scale.set(1.5, 1.5, 1.5);
+        root.traverse((child) => {
+          if ((child as THREE.Mesh).isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        kenneyCache.set(name, root);
+        resolve(root);
+      },
+      undefined,
+      (err) => {
+        console.warn(`[KenneyLoader] Unable to load ${modelPath}:`, err);
         reject(err);
       }
     );

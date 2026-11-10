@@ -37,7 +37,15 @@
 
 ---
 
-## 3. MILESTONE B3.4 & B3.4.1 RESEARCH CANDIDATES & VALIDATION: MODERN CITIZENS (NACL1234)
+## 4. MILESTONE B3.4.6 VIRTUAL OFFICE 3D REVISION ASSETS (POLY HAVEN & KENNEY CC0)
+
+| Asset Group | Sub-directory | Origin / Creator | License | Commercial Rights | Notes / Optimization |
+|---|---|---|:---:|:---:|---|
+| **Architectural Floor Textures (Parquet, Slate, Laminate, Terrazzo, Ceramic)** | `textures/floors/` | Poly Haven (`polyhaven.com`) | CC0 1.0 Public Domain | Yes (Unrestricted) | Downsampled and converted to 512x512 WebP (LANCZOS, ~35KB) for instant loading and 60 FPS WebGL rendering. |
+| **Architectural Wall Textures (Plaster, Beige, Grey, White)** | `textures/walls/` | Poly Haven (`polyhaven.com`) | CC0 1.0 Public Domain | Yes (Unrestricted) | Downsampled and converted to 512x512 WebP (LANCZOS, ~2KB - 18KB) for crisp non-flat wall surfaces. |
+| **Kenney Furniture Kit (Modular Walls, Windows, Furniture & Plants)** | `models/kenney/` | Kenney (`kenney.nl` / `poly.pizza`) | CC0 1.0 Public Domain | Yes (Unrestricted) | 18 optimized low-poly GLB models (doorways, windows, wainscoting, bookcases, plants, lamps, rugs, armchairs). Zero attribution required, credited in full compliance with open-source hygiene. |
+| **KayKit Furniture Bits & Characters** | `models/kaykit/` | Kay Lousberg (`kaylousberg.itch.io`) | CC0 1.0 Public Domain | Yes (Unrestricted) | 21 low-poly furniture pieces and 4 casual human characters with official animation clips. |
+
 
 In Milestone B3.4 and B3.4.1, candidate assets from **Modern Citizens** (`nacl1234`) were rigorously checked against strict acceptance criteria (Adult human, professional attire, elevated 3/4 perspective, $0 cost, commercial rights, zero teenagers/children in core roles):
 

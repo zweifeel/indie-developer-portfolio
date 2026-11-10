@@ -79,8 +79,10 @@ export interface ProjectCrewMember3D {
   attire: HumanAttire3D;
   deskIndex: number; // 0 to 4 in room
   homeDeskPos: Vector3Tuple;
+  seatedPos?: Vector3Tuple; // Exact chair seated coordinate behind desk
   currentPos: Vector3Tuple;
   targetPos: Vector3Tuple | null;
+  pathQueue?: Vector3Tuple[]; // Multi-hop corridor waypoints queue
   facingAngleY: number; // in radians
   currentState: CrewAIState;
   speed: number;

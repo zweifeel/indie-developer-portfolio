@@ -13,10 +13,12 @@ import {
   Vector3Tuple,
   ObstacleBox3D,
   DynamicProjectRoom3D,
+  CrewAIState,
 } from '../../../types/virtualOffice3D';
 import {
   SHARED_FACILITIES,
   getInRoomWanderTargets,
+  buildCorridorRoute,
 } from '../../../data/virtualOffice3DConfig';
 import { calculateGroundDistance } from './chatBubbleEngine';
 import {
@@ -36,7 +38,7 @@ export function stepCrewMovement(
   const arrivedLogs: StudioActivityLog[] = [];
   const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-  let updatedCrew = crewList.map((crew) => {
+  let updatedCrew: ProjectCrewMember3D[] = crewList.map((crew): ProjectCrewMember3D => {
     if (!crew.targetPos) {
       return crew;
     }
@@ -54,19 +56,42 @@ export function stepCrewMovement(
     const distance = Math.sqrt(dx * dx + dz * dz);
 
     if (distance <= stepDistance || distance < 0.25) {
-      // Arrived at target (with obstacle collision clamp)
+      // Arrived at current target waypoint
       const rawArrived: Vector3Tuple = [target[0], 0, target[2]];
       const arrivedPos: Vector3Tuple = obstacles.length > 0
         ? resolveObstacleCollision(current, rawArrived, obstacles)
         : rawArrived;
-      let nextState = crew.currentState;
+
+      // If there are more waypoints queued in the corridor route, advance to next hop
+      if (crew.pathQueue && crew.pathQueue.length > 0) {
+        const nextWaypoint = crew.pathQueue[0];
+        const remainingQueue = crew.pathQueue.slice(1);
+        const nextFacing = Math.atan2(nextWaypoint[0] - arrivedPos[0], nextWaypoint[2] - arrivedPos[2]);
+        return {
+          ...crew,
+          currentPos: arrivedPos,
+          targetPos: [...nextWaypoint] as Vector3Tuple,
+          pathQueue: remainingQueue,
+          currentState: 'WALKING' as const,
+          facingAngleY: nextFacing,
+        };
+      }
+
+      let nextState: CrewAIState = crew.currentState;
       let logMsg = '';
+      let finalFacing = crew.facingAngleY;
+      let finalPos = arrivedPos;
 
       if (crew.currentState === 'WALKING') {
-        // Check if returned home to desk
-        const distToHome = calculateGroundDistance(arrivedPos, crew.homeDeskPos);
-        if (distToHome < 0.8) {
+        // Check if returned home to chair behind desk
+        const targetChair = crew.seatedPos || [crew.homeDeskPos[0], 0, crew.homeDeskPos[2] + 0.75];
+        const distToChair = calculateGroundDistance(arrivedPos, targetChair);
+        const distToDesk = calculateGroundDistance(arrivedPos, crew.homeDeskPos);
+
+        if (distToChair < 1.4 || distToDesk < 1.6) {
           nextState = 'WORKING_AT_DESK';
+          finalPos = [...targetChair];
+          finalFacing = Math.PI; // Face forward towards computer screen
           logMsg = `Kembali ke meja kerja dan fokus melanjutkan tugas di ${crew.projectName}.`;
         } else {
           // Check if arrived at Pantry
@@ -112,9 +137,11 @@ export function stepCrewMovement(
 
       return {
         ...crew,
-        currentPos: arrivedPos,
+        currentPos: finalPos,
         targetPos: null,
+        pathQueue: [],
         currentState: nextState,
+        facingAngleY: finalFacing,
         currentActivityLog: logMsg || crew.currentActivityLog,
       };
     }
@@ -212,13 +239,15 @@ export function evaluateRandomDecisions(
           type: 'movement',
         });
       } else if (dice < 0.55) {
-        // Go to Pantry or Collaboration Lounge
+        // Go to Pantry or Collaboration Lounge via safe corridor route
         const destination = Math.random() < 0.55 ? SHARED_FACILITIES[2] : SHARED_FACILITIES[1]; // Pantry or Plaza
         const waypoints = destination.waypoints;
         const targetPoint = waypoints[Math.floor(Math.random() * waypoints.length)];
 
+        const route = buildCorridorRoute(candidate.currentPos, targetPoint, matchingRoom);
         candidate.currentState = 'WALKING';
-        candidate.targetPos = [...targetPoint];
+        candidate.targetPos = [...route[0]];
+        candidate.pathQueue = route.slice(1);
         candidate.isSleeping = false;
         const destName = destination.facilityId === 'pantry_coffee_bar' ? 'Pantry Kopi' : 'Collaboration Lounge';
         candidate.currentActivityLog = `Berjalan menuju ${destName}`;
@@ -243,8 +272,11 @@ export function evaluateRandomDecisions(
       candidate.currentState === 'CHATTING'
     ) {
       if (Math.random() < 0.70) {
+        const chairTarget = candidate.seatedPos || [candidate.homeDeskPos[0], 0, candidate.homeDeskPos[2] + 0.75];
+        const route = buildCorridorRoute(candidate.currentPos, chairTarget, matchingRoom);
         candidate.currentState = 'WALKING';
-        candidate.targetPos = [...candidate.homeDeskPos];
+        candidate.targetPos = [...route[0]];
+        candidate.pathQueue = route.slice(1);
         candidate.currentActivityLog = `Kembali ke ruang kerja ${candidate.projectName}`;
 
         decisionLogs.push({

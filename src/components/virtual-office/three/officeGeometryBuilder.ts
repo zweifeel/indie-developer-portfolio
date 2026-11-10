@@ -26,6 +26,9 @@ import {
   createCarpetTexture,
   createCorridorRunnerTexture,
   createRoomSignageTexture,
+  createWainscotingWallTexture,
+  createAcousticSlatsWallTexture,
+  getArchitecturalTexture,
 } from './officeTextureGenerator';
 
 /**
@@ -393,23 +396,59 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
     PROJECT_THEMATIC_SPECS[room.projectSlug.toLowerCase()] ||
     PROJECT_THEMATIC_SPECS['dompetnalar'];
 
-  // 1. Procedural Textured Floor Tile
-  let floorTexture: THREE.CanvasTexture | null = null;
+  // 1. Procedural Textured Floor Tile (Poly Haven Architectural WebP or High-Detail Canvas)
+  let floorTexture: THREE.Texture | null = null;
   const hexStr = `#${spec.floorColor.toString(16).padStart(6, '0')}`;
   const borderHexStr = `#${spec.floorBorderColor.toString(16).padStart(6, '0')}`;
 
-  if (spec.style === 'FINTECH_METRIC' || spec.style === 'WORKSPACE_SCANDI') {
-    floorTexture = createParquetFloorTexture(hexStr, borderHexStr, '#451a03');
+  if (spec.style === 'FINTECH_METRIC') {
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/terrazzo_modern.webp',
+      4,
+      4,
+      () => createParquetFloorTexture(hexStr, borderHexStr, '#451a03')
+    );
   } else if (spec.style === 'GAME_DEV_CYBERPUNK') {
-    floorTexture = createOfficeTileTexture('#2e1065', '#1e0845');
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/slate_tiles_dark.webp',
+      4,
+      4,
+      () => createOfficeTileTexture('#2e1065', '#1e0845')
+    );
   } else if (spec.style === 'RETAIL_STORE_POS') {
-    floorTexture = createParquetFloorTexture(hexStr, '#92400e', '#451a03');
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/parquet_herringbone.webp',
+      4,
+      4,
+      () => createParquetFloorTexture(hexStr, '#92400e', '#451a03')
+    );
+  } else if (spec.style === 'MINING_INDUSTRIAL') {
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/wood_plank_warm.webp',
+      4,
+      4,
+      () => createOfficeTileTexture(hexStr, '#1c1917')
+    );
+  } else if (spec.style === 'WORKSPACE_SCANDI') {
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/wood_laminate_light.webp',
+      4,
+      4,
+      () => createParquetFloorTexture(hexStr, borderHexStr, '#451a03')
+    );
   } else {
-    floorTexture = createOfficeTileTexture(hexStr, '#1c1917');
+    floorTexture = getArchitecturalTexture(
+      '/assets/virtual-office/textures/floors/parquet_herringbone.webp',
+      4,
+      4,
+      () => createParquetFloorTexture(hexStr, borderHexStr, '#451a03')
+    );
   }
 
-  const floorMat = new THREE.MeshLambertMaterial({ color: spec.floorColor });
+  const floorMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
   if (floorTexture) floorMat.map = floorTexture;
+  else floorMat.color.setHex(spec.floorColor);
+
   const floorGeo = new THREE.BoxGeometry(w, 0.18, d);
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.position.set(room.centerPos[0], -0.09, room.centerPos[2]);
@@ -423,8 +462,29 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   trim.position.set(room.centerPos[0], -0.18, room.centerPos[2]);
   group.add(trim);
 
-  // 2. Full Architectural Office Walls (2.8m height)
-  const wallMat = new THREE.MeshLambertMaterial({ color: spec.accentWallColor });
+  // 2. Full Architectural Office Walls (2.8m height with Wainscoting & Crown Trims)
+  let wallTexture: THREE.Texture | null = null;
+  if (spec.style === 'GAME_DEV_CYBERPUNK') {
+    wallTexture = createAcousticSlatsWallTexture('#9333ea', '#09090b');
+  } else if (spec.style === 'FINTECH_METRIC') {
+    wallTexture = createWainscotingWallTexture('#f8fafc', '#0f172a', '#334155');
+  } else if (spec.style === 'RETAIL_STORE_POS') {
+    wallTexture = createWainscotingWallTexture('#fef3c7', '#78350f', '#b45309');
+  } else if (spec.style === 'MINING_INDUSTRIAL') {
+    wallTexture = createWainscotingWallTexture('#e7e5e4', '#1c1917', '#44403c');
+  } else if (spec.style === 'WORKSPACE_SCANDI') {
+    wallTexture = createWainscotingWallTexture('#f8fafc', '#475569', '#64748b');
+  } else {
+    wallTexture = createWainscotingWallTexture('#f8fafc', '#1e293b', '#334155');
+  }
+
+  const wallMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  if (wallTexture) {
+    wallMat.map = wallTexture;
+  } else {
+    wallMat.color.setHex(spec.accentWallColor);
+  }
+
   const wallHeight = 2.8;
 
   // 2a. Back Wall
@@ -434,12 +494,26 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   backWall.receiveShadow = true;
   group.add(backWall);
 
-  // Back Wall Baseboard Trim
-  const baseboardGeo = new THREE.BoxGeometry(w, 0.2, 0.35);
+  // Back Wall Baseboard Trim (Bottom)
+  const baseboardGeo = new THREE.BoxGeometry(w, 0.22, 0.35);
   const baseboardMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
   const baseboard = new THREE.Mesh(baseboardGeo, baseboardMat);
-  baseboard.position.set(room.centerPos[0], 0.1, room.bounds.minZ);
+  baseboard.position.set(room.centerPos[0], 0.11, room.bounds.minZ);
   group.add(baseboard);
+
+  // Back Wall Chair-Rail Trim (Moulding at 1.05m height)
+  const chairRailGeo = new THREE.BoxGeometry(w, 0.1, 0.35);
+  const chairRailMat = new THREE.MeshLambertMaterial({ color: spec.floorBorderColor });
+  const chairRail = new THREE.Mesh(chairRailGeo, chairRailMat);
+  chairRail.position.set(room.centerPos[0], 1.05, room.bounds.minZ);
+  group.add(chairRail);
+
+  // Back Wall Crown Moulding (Top)
+  const crownGeo = new THREE.BoxGeometry(w, 0.12, 0.36);
+  const crownMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+  const crown = new THREE.Mesh(crownGeo, crownMat);
+  crown.position.set(room.centerPos[0], 2.74, room.bounds.minZ);
+  group.add(crown);
 
   // 2b. Outer Side Wall (Far edge opposite corridor)
   const sideX = room.wing === 'west' ? room.bounds.minX : room.bounds.maxX;
@@ -448,6 +522,18 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   sideWall.position.set(sideX, wallHeight / 2, room.centerPos[2]);
   sideWall.receiveShadow = true;
   group.add(sideWall);
+
+  // Side Wall Baseboard Trim
+  const sideBaseboardGeo = new THREE.BoxGeometry(0.35, 0.22, d);
+  const sideBaseboard = new THREE.Mesh(sideBaseboardGeo, baseboardMat);
+  sideBaseboard.position.set(sideX, 0.11, room.centerPos[2]);
+  group.add(sideBaseboard);
+
+  // Side Wall Chair-Rail Trim
+  const sideChairRailGeo = new THREE.BoxGeometry(0.35, 0.1, d);
+  const sideChairRail = new THREE.Mesh(sideChairRailGeo, chairRailMat);
+  sideChairRail.position.set(sideX, 1.05, room.centerPos[2]);
+  group.add(sideChairRail);
 
   // 2c. Corridor Entry Wall with Center Doorway Opening (4.5m) and Glass Partitions
   const corridorX = room.wing === 'west' ? room.bounds.maxX : room.bounds.minX;
@@ -467,9 +553,20 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
 
   // Doorway Lintel Beam (above 2.2m door opening)
   const lintelGeo = new THREE.BoxGeometry(0.35, 0.6, 4.6);
-  const lintel = new THREE.Mesh(lintelGeo, wallMat);
+  const lintelMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
+  const lintel = new THREE.Mesh(lintelGeo, lintelMat);
   lintel.position.set(corridorX, 2.5, room.centerPos[2]);
   group.add(lintel);
+
+  // Doorway Side Posts (Casing Frame)
+  const postGeo = new THREE.BoxGeometry(0.38, 2.2, 0.18);
+  const postMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
+  const postNorth = new THREE.Mesh(postGeo, postMat);
+  postNorth.position.set(corridorX, 1.1, room.centerPos[2] - 2.25);
+  const postSouth = new THREE.Mesh(postGeo, postMat);
+  postSouth.position.set(corridorX, 1.1, room.centerPos[2] + 2.25);
+  group.add(postNorth);
+  group.add(postSouth);
 
   // Modern Glass Partition Windows on North & South corridor walls
   const glassMat = new THREE.MeshLambertMaterial({

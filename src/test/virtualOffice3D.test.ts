@@ -13,6 +13,8 @@ import type { Project } from '../types/project';
 import {
   calculateRoomCoordinates,
   provisionProcedural3DCampus,
+  buildCorridorRoute,
+  generateCampusObstacles,
 } from '../data/virtualOffice3DConfig';
 import {
   executeVisitorCommand,
@@ -341,6 +343,53 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       const { updatedCrew } = stepCrewMovement(crew, 0.01, Date.now());
       const dist = calculateGroundDistance(updatedCrew[0].currentPos, updatedCrew[1].currentPos);
       expect(dist).toBeGreaterThan(0.15); // pushed apart
+    });
+
+    it('builds multi-hop corridor route through doorway, connector walkway and central spine', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const westRoom = rooms[0]; // West room at cx = -26, cz = -20
+      const pantryPos: [number, number, number] = [0, 0, 22];
+
+      const route = buildCorridorRoute(crew[0].currentPos, pantryPos, westRoom);
+      expect(route.length).toBeGreaterThanOrEqual(4);
+
+      // First hop should exit via room doorway
+      expect(route[0][0]).toBeCloseTo(westRoom.centerPos[0] + 8.5);
+      // Intermediate hop should transition onto central spine (x = 0)
+      const hasSpineWaypoint = route.some((pt) => Math.abs(pt[0]) < 0.1);
+      expect(hasSpineWaypoint).toBe(true);
+      // Final hop should land at pantry destination
+      const last = route[route.length - 1];
+      expect(last[0]).toBe(pantryPos[0]);
+      expect(last[2]).toBe(pantryPos[2]);
+    });
+
+    it('advances through pathQueue waypoints sequentially until final arrival', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      crew[0].currentPos = [0, 0, 0];
+      crew[0].targetPos = [0.1, 0, 0.1]; // Close to arrival of hop 1
+      crew[0].pathQueue = [[0, 0, 10], [5, 0, 10]];
+      crew[0].currentState = 'WALKING';
+
+      // Step movement — should advance to next hop in pathQueue
+      const { updatedCrew } = stepCrewMovement(crew, 0.1, Date.now());
+      expect(updatedCrew[0].targetPos).toEqual([0, 0, 10]);
+      expect(updatedCrew[0].pathQueue).toEqual([[5, 0, 10]]);
+      expect(updatedCrew[0].currentState).toBe('WALKING');
+    });
+
+    it('ensures seated desk positions are clear of desk obstacle bounding boxes', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const obstacles = generateCampusObstacles(rooms, crew);
+
+      crew.forEach((c) => {
+        const deskBox = obstacles.find((o) => o.id === `desk_${c.id}`);
+        expect(deskBox).toBeDefined();
+        if (deskBox && c.seatedPos) {
+          // Chair Z position must be strictly behind maxZ of desk obstacle
+          expect(c.seatedPos[2]).toBeGreaterThan(deskBox.maxZ);
+        }
+      });
     });
   });
 

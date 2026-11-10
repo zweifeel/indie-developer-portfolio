@@ -20,7 +20,6 @@ import rawProjects from '../data/projects.json';
 
 import {
   transformPushEvent,
-  transformReleaseEvent,
   computeHmacSha256Hex,
 } from '../services/githubWebhookService';
 
@@ -29,7 +28,6 @@ import {
 } from '../../functions/api/webhook/github';
 
 import {
-  CANONICAL_PROJECT_SLUGS,
   fetchPublicProjectProgress,
   fetchAdminProjectProgress,
   transitionItemPublicationStatus,
@@ -44,7 +42,6 @@ import {
 } from '../services/portfolioMetadataValidator';
 
 import {
-  ProjectProgressDocument,
   ProgressEvent,
 } from '../types/portfolioProgress';
 
@@ -176,21 +173,24 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
       publicationStatus: 'draft', // DRAFT!
     };
 
-    baseDoc.events.push(draftEvent);
-    setProgressDocumentCache('mobile-kasir', baseDoc);
+    const docWithDraft = {
+      ...baseDoc,
+      events: [...(baseDoc.events || []), draftEvent],
+    };
+    setProgressDocumentCache('mobile-kasir', docWithDraft);
 
     // Public visitor queries project progress
     const publicRes = await fetchPublicProjectProgress('mobile-kasir');
     expect(publicRes.success).toBe(true);
 
     // Verification: Draft event MUST NOT be present in public progress
-    const foundInPublic = publicRes.data!.events.some((e: ProgressEvent) => e.id === 'evt_draft_secret_001');
+    const foundInPublic = publicRes.data?.events.some((e) => e.id === 'evt_draft_secret_001');
     expect(foundInPublic).toBe(false);
 
     // Admin querying progress CAN see the draft event
     const adminRes = await fetchAdminProjectProgress('mobile-kasir');
     expect(adminRes.success).toBe(true);
-    const foundInAdmin = adminRes.data!.events.some((e: ProgressEvent) => e.id === 'evt_draft_secret_001');
+    const foundInAdmin = adminRes.data?.events?.some((e) => e.id === 'evt_draft_secret_001');
     expect(foundInAdmin).toBe(true);
   });
 
@@ -206,12 +206,15 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
       publicationStatus: 'draft',
     };
 
-    baseDoc.events.push(draftEvent);
-    setProgressDocumentCache('mobile-kasir', baseDoc);
+    const docWithDraft = {
+      ...baseDoc,
+      events: [...(baseDoc.events || []), draftEvent],
+    };
+    setProgressDocumentCache('mobile-kasir', docWithDraft);
 
     // Initial state: hidden from public
     let publicRes = await fetchPublicProjectProgress('mobile-kasir');
-    expect(publicRes.data!.events.some((e: ProgressEvent) => e.id === 'evt_draft_release_v1_0_2')).toBe(false);
+    expect(publicRes.data?.events.some((e) => e.id === 'evt_draft_release_v1_0_2')).toBe(false);
 
     // Security Gate: direct draft -> public transition MUST be rejected!
     const directJump = await transitionItemPublicationStatus({
@@ -237,7 +240,7 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
 
     // Item in 'review' is STILL hidden from public visitors
     publicRes = await fetchPublicProjectProgress('mobile-kasir');
-    expect(publicRes.data!.events.some((e: ProgressEvent) => e.id === 'evt_draft_release_v1_0_2')).toBe(false);
+    expect(publicRes.data?.events.some((e) => e.id === 'evt_draft_release_v1_0_2')).toBe(false);
 
     // Step 2: Admin approves and publishes from 'review' to 'public'
     const publishRes = await transitionItemPublicationStatus({
@@ -253,7 +256,7 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
     // Now verify public visitor CAN see the published changelog!
     publicRes = await fetchPublicProjectProgress('mobile-kasir');
     expect(publicRes.success).toBe(true);
-    const publicEvent = publicRes.data!.events.find((e: ProgressEvent) => e.id === 'evt_draft_release_v1_0_2');
+    const publicEvent = publicRes.data?.events.find((e) => e.id === 'evt_draft_release_v1_0_2');
     expect(publicEvent).toBeDefined();
     expect(publicEvent?.title).toBe('Pembaruan v1.0.2: Dukungan Barcode Scanner Bluetooth');
   });
@@ -270,8 +273,11 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
       publicationStatus: 'public',
     };
 
-    baseDoc.events.push(publishedEvent);
-    setProgressDocumentCache('dompetnalar', baseDoc);
+    const docWithPublished = {
+      ...baseDoc,
+      events: [...(baseDoc.events || []), publishedEvent],
+    };
+    setProgressDocumentCache('dompetnalar', docWithPublished);
 
     await act(async () => {
       render(
@@ -299,8 +305,11 @@ describe('STAGE 9: Full E2E Web Admin CMS Changelog & GitHub Webhook Pipeline', 
       publicationStatus: 'draft',
     };
 
-    baseDoc.events.push(changelogEvent);
-    setProgressDocumentCache('dompetnalar', baseDoc);
+    const docWithAudit = {
+      ...baseDoc,
+      events: [...(baseDoc.events || []), changelogEvent],
+    };
+    setProgressDocumentCache('dompetnalar', docWithAudit);
 
     // Record audit entry
     recordProgressAuditLog({

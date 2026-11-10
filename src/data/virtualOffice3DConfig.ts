@@ -138,6 +138,64 @@ export const ROLE_ATTIRES: Record<CoreCrewRole, HumanAttire3D> = {
 };
 
 /**
+ * Build safe multi-hop corridor routes between rooms and shared campus facilities
+ * to guarantee crew NEVER step onto the dark floor slab / blue void.
+ */
+export function buildCorridorRoute(
+  startPos: Vector3Tuple,
+  destPos: Vector3Tuple,
+  room?: DynamicProjectRoom3D
+): Vector3Tuple[] {
+  const dx = destPos[0] - startPos[0];
+  const dz = destPos[2] - startPos[2];
+  const dist = Math.sqrt(dx * dx + dz * dz);
+  if (!room || dist < 4) {
+    return [[destPos[0], 0, destPos[2]]];
+  }
+
+  const [cx, , cz] = room.centerPos;
+  const isWest = room.wing === 'west';
+  // Doorway is on the corridor wall side
+  const doorX = isWest ? cx + 8.5 : cx - 8.5;
+  const outsideDoorX = isWest ? cx + 11.5 : cx - 11.5;
+
+  const isInsideRoom = isWest ? startPos[0] < cx + 9 : startPos[0] > cx - 9;
+  const isDestInsideRoom = (isWest ? destPos[0] < cx + 9 : destPos[0] > cx - 9) &&
+    Math.abs(destPos[2] - cz) < 7.5;
+
+  if (isInsideRoom && isDestInsideRoom) {
+    return [[destPos[0], 0, destPos[2]]];
+  }
+
+  const route: Vector3Tuple[] = [];
+
+  if (isInsideRoom) {
+    // 1. Move to doorway opening inside room
+    route.push([doorX, 0, cz]);
+    // 2. Step outside door onto the connector walkway
+    route.push([outsideDoorX, 0, cz]);
+    // 3. Move along connector walkway to central spine intersection
+    route.push([0, 0, cz]);
+    // 4. Move along central spine runner to destination Z
+    route.push([0, 0, destPos[2]]);
+    // 5. Final step into destination
+    route.push([destPos[0], 0, destPos[2]]);
+  } else {
+    // Returning from shared facility (Lounge/Pantry/Spine) into room
+    // 1. Move along central spine to room connector row Z
+    route.push([0, 0, cz]);
+    // 2. Move along connector walkway to outside doorway
+    route.push([outsideDoorX, 0, cz]);
+    // 3. Step through doorway into room
+    route.push([doorX, 0, cz]);
+    // 4. Move to final destination inside room (e.g. chair seatedPos)
+    route.push([destPos[0], 0, destPos[2]]);
+  }
+
+  return route;
+}
+
+/**
  * Generate in-room wander destinations for autonomous crew activities
  */
 export function getInRoomWanderTargets(room: DynamicProjectRoom3D): Vector3Tuple[] {
@@ -161,15 +219,15 @@ export function generateCampusObstacles(
 ): ObstacleBox3D[] {
   const obstacles: ObstacleBox3D[] = [];
 
-  // 1. Workstations (Desk Top Footprint)
+  // 1. Workstations (Desk Top Footprint with clear aisle clearance)
   crew.forEach((c) => {
     const [hx, , hz] = c.homeDeskPos;
     obstacles.push({
       id: `desk_${c.id}`,
-      minX: hx - 1.25,
-      maxX: hx + 1.25,
-      minZ: hz - 0.7,
-      maxZ: hz + 0.7,
+      minX: hx - 1.15,
+      maxX: hx + 1.15,
+      minZ: hz - 0.65,
+      maxZ: hz + 0.55, // Stops ahead of chair (hz + 0.75) to prevent character clipping
     });
   });
 
@@ -310,8 +368,10 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
         attire: ROLE_ATTIRES[role],
         deskIndex: rIndex,
         homeDeskPos,
+        seatedPos: [...seatedPos],
         currentPos: [...seatedPos],
         targetPos: null,
+        pathQueue: [],
         facingAngleY: Math.PI, // Facing forward towards desk and laptop
         currentState: 'WORKING_AT_DESK',
         speed: 2.2,

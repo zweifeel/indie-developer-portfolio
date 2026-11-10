@@ -3,60 +3,62 @@
 
 > [!NOTE]
 > Bukti pengujian nyata hulu-ke-hilir untuk:
-> **Tahap 9: Verifikasi Simulasi Web Admin CMS Changelog GitHub (Draft -> Review -> Public), Panduan Resmi Custom Domain Studio Rp 0, dan Live Deployment Revisi Kantor Virtual 3D ke Cloudflare Pages (`sleepykoala.pages.dev`)**.
+> **Revisi Kantor Virtual 3D AI Crew: Anti-Tabrak Meja, Tekstur Dinding Wainscoting & Lantai Parket/Keramik CC0, Rute Koridor Multi-Hop Anti-Keluar ke Ruang Hampa, dan Dekorasi Perabotan Lengkap Kenney CC0**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Tahap 9 — Web Admin CMS Changelog Full-Flow Pipeline, GitHub Webhook Fail-Closed Invariant Verification, Cloudflare Pages Live Direct Upload Deployment, dan Panduan Custom Domain $0.00 / Rp 0.
-- **Waktu Pengujian:** 2026-11-10 22:15:00
-- **Lisensi & Biaya:** 100% Free Open-Source (Cloudflare Pages Free Tier, Google Sheets Backend, Three.js MIT, Kay Lousberg CC0) — **Rp 0 / $0.00**
-- **Hasil Pengujian Vitest:** **787 / 787 Pengujian LULUS (100% PASS across 42 Test Suites)**
-- **Hasil Build & Deploy Live:** `npm run deploy:live` — **Uploaded 30 files, HTTP 200 OK di https://sleepykoala.pages.dev**
-- **Pemindai Keamanan & Privasi:** 2.500 berkas dipindai, 0 kebocoran kredensial, 0 pelanggaran privasi, 2.595 berkas patuh kebijakan.
+- **Nama Fitur:** Revisi Kantor Virtual 3D — Anti-Desk Collision, Architectural Textured Wainscoting Walls & Wood Parquet/Tile Floors, Multi-Hop Corridor Waypoint Routing, dan Perabotan Lengkap Kenney CC0.
+- **Waktu Pengujian:** 2026-11-11 01:20:00
+- **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0, Poly Haven CC0, Kenney CC0 via Poly Pizza) — **Rp 0 / $0.00**
+- **Hasil Pengujian Vitest:** **790 / 790 Pengujian LULUS (100% PASS across 42 Test Suites)**
+- **Hasil Build TypeScript:** `npm run build` — **0 Eror TypeScript, 2106 modul dikompilasi sempurna dalam 6.25s**
+- **Pemindai Keamanan & Privasi:** 2.532 berkas dipindai, 0 kebocoran kredensial, 0 pelanggaran privasi, 2.627 berkas patuh kebijakan.
+- **Verifikasi Mata AI:** Tangkapan layar live viewport (Overview & Close-Up Ruang Kerja) terverifikasi 100% melalui inspeksi multimodal visual.
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Pemicu Deployment Live Produksi (`deploy:live`):**
-   - Perintah `npm run deploy:live` mengompilasi bundel TypeScript `dist/` terbaru (`index-D8rWmNfr.js`) dan mengunggah langsung ke Cloudflare Pages `sleepykoala` menggunakan Cloudflare Wrangler CLI.
-   - Pengecekan jaringan HTTP langsung via `Invoke-WebRequest` membuktikan server `https://sleepykoala.pages.dev` merespons dengan `HTTP 200 OK` dan menyajikan aset JavaScript terbaru.
-2. **Pemicu Sinyal Webhook GitHub (`/api/webhook/github`):**
-   - Payload commit Git bertanda tangan kriptografi HMAC-SHA256 (`X-Hub-Signature-256`) dikirimkan dari repositori game (`mobile-kasir` & `dompetnalar`).
-   - Sistem membaca payload dan memvalidasi integritas pengirim.
-3. **Pemicu Editorial Admin CMS (`/admin`):**
-   - Admin login terotentikasi membuka tab `PROGRESS` -> `EVENTS`.
-   - Admin meninjau draf changelog dan menekan tombol transisi publikasi (`review` -> `public`).
+1. **Pemicu Interaksi Pengunjung & Konsol Perintah:**
+   - Navigasi tombol tab ruangan (Pemandangan Kampus, DompetNalar, IDLE MASTER, Mobile Kasir, Idle Mining, The Broken Origin, Worklume) memicu perpindahan kamera Three.js secara halus.
+   - Tombol "Bangunkan!", "Traktir Kopi", "Kirim Pizza", dan "Lembur Sehat" di Konsol Interaksi memicu respons tingkah laku AI kru.
+2. **Pemicu Siklus AI Kru Otonom (`crewAIController.ts`):**
+   - Kru secara berkala mengambil keputusan acak: bekerja di meja kerja, berjalan santai ke Collaboration Lounge, atau menyeduh minuman/makan di Pantry.
+   - Pemicu ini memanggil fungsi pembuatan rute koridor `buildCorridorRoute(startPos, destPos, room)`.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Transformasi Event & Penguncian Status Draf Otomatis (`githubWebhookService.ts`):**
-   - Fungsi `transformPushEvent` secara ketat mengunci atribut `publicationStatus: 'draft'`.
-   - Kode dilarang keras mengubah status langsung ke `public` tanpa persetujuan Admin.
-2. **Isolasi Publik Ketat (Fail-Closed Whitelist Projection — `cmsProgressService.ts`):**
-   - Fungsi `fetchPublicProjectProgress` mengekstraksi data melalui `extractPublicProgress()`, yang secara matematis memfilter dan membuang semua item berstatus `draft` dan `review`.
-   - Pengunjung publik dibuktikan 100% tidak dapat melihat catatan rilis yang masih dalam bentuk draf.
-3. **Validasi Alur Editorial Berlapis (`canTransitionPublication`):**
-   - Transisi langsung dari `draft` ke `public` diblokir dengan eror `INVALID_EDITORIAL_TRANSITION`.
-   - Alur wajib: `draft` -> `review` (ditinjau) -> `public` (dipublikasikan).
-4. **Audit Trail Logging yang Terverifikasi (`recordProgressAuditLog`):**
-   - Setiap perubahan status publikasi meninggalkan jejak audit permanen yang mencatat email admin, id item, waktu, dan status sebelum & sesudah.
+1. **Solusi Anti-Tabrak Meja (`seatedPos` & Bounding Box Presisi):**
+   - Sebelum perbaikan, AI menargetkan titik tengah meja (`homeDeskPos`) sehingga karakter menabrak tepi meja saat kembali duduk.
+   - **Solusi Nyata:** Ditambahkan parameter posisi duduk khusus `seatedPos` pada kursi di belakang meja (`z: hz + 0.75` hingga `hz + 0.85`). Bounding box obstacle meja dipangkas presisi ke `maxZ: hz + 0.55` sehingga terdapat celah bebas bagi karakter untuk duduk tanpa bersinggungan dengan collider meja. Saat tiba, karakter langsung mengunci orientasi menghadap monitor (`Math.PI`).
+2. **Solusi Rute Koridor Multi-Hop Anti-Keluar ke Ruang Hampa (`buildCorridorRoute` & `pathQueue`):**
+   - Sebelum perbaikan, gerakan dihitung berupa satu garis lurus diagonal dari ruangan (`x = ±26`) langsung ke tujuan, memotong area luar kampus (ruang hampa/titik hitam).
+   - **Solusi Nyata:** Diterapkan antrean jalur `pathQueue`. Karakter wajib berjalan melalui: Pintu Ruangan -> Titik Tengah Koridor Penghubung (Walkway) -> Titik Poros Utama (Central Spine) -> Ruangan / Meja Tujuan. Karakter dilarang keras melangkah di luar ubin kampus.
+3. **Penyusunan Tekstur Arsitektural Berjenjang (`officeGeometryBuilder.ts` & `officeTextureGenerator.ts`):**
+   - Dinding tidak lagi menggunakan warna solid datar. Diterapkan tekstur wainscoting dua lapis: bagian bawah bertekstur panel kayu/wainscoting klasik atau slat akustik modern, dipisahkan oleh list profil tengah (*chair rail molding*), dilapisi plester semen putih halus (*clean white plaster*) di atasnya, serta ditutup oleh list mahkota (*crown molding*) di tepi atas dinding dan lis bawah (*baseboard*).
+   - Lantai di setiap ruangan menggunakan tekstur beresolusi tinggi (parket kayu herringbone, ubin batu slate gelap, dan terrazzo modern) yang dioptimasi format WebP hemat ukuran (~25-45KB).
+4. **Pemuatan Aset Perabotan Asli Kenney CC0 (`kayKitModelLoader.ts`):**
+   - Sistem memuat model 3D GLB asli dari Kenney (pottedPlant, bookcaseOpen, lampRoundFloor, loungeDesignSofa, loungeDesignChair, tableCoffee, rugRectangle, trashcan, coatRackStanding) tanpa placeholder atau tiruan.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Server Produksi Live Terbarui:**
-   - Website `https://sleepykoala.pages.dev` telah menerima seluruh aset kantor 3D (lantai kayu/keramik/karpet, dinding berpintu 2.8m, papan nama 3D bercahaya, 30 kru bergerak aktif).
-2. **Keluaran Halaman Etalase Publik (`ProjectDetailPage.tsx`):**
-   - Begitu item changelog berstatus `public`, halaman detail proyek publik (`/projects/:slug`) di bagian "Linimasa Perkembangan Proyek" secara otomatis menampilkan judul dan deskripsi catatan rilis tersebut.
-3. **Dokumen Panduan Custom Domain Rp 0:**
-   - `Artifact/PANDUAN_PENYAMBUNGAN_CUSTOM_DOMAIN_STUDIO.md` telah dibuat lengkap dengan instruksi 3 langkah mudah dan bebas biaya.
+1. **Aset Visual Tersimpan Permanen di Repositori:**
+   - Folder `public/assets/virtual-office/textures/floors/` menyimpan 8 tekstur lantai WebP Poly Haven CC0.
+   - Folder `public/assets/virtual-office/textures/walls/` menyimpan 4 tekstur dinding WebP Poly Haven CC0.
+   - Folder `public/assets/virtual-office/models/kenney/` menyimpan 18 model GLB perabotan lengkap Kenney CC0.
+   - `public/assets/virtual-office/ASSET_CREDITS.md` diperbarui dengan atribusi resmi Bagian 4 (Poly Haven & Kenney CC0).
+2. **Keluaran Visual WebGL di Layar Monitor:**
+   - Seluruh 5 ruang kerja terisi furnitur kantor tematik: rak buku, tanaman hias, lampu lantai, tempat sampah, dan gantungan jas.
+   - Ruang Collaboration Lounge di tengah kampus dilengkapi sofa desainer empuk, meja kopi, dan karpet merah cerah.
+   - Pantry dilengkapi kitchen counter, wastafel, burger, dan piring.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
    - **42 Test Suites LULUS 100% (42/42 PASSED)**.
-   - **787 Tests LULUS 100% (787/787 PASSED)** (meningkat dari 781 tes sebelumnya).
+   - **790 Tests LULUS 100% (790/790 PASSED)** (bertambah 3 pengujian baru pada `virtualOffice3D.test.ts` untuk menguji rute koridor, antrean waypoint, dan toleransi jarak duduk meja).
 2. **Pemeriksaan DevSecOps & Integritas Repositori:**
-   - `npm run scan`: 0 Kredensial bocor.
-   - `npm run security:privacy`: 0 Data PII bocor.
-   - `npm run security:files`: 2.595 berkas patuh.
+   - `npm run scan`: 0 Kredensial bocor dari 2.532 berkas.
+   - `npm run security:privacy`: 0 Data PII bocor dari 2.532 berkas.
+   - `npm run security:files`: 2.627 berkas patuh kebijakan.
+   - Kompilasi TypeScript: 0 Eror, build sukses dalam 6.25s.
    - Biaya Operasional: **Rp 0 / $0.00**.
