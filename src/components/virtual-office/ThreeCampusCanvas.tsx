@@ -2,8 +2,9 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — THREE.JS CAMPUS CANVAS (LAPIS 3)
  * 
- * Expansive 3D Campus Scene, 30+ Autonomous Human Crew, 360° Orbit & Zoom,
- * Contextual 3D Floating Chat Bubbles, and Interactive Project Room Drawer.
+ * Expansive 3D Campus Scene, 30+ Autonomous Human Crew, 360° Orbit & Drag-Pan,
+ * Authentic KayKit Models with Live AnimationMixer (Sit & Work), Contextual
+ * 3D Floating Chat Bubbles, and Interactive Project Room Drawer.
  * ============================================================================
  */
 
@@ -18,6 +19,8 @@ import {
   Users,
   Compass,
   ArrowRight,
+  Move,
+  RotateCw,
 } from 'lucide-react';
 import type { Project } from '../../types/project';
 import {
@@ -48,6 +51,8 @@ import {
   calculateRoomFocusState,
   stepCameraInterpolation,
   computeCameraPosition,
+  applyCameraPan,
+  applyPointerZoom,
 } from './three/cameraTransitionController';
 import { VisitorCommandConsole } from './VisitorCommandConsole';
 
@@ -92,6 +97,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
   const [lastFeedback, setLastFeedback] = useState<VisitorCommandFeedback | null>(null);
   const [activityLogs, setActivityLogs] = useState<StudioActivityLog[]>([]);
   const [activeBubbles, setActiveBubbles] = useState<ChatBubbleData[]>([]);
+  const [controlMode, setControlMode] = useState<'orbit' | 'pan'>('orbit');
 
   // Camera state refs for continuous frame loop
   const currentCameraState = useRef<CameraState>({ ...CAMPUS_OVERVIEW_PRESET });
@@ -104,6 +110,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
   const crewMeshMapRef = useRef<Map<string, THREE.Group>>(new Map());
   const crewStateRef = useRef<ProjectCrewMember3D[]>([]);
   const roomsRef = useRef<DynamicProjectRoom3D[]>([]);
+  const animationMixersRef = useRef<THREE.AnimationMixer[]>([]);
 
   // Drag interaction refs
   const isDragging = useRef<boolean>(false);
@@ -163,40 +170,40 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     }
   }, [initialFocusedSlug, initialRooms, handleSelectRoom]);
 
-  // Visitor Command Executor
-  const handleExecuteCommand = useCallback((commandText: string) => {
-    const result = executeVisitorCommand(
-      commandText,
-      crewStateRef.current,
-      activeRoom?.projectId || null
-    );
-
+  // Execute Visitor Command via Parser
+  const handleExecuteCommand = useCallback((rawInput: string) => {
+    const focusedRoomSlug = activeRoom?.projectSlug || null;
+    const result = executeVisitorCommand(rawInput, crewStateRef.current, focusedRoomSlug);
     crewStateRef.current = result.updatedCrew;
     setLastFeedback(result.feedback);
 
-    if (result.activityLog) {
-      setActivityLogs((prev) => [result.activityLog!, ...prev.slice(0, 40)]);
+    if (result.feedback.success) {
+      setActivityLogs((prev) => [
+        {
+          id: `log_${Date.now()}`,
+          timestamp: new Date().toLocaleTimeString(),
+          crewName: 'Pengunjung',
+          projectId: 'campus',
+          projectName: 'Kampus Virtual',
+          message: result.feedback.message,
+          type: 'command',
+        },
+        ...prev.slice(0, 40),
+      ]);
     }
-
-    // Refresh bubbles list
-    const bubbles = result.updatedCrew
-      .map((c) => c.activeChatBubble)
-      .filter((b): b is ChatBubbleData => Boolean(b));
-    setActiveBubbles(bubbles);
   }, [activeRoom]);
 
-  // Three.js Mount & Animation Loop
+  // Main Three.js Lifecycle
   useEffect(() => {
-    if (!webglSupported || !containerRef.current || !canvasRef.current) {
-      return;
-    }
-
-    const container = containerRef.current;
+    if (!webglSupported) return;
     const canvas = canvasRef.current;
-    const width = container.clientWidth || 960;
-    const height = Math.max(container.clientHeight, 580);
+    const container = containerRef.current;
+    if (!canvas || !container) return;
 
-    // 1. Camera
+    const width = container.clientWidth || 900;
+    const height = container.clientHeight || 620;
+
+    // 1. Camera Setup
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 500);
     const initialCamPos = computeCameraPosition(currentCameraState.current);
     camera.position.set(initialCamPos[0], initialCamPos[1], initialCamPos[2]);
@@ -210,62 +217,168 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     crewStateRef.current = assembled.crew;
     roomsRef.current = assembled.rooms;
 
-    // 2b. Enhance with Authentic KayKit 3D Models (Characters & Furniture with Graceful Fallback)
+    // 2b. Enhance with Authentic KayKit 3D Models & Animations
     const enhanceWithKayKitModels = async () => {
       try {
         const {
           loadKayKitCharacterModel,
+          getCharacterAnimations,
           loadKayKitFurnitureModel,
           resolveAdventurerForProject,
         } = await import('./three/kayKitModelLoader');
 
-        // 1. Load authentic KayKit 3D Adventurers (Knight, Mage, Rogue, Barbarian)
-        assembled.crew.forEach(async (member, idx) => {
+        animationMixersRef.current = [];
+
+        // 1. Load Authentic KayKit Characters with Active Sit_Chair_Idle Animations
+        for (let idx = 0; idx < assembled.crew.length; idx++) {
+          const member = assembled.crew[idx];
           const charType = resolveAdventurerForProject(member.projectId, idx);
           try {
             const kayMesh = await loadKayKitCharacterModel(charType);
             const parentGroup = assembled.crewMeshMap.get(member.id);
             if (parentGroup && sceneRef.current) {
-              parentGroup.children.forEach((c) => {
-                c.visible = false;
-              });
-              kayMesh.name = `authentic_kaykit_${charType}`;
+              parentGroup.clear(); // remove placeholder
+              kayMesh.name = `kaykit_${charType}_${member.id}`;
               parentGroup.add(kayMesh);
+
+              // Setup AnimationMixer to play authentic KayKit Sit_Chair_Idle
+              const clips = getCharacterAnimations(charType);
+              if (clips && clips.length > 0) {
+                const mixer = new THREE.AnimationMixer(kayMesh);
+                const sitClip =
+                  clips.find((c) => c.name === 'Sit_Chair_Idle') ||
+                  clips.find((c) => c.name === 'Sit_Chair_Pose') ||
+                  clips.find((c) => c.name === 'Idle') ||
+                  clips[0];
+                if (sitClip) {
+                  const action = mixer.clipAction(sitClip);
+                  action.play();
+                }
+                animationMixersRef.current.push(mixer);
+              }
+            }
+          } catch (err) {
+            console.warn('[KayKit] Unable to load character:', member.name, err);
+          }
+        }
+
+        // 2. Load Authentic Thematic KayKit Furniture into Rooms
+        for (const room of assembled.rooms) {
+          const roomGroup = assembled.roomMeshMap.get(room.projectId);
+          if (!roomGroup || !sceneRef.current) continue;
+
+          const slug = room.projectSlug.toLowerCase();
+          try {
+            if (slug === 'dompetnalar') {
+              const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
+              cabinet.position.set(room.centerPos[0] - 6.0, 0, room.bounds.minZ + 1.2);
+              roomGroup.add(cabinet);
+
+              const couch = await loadKayKitFurnitureModel('couch');
+              couch.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.5);
+              roomGroup.add(couch);
+
+              const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
+              rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+              roomGroup.add(rug);
+
+              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
+              cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
+              roomGroup.add(cactus);
+            } else if (slug === 'idle-master') {
+              const armchair = await loadKayKitFurnitureModel('armchair');
+              armchair.position.set(room.centerPos[0] + 6.0, 0, room.bounds.minZ + 1.5);
+              roomGroup.add(armchair);
+
+              const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
+              shelf.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
+              roomGroup.add(shelf);
+
+              const lamp = await loadKayKitFurnitureModel('lamp_standing');
+              lamp.position.set(room.centerPos[0] + 6.5, 0, room.bounds.minZ + 0.8);
+              roomGroup.add(lamp);
+
+              const rug = await loadKayKitFurnitureModel('rug_oval_A');
+              rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+              roomGroup.add(rug);
+            } else if (slug === 'mobile-kasir') {
+              const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
+              cabinet.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
+              roomGroup.add(cabinet);
+
+              const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
+              shelf.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.0);
+              roomGroup.add(shelf);
+
+              const bench = await loadKayKitFurnitureModel('bench');
+              bench.position.set(room.centerPos[0] + 5.5, 0, room.bounds.maxZ - 1.8);
+              roomGroup.add(bench);
+
+              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
+              cactus.position.set(room.bounds.minX + 1.2, 0, room.bounds.maxZ - 1.2);
+              roomGroup.add(cactus);
+            } else if (slug === 'idle-mining') {
+              const cabinet = await loadKayKitFurnitureModel('cabinet_medium_decorated');
+              cabinet.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.0);
+              roomGroup.add(cabinet);
+
+              const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
+              shelf.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.0);
+              roomGroup.add(shelf);
+
+              const box = await loadKayKitFurnitureModel('box_A');
+              box.position.set(room.centerPos[0] - 6.5, 0, room.bounds.maxZ - 1.5);
+              roomGroup.add(box);
+
+              const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
+              rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+              roomGroup.add(rug);
+            } else if (slug === 'worklume') {
+              const couch = await loadKayKitFurnitureModel('couch');
+              couch.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 1.5);
+              roomGroup.add(couch);
+
+              const armchair = await loadKayKitFurnitureModel('armchair');
+              armchair.position.set(room.centerPos[0] + 5.5, 0, room.bounds.minZ + 1.5);
+              roomGroup.add(armchair);
+
+              const tableLow = await loadKayKitFurnitureModel('table_low');
+              tableLow.position.set(room.centerPos[0] - 5.5, 0, room.bounds.minZ + 3.2);
+              roomGroup.add(tableLow);
+
+              const rug = await loadKayKitFurnitureModel('rug_oval_A');
+              rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+              roomGroup.add(rug);
+
+              const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
+              cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
+              roomGroup.add(cactus);
+            } else {
+              const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
+              shelf.position.set(room.centerPos[0] - 4.2, 0, room.bounds.minZ + 0.8);
+              roomGroup.add(shelf);
             }
           } catch {
-            // Silently retain procedural mesh on failure
+            // Safe fallback
           }
-        });
+        }
 
-        // 2. Load authentic KayKit 3D Office Furniture into each room
-        assembled.rooms.forEach(async (room) => {
-          const roomGroup = assembled.roomMeshMap.get(room.projectId);
-          if (!roomGroup || !sceneRef.current) return;
+        // 3. Load Pantry Facilities Furniture
+        try {
+          const counter = await loadKayKitFurnitureModel('kitchencounter_straight_A_decorated');
+          counter.position.set(-2, 0, 24);
+          assembled.scene.add(counter);
 
-          try {
-            // Decorated Bookshelf against back wall
-            const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
-            shelf.position.set(room.centerPos[0] - 4.2, 0, room.bounds.minZ + 0.8);
-            roomGroup.add(shelf);
+          const sink = await loadKayKitFurnitureModel('kitchencounter_sink');
+          sink.position.set(2, 0, 24);
+          assembled.scene.add(sink);
 
-            // Cozy Office Couch in room lounge corner
-            const couch = await loadKayKitFurnitureModel('couch');
-            couch.position.set(room.centerPos[0] + 4.0, 0, room.bounds.minZ + 1.2);
-            roomGroup.add(couch);
-
-            // Potted Cactus plant near entrance
-            const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
-            cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
-            roomGroup.add(cactus);
-
-            // Center Carpet / Rug
-            const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
-            rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
-            roomGroup.add(rug);
-          } catch {
-            // Keep procedural room props if furniture fails
-          }
-        });
+          const cafeTable = await loadKayKitFurnitureModel('table_round_A_decorated');
+          cafeTable.position.set(0, 0, 20);
+          assembled.scene.add(cafeTable);
+        } catch {
+          // Safe fallback
+        }
       } catch {
         // Silently retain procedural mesh in headless environments
       }
@@ -315,6 +428,9 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
       const deltaMs = time - lastTime;
       const deltaSec = Math.min(deltaMs / 1000, 0.1);
       lastTime = time;
+
+      // Update KayKit AnimationMixers (Sit_Chair_Idle & typing)
+      animationMixersRef.current.forEach((mixer) => mixer.update(deltaSec));
 
       // Camera lerp
       currentCameraState.current = stepCameraInterpolation(
@@ -367,7 +483,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
         .filter((b): b is ChatBubbleData => Boolean(b));
       setActiveBubbles(active);
 
-      // Render
+      // Render Scene
       renderer.render(assembled.scene, camera);
     };
 
@@ -381,7 +497,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     };
   }, [webglSupported, projects]);
 
-  // Pointer Drag Handlers (360° Orbit & Clamped Pitch)
+  // Pointer Drag Handlers (Supports 360° Orbit & Ground-Plane Drag Pan)
   const handlePointerDown = (e: React.PointerEvent) => {
     isDragging.current = true;
     previousPointer.current = { x: e.clientX, y: e.clientY };
@@ -394,13 +510,23 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     const dy = e.clientY - previousPointer.current.y;
     previousPointer.current = { x: e.clientX, y: e.clientY };
 
-    // Update orbit angles
-    const speed = 0.006;
-    desiredCameraState.current.orbitAngleHorizontal -= dx * speed;
-    desiredCameraState.current.orbitAngleVertical = Math.max(
-      Math.PI / 8, // ~22° min
-      Math.min(Math.PI / 3, desiredCameraState.current.orbitAngleVertical + dy * speed) // ~60° max
-    );
+    // Pan when in PAN mode OR when Right-Click (buttons === 2) OR when Shift key is pressed
+    if (controlMode === 'pan' || e.buttons === 2 || e.shiftKey) {
+      desiredCameraState.current = applyCameraPan(
+        desiredCameraState.current,
+        dx,
+        dy,
+        0.045
+      );
+    } else {
+      // Orbit rotation
+      const speed = 0.006;
+      desiredCameraState.current.orbitAngleHorizontal -= dx * speed;
+      desiredCameraState.current.orbitAngleVertical = Math.max(
+        Math.PI / 8, // ~22° min
+        Math.min(Math.PI / 3, desiredCameraState.current.orbitAngleVertical + dy * speed) // ~60° max
+      );
+    }
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -412,12 +538,15 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     }
   };
 
+  // Cursor-directed wheel zoom
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();
     const zoomDelta = e.deltaY * 0.04;
-    desiredCameraState.current.distance = Math.max(
-      15, // Min zoom
-      Math.min(85, desiredCameraState.current.distance + zoomDelta) // Max zoom
+    desiredCameraState.current = applyPointerZoom(
+      desiredCameraState.current,
+      zoomDelta,
+      14,
+      85
     );
   };
 
@@ -444,7 +573,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
           Akselerasi Grafis 3D (WebGL) Tidak Tersedia
         </h3>
         <p className="text-xs text-stone-300 max-w-md mx-auto">
-          Perangkat Anda saat ini belum mengaktifkan WebGL. Anda tetap dapat menikmati visualisasi kantor virtual melalui tab <strong>Mode 2.5D Pixel Campus</strong> yang stabil dan ramah semua perangkat.
+          Perangkat Anda belum mengaktifkan akselerasi hardware WebGL. Silakan buka halaman ini menggunakan browser modern dengan hardware acceleration aktif untuk menikmati visualisasi 3D Kampus SleepyKoala Studio.
         </p>
       </div>
     );
@@ -456,6 +585,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
       className={`relative w-full rounded-3xl border border-stone-800 bg-slate-950 overflow-hidden select-none ${className}`}
       style={{ minHeight: '620px' }}
       data-testid="three-campus-canvas-container"
+      onContextMenu={(e) => e.preventDefault()} // prevent default right-click context menu so right-drag pan is smooth
     >
       {/* 1. Interactive 3D WebGL Canvas */}
       <canvas
@@ -504,12 +634,40 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
           })}
         </div>
 
-        {/* View Reset & Zoom Controls */}
+        {/* View Mode (Orbit vs Pan), Zoom, and Reset Controls */}
         <div className="flex items-center gap-1.5 pointer-events-auto bg-stone-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-800 shadow-xl">
+          {/* Mode Switcher: Orbit vs Pan */}
+          <button
+            type="button"
+            onClick={() => setControlMode((prev) => (prev === 'orbit' ? 'pan' : 'orbit'))}
+            className={`px-2.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all flex items-center gap-1.5 ${
+              controlMode === 'pan'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/60 shadow-xs'
+                : 'bg-stone-950 text-stone-300 hover:text-stone-100 border border-stone-800'
+            }`}
+            title={
+              controlMode === 'pan'
+                ? 'Mode Geser (Pan) Aktif — Geser layar/klik tarik untuk menggeser posisi kamera'
+                : 'Mode Putar (Orbit) Aktif — Klik tarik untuk memutar sudut pandang 360°'
+            }
+          >
+            {controlMode === 'pan' ? (
+              <>
+                <Move className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Geser (Pan)</span>
+              </>
+            ) : (
+              <>
+                <RotateCw className="w-3.5 h-3.5 text-cyan-400" />
+                <span className="hidden sm:inline">Putar (Orbit)</span>
+              </>
+            )}
+          </button>
+
           <button
             type="button"
             onClick={() => {
-              desiredCameraState.current.distance = Math.max(15, desiredCameraState.current.distance - 10);
+              desiredCameraState.current = applyPointerZoom(desiredCameraState.current, -10);
             }}
             className="p-1.5 rounded-xl text-stone-400 hover:text-stone-200 hover:bg-stone-800 transition-colors"
             title="Zoom In"
@@ -520,7 +678,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
           <button
             type="button"
             onClick={() => {
-              desiredCameraState.current.distance = Math.min(85, desiredCameraState.current.distance + 10);
+              desiredCameraState.current = applyPointerZoom(desiredCameraState.current, 10);
             }}
             className="p-1.5 rounded-xl text-stone-400 hover:text-stone-200 hover:bg-stone-800 transition-colors"
             title="Zoom Out"
@@ -557,7 +715,6 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
                 </span>
                 <span className="leading-tight block">{bubble.text}</span>
               </div>
-              {/* Bubble pointer beak */}
               <div className="w-2 h-2 bg-stone-900 border-r border-b border-stone-700/80 rotate-45 mx-auto -mt-1" />
             </div>
           );

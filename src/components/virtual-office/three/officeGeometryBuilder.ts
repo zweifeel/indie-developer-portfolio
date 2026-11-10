@@ -2,18 +2,24 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — OFFICE GEOMETRY BUILDER (THREE.JS PROCEDURAL)
  * 
- * Kay Lousberg (KayKit CC0) Aesthetic Low-Poly Humans, Furniture,
- * Dynamic Campus Rooms, and Visual Props.
+ * Authentic KayKit CC0 Low-Poly Office Architecture:
+ * 1. Unified Campus Ground Slab & Corridor Runners (Zero Blue Void)
+ * 2. Distinct Thematic Room Styling (Fintech, Game Dev, Retail POS, Mining, SaaS)
+ * 3. Ergonomic Workstations & Clean Non-overlapping Seating Grid
+ * 4. Thematic Wall Props (Financial Charts TV, Arcade Dingdong, Kanban Board, Pickaxe Plaque)
  * ============================================================================
  */
 
 import * as THREE from 'three';
 import {
   DynamicProjectRoom3D,
-  ProjectCrewMember3D,
   SharedFacility3D,
   Vector3Tuple,
 } from '../../../types/virtualOffice3D';
+import {
+  PROJECT_THEMATIC_SPECS,
+  ThematicRoomSpec,
+} from '../../../types/virtualOfficeThemes';
 
 /**
  * Palette of Warm Pastel & Studio Colors
@@ -21,8 +27,11 @@ import {
 export const STUDIO_PALETTE = {
   floorWood: 0xd9b382,
   floorTrim: 0xb58b57,
+  campusBaseSlab: 0x1e293b, // Deep modern slate foundation
+  campusBaseBorder: 0x334155, // Clean architectural border
+  corridorRunner: 0x0284c7, // Vibrant sky blue runner carpet
   corridorWood: 0xc49a6c,
-  wallPastel: 0xf3f4f6,
+  wallPastel: 0xf8fafc,
   wallAccent: 0xe2e8f0,
   wallGlass: 0x93c5fd,
   deskWood: 0xa87b51,
@@ -39,146 +48,109 @@ export const STUDIO_PALETTE = {
 };
 
 /**
- * Build a modular low-poly human character in Kay Lousberg style
+ * Build Unified Campus Ground Platform & Corridors (Zero Blue Void)
  */
-export function buildKayKitHumanMesh(crew: ProjectCrewMember3D): THREE.Group {
+export function buildUnifiedCampusGround(): THREE.Group {
   const group = new THREE.Group();
-  group.name = `human_${crew.id}`;
+  group.name = 'unified_campus_foundation';
 
-  const attire = crew.attire;
-  const skinMat = new THREE.MeshLambertMaterial({ color: attire.skinTone });
-  const hairMat = new THREE.MeshLambertMaterial({ color: attire.hairColor });
-  const topMat = new THREE.MeshLambertMaterial({ color: attire.topColor });
-  const pantsMat = new THREE.MeshLambertMaterial({ color: attire.pantsColor });
-  const shoesMat = new THREE.MeshLambertMaterial({ color: attire.shoesColor });
+  // 1. Massive Solid Foundation Slab covering the whole campus
+  // Campus spans from x: -38 to 38 (width ~76), z: -38 to 38 (depth ~76)
+  const slabGeo = new THREE.BoxGeometry(82, 0.4, 82);
+  const slabMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.campusBaseSlab });
+  const slab = new THREE.Mesh(slabGeo, slabMat);
+  slab.position.set(0, -0.3, 0);
+  slab.receiveShadow = true;
+  group.add(slab);
 
-  // 1. Torso / Shirt
-  const torsoGeo = new THREE.BoxGeometry(0.7, 0.8, 0.45);
-  const torsoMesh = new THREE.Mesh(torsoGeo, topMat);
-  torsoMesh.position.y = 0.9;
-  torsoMesh.castShadow = true;
-  group.add(torsoMesh);
+  // 1b. Foundation Edge Trim
+  const borderGeo = new THREE.BoxGeometry(83, 0.15, 83);
+  const borderMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.campusBaseBorder });
+  const border = new THREE.Mesh(borderGeo, borderMat);
+  border.position.set(0, -0.45, 0);
+  group.add(border);
 
-  // 1b. Attire Details (Tie, Cardigan/Blazer, or Vest)
-  if (attire.accentColor) {
-    const accentMat = new THREE.MeshLambertMaterial({ color: attire.accentColor });
-    if (attire.topType === 'shirt_tie') {
-      // Tie strip
-      const tieGeo = new THREE.BoxGeometry(0.12, 0.45, 0.05);
-      const tieMesh = new THREE.Mesh(tieGeo, accentMat);
-      tieMesh.position.set(0, 0.95, 0.24);
-      group.add(tieMesh);
-    } else if (attire.topType === 'polo_cardigan' || attire.topType === 'blazer_casual') {
-      // Open cardigan / blazer lapels
-      const lapelLeftGeo = new THREE.BoxGeometry(0.18, 0.8, 0.06);
-      const lapelRightGeo = new THREE.BoxGeometry(0.18, 0.8, 0.06);
-      const lapelL = new THREE.Mesh(lapelLeftGeo, accentMat);
-      const lapelR = new THREE.Mesh(lapelRightGeo, accentMat);
-      lapelL.position.set(-0.25, 0.9, 0.22);
-      lapelR.position.set(0.25, 0.9, 0.22);
-      group.add(lapelL);
-      group.add(lapelR);
-    }
-  }
+  // 2. Central Spine Corridor (North-South connecting Reception, Plaza, Pantry)
+  const spineGeo = new THREE.BoxGeometry(10, 0.04, 66);
+  const spineMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+  const spine = new THREE.Mesh(spineGeo, spineMat);
+  spine.position.set(0, -0.08, 0);
+  spine.receiveShadow = true;
+  group.add(spine);
 
-  // 2. Head (Rounded Stylized Cube / Beveled)
-  const headGeo = new THREE.BoxGeometry(0.55, 0.55, 0.5);
-  const headMesh = new THREE.Mesh(headGeo, skinMat);
-  headMesh.position.y = 1.6;
-  headMesh.castShadow = true;
-  group.add(headMesh);
+  // 2b. Central Spine Carpet Runner
+  const runnerGeo = new THREE.BoxGeometry(4.5, 0.05, 62);
+  const runnerMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.corridorRunner });
+  const runner = new THREE.Mesh(runnerGeo, runnerMat);
+  runner.position.set(0, -0.06, 0);
+  group.add(runner);
 
-  // 2b. Cute Eyes (Stylized dots)
-  const eyeMat = new THREE.MeshBasicMaterial({ color: 0x18181b });
-  const eyeGeo = new THREE.BoxGeometry(0.08, 0.08, 0.05);
-  const leftEye = new THREE.Mesh(eyeGeo, eyeMat);
-  const rightEye = new THREE.Mesh(eyeGeo, eyeMat);
-  leftEye.position.set(-0.14, 1.62, 0.26);
-  rightEye.position.set(0.14, 1.62, 0.26);
-  group.add(leftEye);
-  group.add(rightEye);
+  // 3. West & East Wing Connector Walkways (Connecting Spine to Project Rooms)
+  const rows = [-20, 0, 20];
+  rows.forEach((z) => {
+    // West connector
+    const westWalkGeo = new THREE.BoxGeometry(18, 0.04, 6);
+    const westWalk = new THREE.Mesh(westWalkGeo, spineMat);
+    westWalk.position.set(-13, -0.08, z);
+    group.add(westWalk);
 
-  // 3. Hair Style
-  const hairGeo = new THREE.BoxGeometry(0.58, 0.25, 0.54);
-  const hairMesh = new THREE.Mesh(hairGeo, hairMat);
-  hairMesh.position.set(0, 1.85, -0.02);
-  group.add(hairMesh);
+    // East connector
+    const eastWalkGeo = new THREE.BoxGeometry(18, 0.04, 6);
+    const eastWalk = new THREE.Mesh(eastWalkGeo, spineMat);
+    eastWalk.position.set(13, -0.08, z);
+    group.add(eastWalk);
 
-  // 4. Accessories
-  if (attire.accessory === 'glasses') {
-    const glassMat = new THREE.MeshBasicMaterial({ color: 0x09090b });
-    const glassBridge = new THREE.BoxGeometry(0.44, 0.12, 0.08);
-    const glassMesh = new THREE.Mesh(glassBridge, glassMat);
-    glassMesh.position.set(0, 1.62, 0.27);
-    group.add(glassMesh);
-  } else if (attire.accessory === 'headphones') {
-    const phoneMat = new THREE.MeshLambertMaterial({ color: 0xe11d48 });
-    const band = new THREE.BoxGeometry(0.68, 0.1, 0.3);
-    const bandMesh = new THREE.Mesh(band, phoneMat);
-    bandMesh.position.set(0, 1.25, 0.05);
-    group.add(bandMesh);
-  } else if (attire.accessory === 'lanyard_id') {
-    const badgeMat = new THREE.MeshBasicMaterial({ color: 0x22d3ee });
-    const badgeGeo = new THREE.BoxGeometry(0.15, 0.2, 0.04);
-    const badgeMesh = new THREE.Mesh(badgeGeo, badgeMat);
-    badgeMesh.position.set(0, 0.72, 0.25);
-    group.add(badgeMesh);
-  }
+    // Subtle guide lights along walkways
+    const lightGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.5, 8);
+    const lightMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const postMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
 
-  // 5. Arms
-  const armGeo = new THREE.BoxGeometry(0.2, 0.6, 0.2);
-  const leftArm = new THREE.Mesh(armGeo, topMat);
-  const rightArm = new THREE.Mesh(armGeo, topMat);
-  leftArm.position.set(-0.48, 0.85, 0);
-  rightArm.position.set(0.48, 0.85, 0);
-  group.add(leftArm);
-  group.add(rightArm);
+    const createBollard = (x: number, bz: number) => {
+      const bollard = new THREE.Group();
+      const post = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.8, 8), postMat);
+      post.position.y = 0.4;
+      const glow = new THREE.Mesh(lightGeo, lightMat);
+      glow.position.y = 0.8;
+      bollard.add(post);
+      bollard.add(glow);
+      bollard.position.set(x, 0, bz);
+      return bollard;
+    };
 
-  // 6. Legs & Pants
-  const legGeo = new THREE.BoxGeometry(0.25, 0.5, 0.25);
-  const leftLeg = new THREE.Mesh(legGeo, pantsMat);
-  const rightLeg = new THREE.Mesh(legGeo, pantsMat);
-  leftLeg.position.set(-0.18, 0.25, 0);
-  rightLeg.position.set(0.18, 0.25, 0);
-  group.add(leftLeg);
-  group.add(rightLeg);
-
-  // 7. Shoes
-  const shoeGeo = new THREE.BoxGeometry(0.26, 0.12, 0.32);
-  const leftShoe = new THREE.Mesh(shoeGeo, shoesMat);
-  const rightShoe = new THREE.Mesh(shoeGeo, shoesMat);
-  leftShoe.position.set(-0.18, 0.06, 0.03);
-  rightShoe.position.set(0.18, 0.06, 0.03);
-  group.add(leftShoe);
-  group.add(rightShoe);
+    group.add(createBollard(-6, z - 3.2));
+    group.add(createBollard(-6, z + 3.2));
+    group.add(createBollard(6, z - 3.2));
+    group.add(createBollard(6, z + 3.2));
+  });
 
   return group;
 }
 
 /**
- * Build workstation furniture (Wooden desk, task chair, laptop, monitor)
+ * Build workstation furniture (Wooden desk, task chair, laptop, dual screens, coffee mug)
  */
-export function buildWorkstationMesh(pos: Vector3Tuple, _deskItemLabel: string): THREE.Group {
+export function buildWorkstationMesh(pos: Vector3Tuple, deskItemLabel: string): THREE.Group {
   const station = new THREE.Group();
+  station.name = `workstation_${deskItemLabel.replace(/\s+/g, '_')}`;
   station.position.set(pos[0], pos[1], pos[2]);
 
-  // Desk Top
+  // 1. Desk Top
   const deskMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.deskWood });
-  const topGeo = new THREE.BoxGeometry(2.4, 0.12, 1.2);
+  const topGeo = new THREE.BoxGeometry(2.4, 0.12, 1.3);
   const topMesh = new THREE.Mesh(topGeo, deskMat);
-  topMesh.position.y = 0.9;
+  topMesh.position.y = 0.85;
   topMesh.castShadow = true;
   topMesh.receiveShadow = true;
   station.add(topMesh);
 
-  // Desk Legs
+  // 2. Desk Legs (Sturdy metal modern frame)
   const legMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.deskLegs });
-  const legGeo = new THREE.BoxGeometry(0.1, 0.9, 0.1);
+  const legGeo = new THREE.BoxGeometry(0.08, 0.85, 0.08);
   const legPositions = [
-    [-1.1, 0.45, -0.5],
-    [1.1, 0.45, -0.5],
-    [-1.1, 0.45, 0.5],
-    [1.1, 0.45, 0.5],
+    [-1.1, 0.425, -0.55],
+    [1.1, 0.425, -0.55],
+    [-1.1, 0.425, 0.55],
+    [1.1, 0.425, 0.55],
   ];
   legPositions.forEach(([lx, ly, lz]) => {
     const l = new THREE.Mesh(legGeo, legMat);
@@ -186,45 +158,217 @@ export function buildWorkstationMesh(pos: Vector3Tuple, _deskItemLabel: string):
     station.add(l);
   });
 
-  // Chair
+  // 3. Ergonomic Office Swivel Chair (Carefully positioned behind desk)
+  const chairGroup = new THREE.Group();
+  chairGroup.position.set(0, 0, 0.75); // 0.75m behind desk center
+
   const chairMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.chairBlack });
-  const seatGeo = new THREE.BoxGeometry(0.7, 0.1, 0.7);
-  const seatMesh = new THREE.Mesh(seatGeo, chairMat);
-  seatMesh.position.set(0, 0.55, 0.8);
-  station.add(seatMesh);
+  const seatMesh = new THREE.Mesh(new THREE.BoxGeometry(0.7, 0.1, 0.65), chairMat);
+  seatMesh.position.y = 0.5; // Exactly comfortable seating height
+  chairGroup.add(seatMesh);
 
-  const backGeo = new THREE.BoxGeometry(0.7, 0.7, 0.1);
-  const backMesh = new THREE.Mesh(backGeo, chairMat);
-  backMesh.position.set(0, 0.95, 1.12);
-  station.add(backMesh);
+  const backMesh = new THREE.Mesh(new THREE.BoxGeometry(0.68, 0.65, 0.08), chairMat);
+  backMesh.position.set(0, 0.85, 0.32);
+  chairGroup.add(backMesh);
 
-  // Laptop
+  // Chair Base stem & castors
+  const stemMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.5, 8), legMat);
+  stemMesh.position.y = 0.25;
+  chairGroup.add(stemMesh);
+
+  const starBase = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.04, 5), legMat);
+  starBase.position.y = 0.04;
+  chairGroup.add(starBase);
+
+  station.add(chairGroup);
+
+  // 4. Laptop / Work Computer
   const laptopMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.laptopSilver });
-  const laptopBaseGeo = new THREE.BoxGeometry(0.6, 0.04, 0.4);
-  const laptopBase = new THREE.Mesh(laptopBaseGeo, laptopMat);
-  laptopBase.position.set(0, 0.98, 0.1);
+  const laptopBase = new THREE.Mesh(new THREE.BoxGeometry(0.55, 0.03, 0.38), laptopMat);
+  laptopBase.position.set(0, 0.92, 0.05);
   station.add(laptopBase);
 
-  // Glowing Screen
+  // Glowing Screen (Tilted facing chair)
   const screenMat = new THREE.MeshBasicMaterial({ color: STUDIO_PALETTE.screenGlow });
-  const screenGeo = new THREE.BoxGeometry(0.56, 0.38, 0.04);
-  const screenMesh = new THREE.Mesh(screenGeo, screenMat);
-  screenMesh.position.set(0, 1.2, -0.1);
-  screenMesh.rotation.x = -Math.PI / 12;
+  const screenMesh = new THREE.Mesh(new THREE.BoxGeometry(0.52, 0.34, 0.03), screenMat);
+  screenMesh.position.set(0, 1.1, -0.12);
+  screenMesh.rotation.x = -Math.PI / 14;
   station.add(screenMesh);
 
+  // 5. Desk Accessories
   // Coffee Mug
   const mugMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.coffeeMug });
-  const mugGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.15, 8);
-  const mug = new THREE.Mesh(mugGeo, mugMat);
-  mug.position.set(0.75, 1.04, 0.2);
+  const mug = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.13, 8), mugMat);
+  mug.position.set(0.75, 0.98, 0.15);
   station.add(mug);
+
+  // Mouse Pad & Optical Mouse
+  const padMat = new THREE.MeshBasicMaterial({ color: 0x18181b });
+  const pad = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.01, 0.25), padMat);
+  pad.position.set(0.55, 0.92, 0.15);
+  station.add(pad);
+
+  const mouseMat = new THREE.MeshLambertMaterial({ color: 0x38bdf8 });
+  const mouse = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.03, 0.1), mouseMat);
+  mouse.position.set(0.55, 0.94, 0.15);
+  station.add(mouse);
 
   return station;
 }
 
 /**
- * Build dynamic room walls and floors
+ * Build Thematic Props for Project Rooms (Candlestick TV, Arcade, POS, Kanban, Pickaxe)
+ */
+export function buildThematicRoomProps(room: DynamicProjectRoom3D): THREE.Group {
+  const group = new THREE.Group();
+  group.name = `thematic_props_${room.projectSlug}`;
+  const slug = room.projectSlug.toLowerCase();
+  const spec: ThematicRoomSpec = PROJECT_THEMATIC_SPECS[slug] || PROJECT_THEMATIC_SPECS['dompetnalar'];
+
+  const backZ = room.bounds.minZ + 0.3;
+
+  if (spec.style === 'FINTECH_METRIC') {
+    // 1. Large Wall Mounted Financial Stock Chart TV Screen
+    const tvGroup = new THREE.Group();
+    const frame = new THREE.Mesh(
+      new THREE.BoxGeometry(4.2, 2.4, 0.15),
+      new THREE.MeshLambertMaterial({ color: 0x09090b })
+    );
+    const display = new THREE.Mesh(
+      new THREE.BoxGeometry(4.0, 2.2, 0.02),
+      new THREE.MeshBasicMaterial({ color: 0x022c22 }) // Deep matrix dark green
+    );
+    display.position.z = 0.08;
+    tvGroup.add(frame);
+    tvGroup.add(display);
+
+    // Add Candlestick Bars on the TV screen
+    const barColors = [0x10b981, 0x10b981, 0xef4444, 0x10b981, 0x10b981, 0x10b981];
+    barColors.forEach((col, idx) => {
+      const barH = 0.4 + (idx * 0.22) % 1.4;
+      const bar = new THREE.Mesh(
+        new THREE.BoxGeometry(0.25, barH, 0.05),
+        new THREE.MeshBasicMaterial({ color: col })
+      );
+      bar.position.set(-1.4 + idx * 0.55, -0.3 + barH / 2, 0.12);
+      tvGroup.add(bar);
+    });
+
+    tvGroup.position.set(room.centerPos[0], 2.2, backZ);
+    group.add(tvGroup);
+  } else if (spec.style === 'GAME_DEV_CYBERPUNK') {
+    // 2. Retro Arcade Machine Dingdong
+    const arcade = new THREE.Group();
+    const arcadeBody = new THREE.Mesh(
+      new THREE.BoxGeometry(1.4, 2.8, 1.4),
+      new THREE.MeshLambertMaterial({ color: 0x4c1d95 })
+    );
+    arcadeBody.position.y = 1.4;
+
+    const arcadeScreen = new THREE.Mesh(
+      new THREE.BoxGeometry(1.1, 0.8, 0.05),
+      new THREE.MeshBasicMaterial({ color: 0xec4899 }) // Glowing hot pink 8-bit screen
+    );
+    arcadeScreen.position.set(0, 1.7, 0.7);
+    arcadeScreen.rotation.x = -Math.PI / 10;
+
+    const marquee = new THREE.Mesh(
+      new THREE.BoxGeometry(1.2, 0.35, 0.1),
+      new THREE.MeshBasicMaterial({ color: 0x22d3ee }) // Cyan glowing marquee
+    );
+    marquee.position.set(0, 2.65, 0.65);
+
+    arcade.add(arcadeBody);
+    arcade.add(arcadeScreen);
+    arcade.add(marquee);
+    arcade.position.set(room.centerPos[0] + (room.wing === 'west' ? -6 : 6), 0, room.centerPos[2] - 3.5);
+    arcade.rotation.y = room.wing === 'west' ? Math.PI / 4 : -Math.PI / 4;
+    group.add(arcade);
+  } else if (spec.style === 'RETAIL_STORE_POS') {
+    // 3. Supermarket Mini Checkout Counter & POS Register
+    const posStation = new THREE.Group();
+    const counterDesk = new THREE.Mesh(
+      new THREE.BoxGeometry(2.8, 1.1, 1.4),
+      new THREE.MeshLambertMaterial({ color: 0xf59e0b }) // Amber checkout desk
+    );
+    counterDesk.position.y = 0.55;
+
+    const cashRegister = new THREE.Mesh(
+      new THREE.BoxGeometry(0.7, 0.45, 0.6),
+      new THREE.MeshLambertMaterial({ color: 0x1c1917 })
+    );
+    cashRegister.position.set(-0.6, 1.3, 0);
+
+    const posDisplay = new THREE.Mesh(
+      new THREE.BoxGeometry(0.4, 0.3, 0.04),
+      new THREE.MeshBasicMaterial({ color: 0x10b981 })
+    );
+    posDisplay.position.set(-0.6, 1.6, 0.2);
+
+    posStation.add(counterDesk);
+    posStation.add(cashRegister);
+    posStation.add(posDisplay);
+    posStation.position.set(room.centerPos[0] + (room.wing === 'west' ? -5.5 : 5.5), 0, room.centerPos[2] + 2.5);
+    group.add(posStation);
+  } else if (spec.style === 'MINING_INDUSTRIAL') {
+    // 4. Mining Trophy & Gold Pickaxe Wall Plaque
+    const plaque = new THREE.Group();
+    const board = new THREE.Mesh(
+      new THREE.BoxGeometry(2.4, 1.6, 0.1),
+      new THREE.MeshLambertMaterial({ color: 0x78350f }) // Walnut wood plaque
+    );
+    const pickHead = new THREE.Mesh(
+      new THREE.BoxGeometry(1.6, 0.18, 0.12),
+      new THREE.MeshLambertMaterial({ color: 0xfacc15 }) // Golden pickaxe head
+    );
+    const pickHandle = new THREE.Mesh(
+      new THREE.BoxGeometry(0.12, 1.2, 0.08),
+      new THREE.MeshLambertMaterial({ color: 0x451a03 })
+    );
+    pickHead.position.set(0, 0.2, 0.08);
+    pickHandle.position.set(0, -0.2, 0.08);
+
+    plaque.add(board);
+    plaque.add(pickHead);
+    plaque.add(pickHandle);
+    plaque.position.set(room.centerPos[0], 2.2, backZ);
+    group.add(plaque);
+  } else if (spec.style === 'WORKSPACE_SCANDI') {
+    // 5. Giant Agile Kanban Board on Wall with Colorful Sticky Notes
+    const kanban = new THREE.Group();
+    const boardMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(4.8, 2.2, 0.08),
+      new THREE.MeshLambertMaterial({ color: 0xffffff })
+    );
+    const frameMesh = new THREE.Mesh(
+      new THREE.BoxGeometry(4.9, 2.3, 0.06),
+      new THREE.MeshLambertMaterial({ color: 0xd97706 })
+    );
+    kanban.add(frameMesh);
+    kanban.add(boardMesh);
+
+    // Sticky Notes (Yellow, Pink, Cyan, Green)
+    const noteColors = [0xfef08a, 0xf472b6, 0x38bdf8, 0x4ade80, 0xfef08a, 0xf472b6, 0x38bdf8];
+    noteColors.forEach((nc, i) => {
+      const col = i % 3;
+      const row = Math.floor(i / 3);
+      const note = new THREE.Mesh(
+        new THREE.BoxGeometry(0.35, 0.35, 0.02),
+        new THREE.MeshBasicMaterial({ color: nc })
+      );
+      note.position.set(-1.6 + col * 1.4, 0.4 - row * 0.6, 0.06);
+      kanban.add(note);
+    });
+
+    kanban.position.set(room.centerPos[0], 2.2, backZ);
+    group.add(kanban);
+  }
+
+  return group;
+}
+
+/**
+ * Build dynamic room walls and floors with Thematic Styling
  */
 export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   const group = new THREE.Group();
@@ -233,23 +377,27 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   const w = room.bounds.maxX - room.bounds.minX;
   const d = room.bounds.maxZ - room.bounds.minZ;
 
-  // Parquet Floor Tile
-  const floorMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.floorWood });
-  const floorGeo = new THREE.BoxGeometry(w, 0.2, d);
+  const spec: ThematicRoomSpec =
+    PROJECT_THEMATIC_SPECS[room.projectSlug.toLowerCase()] ||
+    PROJECT_THEMATIC_SPECS['dompetnalar'];
+
+  // Thematic Floor Tile
+  const floorMat = new THREE.MeshLambertMaterial({ color: spec.floorColor });
+  const floorGeo = new THREE.BoxGeometry(w, 0.18, d);
   const floor = new THREE.Mesh(floorGeo, floorMat);
-  floor.position.set(room.centerPos[0], -0.1, room.centerPos[2]);
+  floor.position.set(room.centerPos[0], -0.09, room.centerPos[2]);
   floor.receiveShadow = true;
   group.add(floor);
 
-  // Floor Edge Trim
-  const trimMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.floorTrim });
-  const trimGeo = new THREE.BoxGeometry(w + 0.4, 0.1, d + 0.4);
+  // Thematic Floor Edge Trim
+  const trimMat = new THREE.MeshLambertMaterial({ color: spec.floorBorderColor });
+  const trimGeo = new THREE.BoxGeometry(w + 0.3, 0.1, d + 0.3);
   const trim = new THREE.Mesh(trimGeo, trimMat);
-  trim.position.set(room.centerPos[0], -0.2, room.centerPos[2]);
+  trim.position.set(room.centerPos[0], -0.18, room.centerPos[2]);
   group.add(trim);
 
   // Low Isometric Half-Walls (Outer edges only so interior is easily visible)
-  const wallMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.wallPastel });
+  const wallMat = new THREE.MeshLambertMaterial({ color: spec.accentWallColor });
   const wallHeight = 2.4;
 
   // Back Wall
@@ -266,6 +414,10 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   sideWall.position.set(sideX, wallHeight / 2, room.centerPos[2]);
   sideWall.receiveShadow = true;
   group.add(sideWall);
+
+  // Add Thematic Wall Props
+  const thematicProps = buildThematicRoomProps(room);
+  group.add(thematicProps);
 
   return group;
 }
@@ -284,9 +436,9 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
     const floorMat = new THREE.MeshLambertMaterial({
       color: fac.facilityId === 'collaboration_plaza' ? 0x0f766e : STUDIO_PALETTE.corridorWood,
     });
-    const floorGeo = new THREE.BoxGeometry(w, 0.18, d);
+    const floorGeo = new THREE.BoxGeometry(w, 0.16, d);
     const floor = new THREE.Mesh(floorGeo, floorMat);
-    floor.position.set(fac.centerPos[0], -0.09, fac.centerPos[2]);
+    floor.position.set(fac.centerPos[0], -0.08, fac.centerPos[2]);
     group.add(floor);
 
     // Collaboration Lounge Props

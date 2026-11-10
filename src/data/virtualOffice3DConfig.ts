@@ -64,15 +64,15 @@ export const SHARED_FACILITIES: SharedFacility3D[] = [
  * Common Walkway Corridor Waypoints (connecting west rooms, center, and east rooms)
  */
 export const CAMPUS_CORRIDOR_WAYPOINTS: Vector3Tuple[] = [
-  [-12, 0, -20],
-  [-12, 0, 0],
-  [-12, 0, 20],
+  [-13, 0, -20],
+  [-13, 0, 0],
+  [-13, 0, 20],
   [0, 0, -20],
   [0, 0, 0],
   [0, 0, 20],
-  [12, 0, -20],
-  [12, 0, 0],
-  [12, 0, 20],
+  [13, 0, -20],
+  [13, 0, 0],
+  [13, 0, 20],
 ];
 
 /**
@@ -80,18 +80,18 @@ export const CAMPUS_CORRIDOR_WAYPOINTS: Vector3Tuple[] = [
  */
 export const ROLE_ATTIRES: Record<CoreCrewRole, HumanAttire3D> = {
   PLANNER: {
-    skinTone: '#e0ac69', // Sawo matang
+    skinTone: '#e0ac69',
     hairColor: '#2b1d14',
     hairStyle: 'short_neat',
     topType: 'shirt_tie',
     topColor: '#38bdf8', // Light blue oxford shirt
-    accentColor: '#1e3a8a', // Navy blue tie
-    pantsColor: '#d4b996', // Khaki chino
+    accentColor: '#1e3a8a',
+    pantsColor: '#d4b996',
     shoesColor: '#3b2f2f',
     accessory: 'lanyard_id',
   },
   DEVELOPER: {
-    skinTone: '#fcd34d', // Kuning langsat
+    skinTone: '#fcd34d',
     hairColor: '#18181b',
     hairStyle: 'side_part',
     topType: 'polo_cardigan',
@@ -102,34 +102,34 @@ export const ROLE_ATTIRES: Record<CoreCrewRole, HumanAttire3D> = {
     accessory: 'headphones',
   },
   TESTER: {
-    skinTone: '#fed7aa', // Warm peach
-    hairColor: '#7c2d12', // Auburn brown
+    skinTone: '#fed7aa',
+    hairColor: '#7c2d12',
     hairStyle: 'curly_top',
     topType: 'blazer_casual',
-    topColor: '#18181b', // Black inner shirt
-    accentColor: '#14b8a6', // Teal / sage green blazer
+    topColor: '#18181b',
+    accentColor: '#14b8a6', // Sage green blazer
     pantsColor: '#334155',
     shoesColor: '#0f172a',
     accessory: 'glasses',
   },
   REVIEWER: {
-    skinTone: '#d97706', // Warm deep tan
+    skinTone: '#d97706',
     hairColor: '#1c1917',
     hairStyle: 'bob_cut',
     topType: 'vest_formal',
     topColor: '#ffffff',
-    accentColor: '#1e40af', // Navy blue knit vest
+    accentColor: '#1e40af', // Navy vest
     pantsColor: '#1e293b',
     shoesColor: '#451a03',
     accessory: 'lanyard_id',
   },
   PUBLISHER: {
-    skinTone: '#fde68a', // Fair
+    skinTone: '#fde68a',
     hairColor: '#451a03',
     hairStyle: 'short_neat',
     topType: 'shirt_tie',
     topColor: '#f8fafc',
-    accentColor: '#dc2626', // Crimson red tie
+    accentColor: '#dc2626',
     pantsColor: '#0f172a',
     shoesColor: '#18181b',
     accessory: 'glasses',
@@ -201,13 +201,13 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
     const { wing, centerPos, bounds, cameraFocusPos } = calculateRoomCoordinates(pIndex);
     const assignedCrewIds: string[] = [];
 
-    // 5 Desks layout inside room: 3 along back wall, 2 in front
+    // 5 Desks layout inside room: 3 along back wall, 2 in front (generously spaced)
     const deskOffsets: Array<[number, number]> = [
-      [-5, -3], // Desk 0: Planner
-      [0, -3],  // Desk 1: Developer
-      [5, -3],  // Desk 2: Tester
-      [-3, 3],  // Desk 3: Reviewer
-      [3, 3],   // Desk 4: Publisher
+      [-5.0, -2.5], // Desk 0: Planner
+      [0.0, -2.5],  // Desk 1: Developer
+      [5.0, -2.5],  // Desk 2: Tester
+      [-3.2, 2.5],  // Desk 3: Reviewer
+      [3.2, 2.5],   // Desk 4: Publisher
     ];
 
     roles.forEach((role, rIndex) => {
@@ -219,6 +219,13 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
         centerPos[0] + offX,
         0,
         centerPos[2] + offZ,
+      ];
+
+      // Seated position on the chair behind the desk
+      const seatedPos: Vector3Tuple = [
+        centerPos[0] + offX,
+        0,
+        centerPos[2] + offZ + 0.75,
       ];
 
       const namesPool = CANONICAL_NAMES[role];
@@ -235,9 +242,9 @@ export function provisionProcedural3DCampus(projects?: readonly Project[] | Proj
         attire: ROLE_ATTIRES[role],
         deskIndex: rIndex,
         homeDeskPos,
-        currentPos: [...homeDeskPos],
+        currentPos: [...seatedPos],
         targetPos: null,
-        facingAngleY: Math.PI / 4,
+        facingAngleY: Math.PI, // Facing forward towards desk and laptop
         currentState: 'WORKING_AT_DESK',
         speed: 2.2,
         deskItem: DESK_ITEMS[role],

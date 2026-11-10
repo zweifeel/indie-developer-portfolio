@@ -2,8 +2,10 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — PROCEDURAL CAMPUS BUILDER (LAPIS 2)
  * 
- * Dynamic Three.js Scene Assembler: Spawns rooms for ANY project count,
- * provisions 5 human crew members per project, and manages mesh nodes.
+ * Dynamic Three.js Scene Assembler:
+ * 1. Spawns Unified Campus Foundation Slab & Corridors (Zero Blue Void)
+ * 2. Spawns Thematic Rooms with Distinct Wall Props & Color Schemes
+ * 3. Provisions 5 Human Crew Workstations per Room with Non-overlapping Seating
  * ============================================================================
  */
 
@@ -18,9 +20,9 @@ import {
   provisionProcedural3DCampus,
 } from '../../../data/virtualOffice3DConfig';
 import {
+  buildUnifiedCampusGround,
   buildRoomMesh,
   buildWorkstationMesh,
-  buildKayKitHumanMesh,
   buildSharedFacilitiesGroup,
 } from './officeGeometryBuilder';
 
@@ -37,29 +39,44 @@ export interface Assembled3DCampus {
  */
 export function assembleProcedural3DCampus(projects: readonly Project[] | Project[]): Assembled3DCampus {
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x0f172a); // Deep modern slate slate-900
+  scene.background = new THREE.Color(0x0a0f1d); // Deep elegant night slate
 
-  // 1. Lighting
-  const ambientLight = new THREE.AmbientLight(0xfffbeb, 0.9); // Warm cozy ambient
+  // 1. Lighting Setup
+  const ambientLight = new THREE.AmbientLight(0xfffbeb, 0.95); // Warm cozy ambient light
   scene.add(ambientLight);
 
-  const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-  dirLight.position.set(25, 45, 20);
+  const dirLight = new THREE.DirectionalLight(0xffffff, 1.25);
+  dirLight.position.set(30, 50, 25);
   dirLight.castShadow = true;
   dirLight.shadow.mapSize.width = 2048;
   dirLight.shadow.mapSize.height = 2048;
+  dirLight.shadow.camera.near = 0.5;
+  dirLight.shadow.camera.far = 150;
+  dirLight.shadow.camera.left = -50;
+  dirLight.shadow.camera.right = 50;
+  dirLight.shadow.camera.top = 50;
+  dirLight.shadow.camera.bottom = -50;
   scene.add(dirLight);
 
-  // Soft cyan rim light from front
-  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.4);
-  rimLight.position.set(-20, 20, -15);
+  // Soft cyan rim light from front-left
+  const rimLight = new THREE.DirectionalLight(0x38bdf8, 0.45);
+  rimLight.position.set(-25, 25, -20);
   scene.add(rimLight);
 
-  // 2. Shared Facilities (Lobby, Collaboration Plaza, Pantry)
+  // Warm amber soft fill light from back-right
+  const fillLight = new THREE.DirectionalLight(0xfef08a, 0.3);
+  fillLight.position.set(20, 20, 30);
+  scene.add(fillLight);
+
+  // 2. Unified Solid Campus Foundation Slab & Corridors (Eliminates All Blue Voids)
+  const campusGround = buildUnifiedCampusGround();
+  scene.add(campusGround);
+
+  // 3. Shared Facilities (Lobby, Collaboration Plaza, Pantry)
   const sharedGroup = buildSharedFacilitiesGroup(SHARED_FACILITIES);
   scene.add(sharedGroup);
 
-  // 3. Procedural Rooms & Crew
+  // 4. Procedural Thematic Rooms & Workstations
   const { rooms, crew } = provisionProcedural3DCampus(projects);
   const crewMeshMap = new Map<string, THREE.Group>();
   const roomMeshMap = new Map<string, THREE.Group>();
@@ -70,7 +87,7 @@ export function assembleProcedural3DCampus(projects: readonly Project[] | Projec
     scene.add(roomMesh);
     roomMeshMap.set(room.projectId, roomMesh);
 
-    // Add workstations for assigned crew
+    // Add workstations for assigned crew members
     const roomCrew = crew.filter((c) => c.projectId === room.projectId);
     roomCrew.forEach((c) => {
       const station = buildWorkstationMesh(c.homeDeskPos, c.deskItem);
@@ -78,13 +95,15 @@ export function assembleProcedural3DCampus(projects: readonly Project[] | Projec
     });
   });
 
-  // Add Human Characters
+  // 5. Add Crew Anchor Nodes (to host KayKit character models and animations)
   crew.forEach((c) => {
-    const humanMesh = buildKayKitHumanMesh(c);
-    humanMesh.position.set(c.currentPos[0], c.currentPos[1], c.currentPos[2]);
-    humanMesh.rotation.y = c.facingAngleY;
-    scene.add(humanMesh);
-    crewMeshMap.set(c.id, humanMesh);
+    const crewAnchor = new THREE.Group();
+    crewAnchor.name = `crew_anchor_${c.id}`;
+    // Position character seated on the chair, facing the desk & laptop
+    crewAnchor.position.set(c.currentPos[0], c.currentPos[1], c.currentPos[2]);
+    crewAnchor.rotation.y = c.facingAngleY;
+    scene.add(crewAnchor);
+    crewMeshMap.set(c.id, crewAnchor);
   });
 
   return {
@@ -109,7 +128,7 @@ export function syncCrewMeshes(
       mesh.position.set(c.currentPos[0], c.currentPos[1], c.currentPos[2]);
       mesh.rotation.y = c.facingAngleY;
 
-      // Gentle breathing idle / sleeping head tilt
+      // Subtle sleeping head tilt
       if (c.isSleeping) {
         mesh.rotation.z = 0.25; // tilted sleepy head
       } else {

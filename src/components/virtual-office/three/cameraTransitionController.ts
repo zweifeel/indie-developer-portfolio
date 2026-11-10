@@ -2,8 +2,8 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — CAMERA TRANSITION CONTROLLER (LAPIS 2)
  * 
- * Smooth Lerp Interpolations between Full Campus Overview and
- * Focused Project Room Viewport.
+ * Smooth Lerp Interpolations, Drag-Pan Navigation, and Cursor Zoom between
+ * Full Campus Overview and Focused Project Room Viewports.
  * ============================================================================
  */
 
@@ -78,6 +78,55 @@ export function stepCameraInterpolation(
     orbitAngleHorizontal,
     orbitAngleVertical,
     distance,
+  };
+}
+
+/**
+ * Apply drag-pan across the ground plane aligned with current camera yaw
+ */
+export function applyCameraPan(
+  state: CameraState,
+  deltaX: number,
+  deltaY: number,
+  panSensitivity: number = 0.05
+): CameraState {
+  const factor = panSensitivity * (state.distance / 50);
+  const yaw = state.orbitAngleHorizontal;
+
+  // Right vector on ground plane
+  const rightX = Math.cos(yaw);
+  const rightZ = -Math.sin(yaw);
+
+  // Forward vector on ground plane
+  const forwardX = Math.sin(yaw);
+  const forwardZ = Math.cos(yaw);
+
+  const moveX = (-deltaX * rightX + deltaY * forwardX) * factor;
+  const moveZ = (-deltaX * rightZ + deltaY * forwardZ) * factor;
+
+  // Clamp target coordinates to keep within campus boundaries
+  const newX = Math.max(-50, Math.min(50, state.target[0] + moveX));
+  const newZ = Math.max(-50, Math.min(50, state.target[2] + moveZ));
+
+  return {
+    ...state,
+    target: [newX, state.target[1], newZ],
+  };
+}
+
+/**
+ * Apply smooth zoom
+ */
+export function applyPointerZoom(
+  state: CameraState,
+  zoomDelta: number,
+  minDist = 12,
+  maxDist = 90
+): CameraState {
+  const newDistance = Math.max(minDist, Math.min(maxDist, state.distance + zoomDelta));
+  return {
+    ...state,
+    distance: newDistance,
   };
 }
 

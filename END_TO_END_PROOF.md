@@ -3,68 +3,66 @@
 
 > [!NOTE]
 > Bukti pengujian nyata hulu-ke-hilir untuk:
-> **Tahap 8.3 & 8.4: Peluncuran Live Produksi Cloudflare Pages `sleepykoala.pages.dev`, Integrasi Kunci Webhook Terenkripsi, Aktivasi Webhook Multi-Repo `zweifeel`, Pengujian Pendaftaran Beta Tester Live ke Google Sheets, dan Verifikasi Visual AI Multimodal**.
+> **Tahap 8.5 & Tahap 9: Rekonstruksi Total Kantor Virtual 3D KayKit (Busana Kasual Tanpa Senjata, Eliminasi Void Bolong Biru, Properti Tematik 6 Ruangan, Navigasi Drag-Pan Bebas & Zoom Kursor, serta Penghapusan Mode 2.5D Rusak) dan Implementasi Modul Monitoring Closed Testing 14 Hari Google Play Console Mobile Kasir di Web Admin CMS**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Tahap 8.3 & 8.4 — Live Production Deployment ke Cloudflare Pages `sleepykoala` (`https://sleepykoala.pages.dev`), Pemasangan Rahasia Terenkripsi `GITHUB_WEBHOOK_SECRET`, Registrasi Webhook GitHub pada 5 Repositori `zweifeel` (`DompetNalar`, `idle-master`, `mobile-kasir`, `idle-mining`, `worklume`), Uji Pendaftaran Beta Tester Live ke Google Sheets, serta Verifikasi Visual 3D KayKit di Domain Publik.
-- **Waktu Pengujian:** 2026-11-10 10:15:00
+- **Nama Fitur:** Tahap 8.5 & Tahap 9 — Rekonstruksi Kantor Virtual 3D Low-Poly KayKit (Busana Kasual Tanpa Senjata Fantasi, Anti-Clipping Tempat Duduk, Pondasi Kampus Terpadu Zero-Void, Properti Unik Per Ruangan, Animasi Duduk/Ketik, Navigasi Bebas) + Modul Monitoring Closed Testing 14 Hari Mobile Kasir di Admin CMS (`/admin` -> tab `COMPLIANCE`).
+- **Waktu Pengujian:** 2026-11-10 19:10:00
 - **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0, Cloudflare Pages Free Tier & Google Sheets Backend) — **Rp 0 / $0.00**
-- **Hasil Pengujian Vitest:** **772 / 772 Pengujian LULUS (100% PASS across 39 Test Suites)**
+- **Hasil Pengujian Vitest:** **779 / 779 Pengujian LULUS (100% PASS across 41 Test Suites)**
+- **Hasil Build Production:** `tsc -b && vite build` — **0 Eror TypeScript, Selesai dalam 4.65s**
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Pemicu Pendaftaran Beta Tester Langsung di Domain Publik (`POST https://sleepykoala.pages.dev/api/register-tester`):**
-   - Dikirim payload pendaftaran calon penguji coba aplikasi `mobile-kasir` (`testerName: "Antigravity Verification Tester"`, `testerEmail: "tester-e2e-masked@example.com"`).
-2. **Pemicu Sinyal Webhook GitHub Ping & Push Langsung dari GitHub (`zweifeel/DompetNalar` & `zweifeel/mobile-kasir`):**
-   - GitHub mengirimkan ping resmi ke `https://sleepykoala.pages.dev/api/webhook/github` dengan tanda tangan digital HMAC-SHA256 yang dihitung dari `GITHUB_WEBHOOK_SECRET`.
-3. **Pemicu Permintaan Aset 3D Karakter KayKit di Domain Live:**
-   - Permintaan HTTP GET untuk model 3D `https://sleepykoala.pages.dev/assets/virtual-office/models/kaykit/characters/Knight.glb`.
+1. **Pemicu Interaksi 3D Canvas di Beranda (`HomePage.tsx`):**
+   - Navigasi toolbar ruangan: tombol *Pemandangan Kampus (Overview)*, *DompetNalar*, *Idle Master*, *Mobile Kasir*, *Idle Mining Empire*, *The Broken Origin*, *Worklume*.
+   - Tombol toggle mode navigasi kamera: *Putar (Orbit)* dan *Geser (Pan)*.
+   - Pemicu drag mouse (klik kanan drag / shift+drag / tombol Pan aktif) untuk menggeser posisi kamera di atas pelat lantai kampus.
+   - Pemicu scroll wheel untuk zoom terarah kursor (14m min s/d 85m max).
+2. **Pemicu Modul Monitoring Closed Testing 14 Hari di Admin (`/admin` -> tab `COMPLIANCE`):**
+   - Pilihan hari kalender: Hari ke-1 s/d Hari ke-14.
+   - Pemicu centang checkbox pada 4 pilar checklist harian (*Opt-in Tester Verification*, *Crash & ANR Rate Inspection*, *Tinjauan Feedback & Masukan Tester*, *Sesi Aplikasi & Pengujian Fitur Riil*).
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Cloudflare Pages Edge Functions Same-Origin Proxy (`functions/api/register-tester.ts`):**
-   - Menerima permohonan pendaftaran, melakukan sanitasi email, masking IP, dan menginjeksi token handshake `APPS_SCRIPT_SECRET` ke Google Apps Script tanpa kebocoran di sisi peramban klien.
-2. **Mesin Verifikasi Webhook & Constant-Time Comparison (`githubWebhookService.ts`):**
-   - Memverifikasi header `X-Hub-Signature-256` dengan kunci rahasia Cloudflare `GITHUB_WEBHOOK_SECRET` secara aman anti timing attacks, meloloskan 5 repositori terverifikasi di bawah akun `zweifeel`, dan mengunci ketat proyek `TBO-ROBLOX` (`HTTP 403 REPOSITORY_FROZEN`).
-3. **Pemuatan Aset 3D Three.js di Domain Live:**
-   - Server Cloudflare menyajikan model 3D biner (`Content-Type: model/gltf-binary`) dengan header cache 1 tahun immutable (`max-age=31536000, immutable`).
+1. **Penyaringan Node Senjata & Busana Fantasi KayKit (`kayKitModelLoader.ts`):**
+   - Node modular senjata, perisai, helm, topi sihir, dan mantel (`1H_Sword`, `1H_Crossbow`, `1H_Axe`, `Shield`, `Knight_Helmet`, `Mage_Hat`, dll.) dinonaktifkan (`child.visible = false`). Menyisakan karakter humanoid polos kasual ("Prototype Pete") yang sopan dan ramah kantor.
+2. **Mesin Pelat Pondasi Terpadu Kampus (`officeGeometryBuilder.ts` -> `buildUnifiedCampusGround`):**
+   - Menghasilkan pelat kampus solid 82x82 meter dengan koridor jalan setapak dan lampu bollard bercahaya. Seluruh ruangan berdiri di atas satu pondasi kampus yang menyatu tanpa celah bolong biru (*zero blue void*).
+3. **Properti Tematik Unik Tiap Ruangan Proyek (`officeGeometryBuilder.ts` -> `buildThematicRoomProps`):**
+   - **DompetNalar:** Layar TV gantung berisi grafik candlestick saham fintech (warna hijau-merah).
+   - **IDLE MASTER:** Mesin arcade dingdong retro warna ungu-pink di sudut ruang game dev.
+   - **Mobile Kasir:** Meja kasir minimarket POS oranye dan kasir pintar.
+   - **Idle Mining:** Peti kayu barang tambang dan plakat beliung.
+   - **Worklume:** Papan kanban warna-warni, sofa diskusi, dan meja rendah.
+   - **Pantry:** Counter bar dapur, wastafel cuci piring KayKit, dan meja kafe bulat.
+4. **Logika Monitoring Closed Testing 14 Hari (`closedTestingService.ts`):**
+   - Menghitung persentase kepatuhan (0-100%), memvalidasi minimal 20 tester opt-in, crash-free user rate > 99.0%, dan menandai status `COMPLETED_READY_FOR_PRODUCTION` jika 14 hari penuh telah terverifikasi.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Bukti Pendaftaran Beta Tester Tercatat di Google Sheets:**
-   - Respons dari server:
-     ```json
-     {
-       "success": true,
-       "error": null,
-       "message": "Pendaftaran closed testing berhasil diterima! Terima kasih telah bersedia menguji Mobile Kasir.",
-       "projectId": "mobile-kasir",
-       "maskedEmail": "an***@gmail.com",
-       "timestamp": "2026-11-10 10:13:27"
-     }
-     ```
-   - Data berhasil masuk ke Google Sheets produksi tanpa biaya server ($0.00 / Rp 0).
-2. **Bukti Pengiriman Webhook Berhasil di Sisi GitHub (Status 200 OK):**
-   - Repositori `zweifeel/DompetNalar`: Delivery ID `e95c3e10-dcb4-11f1-98b3-8abfb8f738c1`, `status_code: 200 OK`, durasi `0.11s`.
-   - Repositori `zweifeel/mobile-kasir`: Delivery ID `f50c31d4-dcb4-11f1-940a-75c8a043765a`, `status_code: 200 OK`, durasi `0.19s`.
-   - Repositori `zweifeel/idle-master`, `idle-mining`, `worklume` telah aktif terpasang webhook.
-3. **Bukti Tangkapan Layar Visual Mandiri (Protokol Mata AI):**
-   - `Artifact/live_sleepykoala_pages_dev_verification.png`: Menampilkan beranda live di `https://sleepykoala.pages.dev/` dengan kartu statistik studio, tombol pendaftaran closed testing, dan tab switcher kantor virtual 3D.
-   - `Artifact/live_sleepykoala_pages_dev_3d_campus.png`: Menampilkan kampus virtual 3D Three.js yang aktif di domain live dengan 30 kru petualang KayKit (Ksatria, Penyihir, Rogue, Barbarian), perabotan kantor, balon obrolan mengambang, dan konsol perintah interaktif.
-4. **Bukti Keutuhan Google AdMob `app-ads.txt`:**
-   - `curl.exe -i -s "https://sleepykoala.pages.dev/app-ads.txt"` mengembalikan `HTTP 200 OK` dengan isi resmi `google.com, pub-2539100802088383, DIRECT, f08c47fec0942fa0`.
+1. **Bukti Visual Tangkapan Layar Mandiri (Protokol Mata AI):**
+   - Berkas: `Artifact/screenshot_kampus_3d_verified.png`.
+   - Terverifikasi secara visual:
+     * Mode 2.5D rusak telah dihapus total.
+     * Tidak ada lagi jurang bolong biru melayang antar ruangan; pondasi tampak kokoh, bersih, dan estetik.
+     * Karakter KayKit berkepala kasual rapi, tidak membawa senjata, duduk di kursi masing-masing di depan meja laptop tanpa menumpuk (*anti-clipping*).
+     * Properti tematik (layar saham DompetNalar, arcade dingdong IDLE MASTER, meja kasir Mobile Kasir) terlihat jelas di layar.
+2. **Dokumen Resmi Checklist Kepatuhan:**
+   - Berkas: `Artifact/CHECKLIST_MONITORING_CLOSED_TESTING_14_HARI_MOBILE_KASIR.md`.
+3. **Penyimpanan Status Kepatuhan di Admin:**
+   - Komponen `ClosedTestingMonitor.tsx` aktif merender timeline 14 hari di tab `COMPLIANCE` dashboard Admin.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
-   - **39 Test Suites LULUS 100% (39/39 PASSED)**.
-   - **772 Tests LULUS 100% (772/772 PASSED)** tanpa ada regresi.
-2. **Pemeriksaan Kualitas Kode:**
-   - `npx tsc -b`: 0 Eror TypeScript.
-   - `npm run lint`: 0 Eror linter (Oxlint).
-   - `npm run security:scan`: 0 Kebocoran rahasia di 2.455 berkas.
-   - `npm run security:privacy`: 0 Data PII ilegal.
-   - `npm run security:files`: 2.550 berkas patuh kebijakan repositori.
+   - **41 Test Suites LULUS 100% (41/41 PASSED)**.
+   - **779 Tests LULUS 100% (779/779 PASSED)** tanpa ada kegagalan.
+2. **Pemeriksaan Kualitas Kode & DevSecOps:**
+   - `npm run build`: 0 Eror TypeScript.
+   - `node scripts/security-scan.js`: 0 Kebocoran rahasia di 2.493 berkas.
+   - `node scripts/privacy-scan.js`: 0 Data PII ilegal.
+   - `node scripts/check-file-policy.js`: 2.588 berkas patuh kebijakan repositori.
    - Biaya Operasional: **Rp 0 / $0.00**.

@@ -2,9 +2,9 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — KAYKIT 3D MODEL LOADER & CACHING ENGINE
  * 
- * Provides asynchronous loading, master-mesh caching, and instanced cloning
- * for official KayKit Adventurers (Knight, Mage, Rogue, Barbarian) and
- * KayKit Furniture Bits in Three.js WebGL scenes.
+ * Provides asynchronous loading, master-mesh caching, weapon cleaning (casual mode),
+ * and instanced cloning for official KayKit characters and KayKit Furniture Bits
+ * in Three.js WebGL scenes.
  * ============================================================================
  */
 
@@ -18,11 +18,13 @@ import {
   KAYKIT_FURNITURE_PATHS,
   PROJECT_LEAD_ADVENTURER_MAP,
 } from '../../../types/kayKitAssetTypes';
+import { KAYKIT_FANTASY_NODES_TO_HIDE } from '../../../types/virtualOfficeThemes';
 
 /**
- * Cache for loaded master models
+ * Cache for loaded master models & animations
  */
 const characterCache = new Map<KayKitCharacterType, THREE.Group>();
+const animationsCache = new Map<KayKitCharacterType, THREE.AnimationClip[]>();
 const furnitureCache = new Map<KayKitFurnitureType, THREE.Group>();
 const pendingLoads = new Map<string, Promise<THREE.Group>>();
 
@@ -51,12 +53,17 @@ export function cloneModelHierarchy(source: THREE.Group): THREE.Group {
       child.receiveShadow = true;
       child.frustumCulled = false;
     }
+    // Re-enforce weapon removal on clones
+    if (KAYKIT_FANTASY_NODES_TO_HIDE.includes(child.name as any)) {
+      child.visible = false;
+    }
   });
   return clone;
 }
 
 /**
- * Asynchronously load and cache a KayKit Adventurer model
+ * Asynchronously load and cache a KayKit character model
+ * Strips all weapons, shields, helmets, and wizard hats so they appear as casual office humans.
  */
 export async function loadKayKitCharacterModel(type: KayKitCharacterType): Promise<THREE.Group> {
   if (characterCache.has(type)) {
@@ -77,12 +84,21 @@ export async function loadKayKitCharacterModel(type: KayKitCharacterType): Promi
         const root = gltf.scene;
         root.name = `kaykit_master_${type}`;
 
+        // Cache animations
+        if (gltf.animations && gltf.animations.length > 0) {
+          animationsCache.set(type, gltf.animations);
+        }
+
         // Scale and align for studio office desks (units ~1.8m height)
         root.scale.set(1.0, 1.0, 1.0);
         root.traverse((child) => {
           if ((child as THREE.Mesh).isMesh) {
             child.castShadow = true;
             child.receiveShadow = true;
+          }
+          // Remove all weapons, armor, hats, and capes for clean office casual look
+          if (KAYKIT_FANTASY_NODES_TO_HIDE.includes(child.name as any)) {
+            child.visible = false;
           }
         });
 
@@ -105,6 +121,13 @@ export async function loadKayKitCharacterModel(type: KayKitCharacterType): Promi
   } finally {
     pendingLoads.delete(modelPath);
   }
+}
+
+/**
+ * Get animation clips for a KayKit character
+ */
+export function getCharacterAnimations(type: KayKitCharacterType): THREE.AnimationClip[] {
+  return animationsCache.get(type) || [];
 }
 
 /**
@@ -160,7 +183,7 @@ export async function loadKayKitFurnitureModel(type: KayKitFurnitureType): Promi
 }
 
 /**
- * Preload all core KayKit adventurers and essential office furniture
+ * Preload all core KayKit characters and essential office furniture
  */
 export async function preloadKayKitStudioAssets(): Promise<void> {
   const characters: KayKitCharacterType[] = ['Knight', 'Mage', 'Rogue', 'Barbarian'];
@@ -168,12 +191,24 @@ export async function preloadKayKitStudioAssets(): Promise<void> {
     'table_medium',
     'table_medium_long',
     'chair_A',
+    'chair_B_wood',
     'couch',
+    'armchair',
     'shelf_B_large_decorated',
+    'cabinet_medium_decorated',
     'cactus_medium_A',
     'lamp_table',
+    'lamp_standing',
     'book_set',
     'rug_rectangle_A',
+    'rug_oval_A',
+    'pictureframe_large_A',
+    'table_low',
+    'kitchencounter_straight_A_decorated',
+    'kitchencounter_sink',
+    'table_round_A_decorated',
+    'bench',
+    'box_A',
   ];
 
   await Promise.allSettled([
@@ -183,7 +218,7 @@ export async function preloadKayKitStudioAssets(): Promise<void> {
 }
 
 /**
- * Resolve character adventurer class from project slug
+ * Resolve character class from project slug
  */
 export function resolveAdventurerForProject(projectSlug: string, memberIndex: number = 0): KayKitCharacterType {
   const base = PROJECT_LEAD_ADVENTURER_MAP[projectSlug.toLowerCase()];

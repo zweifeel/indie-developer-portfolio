@@ -76,6 +76,7 @@ import {
 import { CmsMediaMetadata, MediaRole, MediaVisibility } from '../services/media/types';
 import { ProjectIcon, ScreenshotImage } from '../components/ProjectMedia';
 import { AdminProgressManager } from '../components/admin/AdminProgressManager';
+import { ClosedTestingMonitor } from '../components/admin/ClosedTestingMonitor';
 import { usePageMeta } from '../hooks/usePageMeta';
 
 export const AdminPage: React.FC = () => {
@@ -2076,10 +2077,13 @@ export const AdminPage: React.FC = () => {
       )}
 
       {/* ========================================================================= */}
-      {/* TAB 5: GOOGLE PLAY CONSOLE COMPLIANCE MANAGER (Milestone 6.6) */}
+      {/* TAB 5: GOOGLE PLAY CONSOLE COMPLIANCE MANAGER (Milestone 6.6 & Tahap 9) */}
       {/* ========================================================================= */}
       {activeTab === 'COMPLIANCE' && (
         <div className="space-y-6">
+          {/* 14-Day Google Play Closed Testing Tracker for Mobile Kasir */}
+          <ClosedTestingMonitor />
+
           <div className="bg-stone-900 border border-stone-800 rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 className="text-lg font-bold text-stone-100 flex items-center gap-2">
