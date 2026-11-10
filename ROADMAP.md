@@ -77,6 +77,7 @@ Sesuai inspirasi dari video lembur.id & gaya karakter manusia ramah Kay Lousberg
 ## 🚀 TAHAP AKTIF SELANJUTNYA (EKSEKUSI DI NEW CHAT)
 
 ### 8. Peluncuran Live Produksi Cloudflare Pages & Pemantauan Tester
-- [ ] **8.1 Push Perdana Repositori ke GitHub Owner:** Jalankan `git push -u origin master` dari PowerShell / GitHub Desktop.
-- [ ] **8.2 Hubungkan Repositori ke Cloudflare Pages:** Pilih repo `indie-developer-portfolio` di dashboard Cloudflare Pages, build preset Vite (`npm run build`, output: `dist`), live di `*.pages.dev` ($0.00 / Rp 0).
-- [ ] **8.3 Uji Coba Formulir Tester Nyata di Alamat Live:** Melakukan pendaftaran tester uji coba langsung di domain publik Cloudflare Pages untuk memastikan data masuk ke Google Sheets.
+- [x] **8.1 Push Perdana Repositori ke GitHub Owner (`zweifeel`):** Cabang `master` telah berhasil di-push ke `https://github.com/zweifeel/indie-developer-portfolio.git` dan 4 repositori proyek mandiri (`idle-master`, `mobile-kasir`, `idle-mining`, `worklume`) telah dibuat di bawah akun `zweifeel`.
+- [x] **8.2 Integrasi Model 3D Otentik KayKit Adventurers & Furniture (CC0):** Karakter `Knight.glb`, `Mage.glb`, `Rogue.glb`, `Barbarian.glb` serta perabotan kantor 3D KayKit telah terpasang dan terverifikasi visual di browser nyata.
+- [ ] **8.3 Hubungkan Repositori ke Cloudflare Pages:** Pilih repo `zweifeel/indie-developer-portfolio` di dashboard Cloudflare Pages (`dash.cloudflare.com`), build preset Vite (`npm run build`, output: `dist`), live di `*.pages.dev` ($0.00 / Rp 0).
+- [ ] **8.4 Uji Coba Formulir Tester Nyata di Alamat Live:** Melakukan pendaftaran tester uji coba langsung di domain publik Cloudflare Pages untuk memastikan data masuk ke Google Sheets.

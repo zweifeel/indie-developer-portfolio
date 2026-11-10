@@ -210,10 +210,16 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     crewStateRef.current = assembled.crew;
     roomsRef.current = assembled.rooms;
 
-    // 2b. Enhance with Authentic KayKit 3D Models (Graceful Fallback)
+    // 2b. Enhance with Authentic KayKit 3D Models (Characters & Furniture with Graceful Fallback)
     const enhanceWithKayKitModels = async () => {
       try {
-        const { loadKayKitCharacterModel, resolveAdventurerForProject } = await import('./three/kayKitModelLoader');
+        const {
+          loadKayKitCharacterModel,
+          loadKayKitFurnitureModel,
+          resolveAdventurerForProject,
+        } = await import('./three/kayKitModelLoader');
+
+        // 1. Load authentic KayKit 3D Adventurers (Knight, Mage, Rogue, Barbarian)
         assembled.crew.forEach(async (member, idx) => {
           const charType = resolveAdventurerForProject(member.projectId, idx);
           try {
@@ -228,6 +234,36 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
             }
           } catch {
             // Silently retain procedural mesh on failure
+          }
+        });
+
+        // 2. Load authentic KayKit 3D Office Furniture into each room
+        assembled.rooms.forEach(async (room) => {
+          const roomGroup = assembled.roomMeshMap.get(room.projectId);
+          if (!roomGroup || !sceneRef.current) return;
+
+          try {
+            // Decorated Bookshelf against back wall
+            const shelf = await loadKayKitFurnitureModel('shelf_B_large_decorated');
+            shelf.position.set(room.centerPos[0] - 4.2, 0, room.bounds.minZ + 0.8);
+            roomGroup.add(shelf);
+
+            // Cozy Office Couch in room lounge corner
+            const couch = await loadKayKitFurnitureModel('couch');
+            couch.position.set(room.centerPos[0] + 4.0, 0, room.bounds.minZ + 1.2);
+            roomGroup.add(couch);
+
+            // Potted Cactus plant near entrance
+            const cactus = await loadKayKitFurnitureModel('cactus_medium_A');
+            cactus.position.set(room.bounds.maxX - 1.2, 0, room.bounds.maxZ - 1.2);
+            roomGroup.add(cactus);
+
+            // Center Carpet / Rug
+            const rug = await loadKayKitFurnitureModel('rug_rectangle_A');
+            rug.position.set(room.centerPos[0], 0.02, room.centerPos[2]);
+            roomGroup.add(rug);
+          } catch {
+            // Keep procedural room props if furniture fails
           }
         });
       } catch {

@@ -10,6 +10,7 @@
 
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils.js';
 import {
   KayKitCharacterType,
   KayKitFurnitureType,
@@ -35,14 +36,20 @@ function getLoader(): GLTFLoader {
 }
 
 /**
- * Deep clone a Three.js hierarchy with shared geometries & materials
+ * Deep clone a Three.js hierarchy (supports rigged SkinnedMesh via SkeletonUtils)
  */
 export function cloneModelHierarchy(source: THREE.Group): THREE.Group {
-  const clone = source.clone(true);
+  let clone: THREE.Group;
+  try {
+    clone = SkeletonUtils.clone(source) as THREE.Group;
+  } catch {
+    clone = source.clone(true);
+  }
   clone.traverse((child) => {
     if ((child as THREE.Mesh).isMesh) {
       child.castShadow = true;
       child.receiveShadow = true;
+      child.frustumCulled = false;
     }
   });
   return clone;
