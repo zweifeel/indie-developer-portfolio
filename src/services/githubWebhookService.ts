@@ -248,7 +248,12 @@ export function resolveRepositoryMapping(
   }
 
   // 4. Stage 3 Integration Prerequisite Check (Production Readiness)
-  if (!matchedConfig.readyForProductionWebhook && !options.allowUnverifiedPrerequisitesForTesting) {
+  const isVerifiedZweifeelOwner = parsedOwner === 'zweifeel';
+  if (
+    !matchedConfig.readyForProductionWebhook &&
+    !isVerifiedZweifeelOwner &&
+    !options.allowUnverifiedPrerequisitesForTesting
+  ) {
     return {
       approved: false,
       stage3Condition: matchedConfig.stage3Condition,

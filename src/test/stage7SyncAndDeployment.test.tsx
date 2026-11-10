@@ -223,6 +223,35 @@ describe('STAGE 7: Production Rollout, Cloudflare Headers & GitHub Webhook Sync 
       expect(data.success).toBe(false);
       expect(data.error).toBe('REPOSITORY_FROZEN');
     });
+
+    it('Scenario Stage 8: permits verified multi-repositories under zweifeel account in strict production mode', () => {
+      const zweifeelRepos = [
+        { repo: 'zweifeel/idle-master', expectedSlug: 'idle-master' },
+        { repo: 'zweifeel/mobile-kasir', expectedSlug: 'mobile-kasir' },
+        { repo: 'zweifeel/idle-mining', expectedSlug: 'idle-mining' },
+        { repo: 'zweifeel/worklume', expectedSlug: 'worklume' },
+        { repo: 'zweifeel/indie-developer-portfolio', expectedSlug: 'indie-developer-portfolio' },
+      ];
+
+      for (const item of zweifeelRepos) {
+        const mapping = resolveRepositoryMapping(item.repo, {
+          allowUnverifiedPrerequisitesForTesting: false,
+        });
+
+        expect(mapping.approved).toBe(true);
+        expect(mapping.error).toBeUndefined();
+        expect(mapping.info?.slug).toBe(item.expectedSlug);
+      }
+    });
+
+    it('Scenario Stage 8: continues to reject non-verified owners for unready repos in strict production mode', () => {
+      const mapping = resolveRepositoryMapping('unregistered-user/mobile-kasir', {
+        allowUnverifiedPrerequisitesForTesting: false,
+      });
+
+      expect(mapping.approved).toBe(false);
+      expect(mapping.error).toBe('STAGE3_PREREQUISITE_UNMET');
+    });
   });
 
   describe('4. Unlimited Closed Testing Registration Presentation', () => {

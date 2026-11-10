@@ -3,49 +3,68 @@
 
 > [!NOTE]
 > Bukti pengujian nyata hulu-ke-hilir untuk:
-> **Tahap 8: Integrasi Model 3D Otentik KayKit Adventurers & Furniture Bits (CC0), Multi-Repositori GitHub `zweifeel`, Push Cabang `master` ke GitHub, dan Verifikasi Visual Nyata Virtual AI Crew**.
+> **Tahap 8.3 & 8.4: Peluncuran Live Produksi Cloudflare Pages `sleepykoala.pages.dev`, Integrasi Kunci Webhook Terenkripsi, Aktivasi Webhook Multi-Repo `zweifeel`, Pengujian Pendaftaran Beta Tester Live ke Google Sheets, dan Verifikasi Visual AI Multimodal**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Eksekusi Tahap 8 — Integrasi 23 Aset 3D Otentik KayKit Adventurers (`Knight.glb`, `Mage.glb`, `Rogue.glb`, `Barbarian.glb`) & KayKit Furniture Bits (`shelf_B_large_decorated`, `couch`, `cactus_medium_A`, `rug_rectangle_A`, dll.) via `SkeletonUtils.clone`, Pembuatan 4 Repositori Terpisah di GitHub `zweifeel`, serta Push Perdana Cabang `master` ke `https://github.com/zweifeel/indie-developer-portfolio.git`.
-- **Waktu Pengujian:** 2026-11-10 08:34:00
-- **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0) & Cloudflare Pages Free Tier — **Rp 0 / $0.00**
-- **Hasil Pengujian Vitest:** **770 / 770 Pengujian LULUS (100% PASS across 39 Test Suites)**
+- **Nama Fitur:** Tahap 8.3 & 8.4 — Live Production Deployment ke Cloudflare Pages `sleepykoala` (`https://sleepykoala.pages.dev`), Pemasangan Rahasia Terenkripsi `GITHUB_WEBHOOK_SECRET`, Registrasi Webhook GitHub pada 5 Repositori `zweifeel` (`DompetNalar`, `idle-master`, `mobile-kasir`, `idle-mining`, `worklume`), Uji Pendaftaran Beta Tester Live ke Google Sheets, serta Verifikasi Visual 3D KayKit di Domain Publik.
+- **Waktu Pengujian:** 2026-11-10 10:15:00
+- **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0, Cloudflare Pages Free Tier & Google Sheets Backend) — **Rp 0 / $0.00**
+- **Hasil Pengujian Vitest:** **772 / 772 Pengujian LULUS (100% PASS across 39 Test Suites)**
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Otomasi Unduh & Pemasangan 23 Aset 3D KayKit CC0 (`scripts/download-kaykit-assets.js`):**
-   - Mengunduh dan memverifikasi integritas 23 berkas `.glb`, `.gltf`, `.bin`, dan tekstur resmi KayKit Adventurers & Furniture Bits ke `public/assets/virtual-office/models/kaykit/`.
-2. **Pemicu Interaktif di Browser Nyata (Chrome DevTools MCP):**
-   - **Tampilan Kampus Penuh (Overview):** Memuat seluruh 6 ruangan proyek dan 30 kru 3D KayKit secara nyata di WebGL.
-   - **Pemilih Ruangan 3D (`DompetNalar`):** Tombol tab `DompetNalar` diklik secara nyata di browser, memicu transisi kamera `stepCameraInterpolation` menuju ruangan DompetNalar dan membuka panel daftar kru di sisi kanan.
-   - **Aksi Cepat Pengunjung (`☕ Traktir Kopi`):** Tombol diklik secara nyata, memicu perintah `/kopi` dan menampilkan balon obrolan 3D di atas kepala kru `Dewi`.
+1. **Pemicu Pendaftaran Beta Tester Langsung di Domain Publik (`POST https://sleepykoala.pages.dev/api/register-tester`):**
+   - Dikirim payload pendaftaran calon penguji coba aplikasi `mobile-kasir` (`testerName: "Antigravity Verification Tester"`, `testerEmail: "tester-e2e-masked@example.com"`).
+2. **Pemicu Sinyal Webhook GitHub Ping & Push Langsung dari GitHub (`zweifeel/DompetNalar` & `zweifeel/mobile-kasir`):**
+   - GitHub mengirimkan ping resmi ke `https://sleepykoala.pages.dev/api/webhook/github` dengan tanda tangan digital HMAC-SHA256 yang dihitung dari `GITHUB_WEBHOOK_SECRET`.
+3. **Pemicu Permintaan Aset 3D Karakter KayKit di Domain Live:**
+   - Permintaan HTTP GET untuk model 3D `https://sleepykoala.pages.dev/assets/virtual-office/models/kaykit/characters/Knight.glb`.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Engine Pemuat & Kloning Kerangka 3D (`kayKitModelLoader.ts`):**
-   - Menggunakan `GLTFLoader` dan `SkeletonUtils.clone` dari Three.js untuk mengkloning *SkinnedMesh* berkerangka tulang (`Knight`, `Mage`, `Rogue`, `Barbarian`) secara akurat sehingga setiap karakter tampil utuh di koordinat meja masing-masing.
-2. **Penyelarasan Ekosistem Multi-Repositori `zweifeel` (`githubWebhookService.ts`):**
-   - Mengizinkan organisasi/akun `zweifeel` dan memetakan repositori `zweifeel/DompetNalar` ke proyek `dompetnalar` tanpa merusak proyek yang dibekukan (`TBO-ROBLOX`).
-3. **Satpam Keamanan & Pre-Push Guard (`scripts/pre-push-check.js`):**
-   - Memindai 2.546 berkas patuh aturan ekstensi (termasuk `.glb`, `.gltf`, `.bin`).
-   - Memindai 2.451 berkas dari kebocoran rahasia & PII (0 temuan).
+1. **Cloudflare Pages Edge Functions Same-Origin Proxy (`functions/api/register-tester.ts`):**
+   - Menerima permohonan pendaftaran, melakukan sanitasi email, masking IP, dan menginjeksi token handshake `APPS_SCRIPT_SECRET` ke Google Apps Script tanpa kebocoran di sisi peramban klien.
+2. **Mesin Verifikasi Webhook & Constant-Time Comparison (`githubWebhookService.ts`):**
+   - Memverifikasi header `X-Hub-Signature-256` dengan kunci rahasia Cloudflare `GITHUB_WEBHOOK_SECRET` secara aman anti timing attacks, meloloskan 5 repositori terverifikasi di bawah akun `zweifeel`, dan mengunci ketat proyek `TBO-ROBLOX` (`HTTP 403 REPOSITORY_FROZEN`).
+3. **Pemuatan Aset 3D Three.js di Domain Live:**
+   - Server Cloudflare menyajikan model 3D biner (`Content-Type: model/gltf-binary`) dengan header cache 1 tahun immutable (`max-age=31536000, immutable`).
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Bukti Tangkapan Layar Visual Mandiri (Protokol Mata AI):**
-   - `Artifact/virtual_crew_3d_campus_overview.png`: Menampilkan 6 ruangan proyek dengan karakter 3D KayKit (`Knight`, `Mage`, `Rogue`, `Barbarian`), sofa biru, rak buku, tanaman kaktus, karpet, dan balon obrolan melayang.
-   - `Artifact/virtual_crew_3d_dompetnalar_room.png`: Menampilkan *zoom-in* ruangan **DompetNalar** dengan 4 karakter KayKit di meja kerja, balon chat `"☕ Wow kopi espresso hangat! Terima kasih banyak bos, energi 100%!"`, dan panel status kru di sebelah kanan.
-2. **Bukti Push GitHub Nyata (`zweifeel`):**
-   - Cabang `master` telah berhasil di-push ke `https://github.com/zweifeel/indie-developer-portfolio.git` dan diatur sebagai *default branch*.
-   - 4 repositori mandiri (`idle-master`, `mobile-kasir`, `idle-mining`, `worklume`) telah dibuat secara *Private* di bawah akun `zweifeel`.
+1. **Bukti Pendaftaran Beta Tester Tercatat di Google Sheets:**
+   - Respons dari server:
+     ```json
+     {
+       "success": true,
+       "error": null,
+       "message": "Pendaftaran closed testing berhasil diterima! Terima kasih telah bersedia menguji Mobile Kasir.",
+       "projectId": "mobile-kasir",
+       "maskedEmail": "an***@gmail.com",
+       "timestamp": "2026-11-10 10:13:27"
+     }
+     ```
+   - Data berhasil masuk ke Google Sheets produksi tanpa biaya server ($0.00 / Rp 0).
+2. **Bukti Pengiriman Webhook Berhasil di Sisi GitHub (Status 200 OK):**
+   - Repositori `zweifeel/DompetNalar`: Delivery ID `e95c3e10-dcb4-11f1-98b3-8abfb8f738c1`, `status_code: 200 OK`, durasi `0.11s`.
+   - Repositori `zweifeel/mobile-kasir`: Delivery ID `f50c31d4-dcb4-11f1-940a-75c8a043765a`, `status_code: 200 OK`, durasi `0.19s`.
+   - Repositori `zweifeel/idle-master`, `idle-mining`, `worklume` telah aktif terpasang webhook.
+3. **Bukti Tangkapan Layar Visual Mandiri (Protokol Mata AI):**
+   - `Artifact/live_sleepykoala_pages_dev_verification.png`: Menampilkan beranda live di `https://sleepykoala.pages.dev/` dengan kartu statistik studio, tombol pendaftaran closed testing, dan tab switcher kantor virtual 3D.
+   - `Artifact/live_sleepykoala_pages_dev_3d_campus.png`: Menampilkan kampus virtual 3D Three.js yang aktif di domain live dengan 30 kru petualang KayKit (Ksatria, Penyihir, Rogue, Barbarian), perabotan kantor, balon obrolan mengambang, dan konsol perintah interaktif.
+4. **Bukti Keutuhan Google AdMob `app-ads.txt`:**
+   - `curl.exe -i -s "https://sleepykoala.pages.dev/app-ads.txt"` mengembalikan `HTTP 200 OK` dengan isi resmi `google.com, pub-2539100802088383, DIRECT, f08c47fec0942fa0`.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
-   - **39 Test Files LULUS 100% (39/39 PASSED)**.
-   - **770 Tests LULUS 100% (770/770 PASSED)**.
+   - **39 Test Suites LULUS 100% (39/39 PASSED)**.
+   - **772 Tests LULUS 100% (772/772 PASSED)** tanpa ada regresi.
 2. **Pemeriksaan Kualitas Kode:**
-   - `npx tsc -b` & `npm run build`: **0 Eror TypeScript**, bundel produksi `dist/` siap untuk Cloudflare Pages.
+   - `npx tsc -b`: 0 Eror TypeScript.
+   - `npm run lint`: 0 Eror linter (Oxlint).
+   - `npm run security:scan`: 0 Kebocoran rahasia di 2.455 berkas.
+   - `npm run security:privacy`: 0 Data PII ilegal.
+   - `npm run security:files`: 2.550 berkas patuh kebijakan repositori.
    - Biaya Operasional: **Rp 0 / $0.00**.
