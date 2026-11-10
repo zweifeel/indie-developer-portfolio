@@ -3,70 +3,60 @@
 
 > [!NOTE]
 > Bukti pengujian nyata hulu-ke-hilir untuk:
-> **Penyelesaian 4 Revisi Utama Kantor Virtual 3D: Multi-Agent Autonomous Random Movement & Animasi KayKit Nyata, Sistem Collision Anti-Tembus & Wall-Sliding, Tekstur Lantai Prosedural & Tembok Arsitektur & Papan Nama Proyek 3D, serta Navigasi Kamera Free Drag-to-Pan Bebas**.
+> **Tahap 9: Verifikasi Simulasi Web Admin CMS Changelog GitHub (Draft -> Review -> Public), Panduan Resmi Custom Domain Studio Rp 0, dan Live Deployment Revisi Kantor Virtual 3D ke Cloudflare Pages (`sleepykoala.pages.dev`)**.
 
 ---
 
 ## 1. Identitas Fitur
-- **Nama Fitur:** Revisi Kantor Virtual 3D — Multi-Agent Crew AI Animation Blending (`Walking_A` & `Sit_Chair_Idle`), Bounding Box Collision & Agent Separation, Procedural Floor Canvas Textures, Architectural Walls & 3D Illuminated Project Signage Boards, dan Free Drag-to-Pan Camera Controls.
-- **Waktu Pengujian:** 2026-11-10 20:30:00
-- **Lisensi & Biaya:** 100% Free Open-Source (Three.js MIT, Kay Lousberg CC0, Cloudflare Pages Free Tier & Google Sheets Backend) — **Rp 0 / $0.00**
-- **Hasil Pengujian Vitest:** **781 / 781 Pengujian LULUS (100% PASS across 41 Test Suites)**
-- **Hasil Build Production:** `tsc -b && vite build` — **0 Eror TypeScript, Selesai dalam 5.99s**
+- **Nama Fitur:** Tahap 9 — Web Admin CMS Changelog Full-Flow Pipeline, GitHub Webhook Fail-Closed Invariant Verification, Cloudflare Pages Live Direct Upload Deployment, dan Panduan Custom Domain $0.00 / Rp 0.
+- **Waktu Pengujian:** 2026-11-10 22:15:00
+- **Lisensi & Biaya:** 100% Free Open-Source (Cloudflare Pages Free Tier, Google Sheets Backend, Three.js MIT, Kay Lousberg CC0) — **Rp 0 / $0.00**
+- **Hasil Pengujian Vitest:** **787 / 787 Pengujian LULUS (100% PASS across 42 Test Suites)**
+- **Hasil Build & Deploy Live:** `npm run deploy:live` — **Uploaded 30 files, HTTP 200 OK di https://sleepykoala.pages.dev**
+- **Pemindai Keamanan & Privasi:** 2.500 berkas dipindai, 0 kebocoran kredensial, 0 pelanggaran privasi, 2.595 berkas patuh kebijakan.
 
 ---
 
 ## 2. Empat Pilar Bukti End-to-End
 
 ### Pilar 1: Input / Pemicu Nyata
-1. **Pemicu Navigasi Kamera Free Drag & Pan (Mouse & Touch):**
-   - **Klik-Kiri Drag (atau sentuh geser di ponsel):** Langsung menggerakkan kamera secara bebas ke segala penjuru kampus (menghilangkan rasa "terkunci di tengah hijau").
-   - **Klik-Kanan Drag / Tahan Shift / Tombol Putar (Orbit):** Memutar kamera 360° secara mulus mengitari sudut pandang yang diinginkan.
-   - **Roda Mouse (Scroll):** Memperbesar (*zoom in*) dan memperkecil (*zoom out*) pandangan kampus dari 12m hingga 90m terarah ke posisi kursor.
-2. **Pemicu Aktivitas Otonom Multi-Agent:**
-   - Evaluasi otomatis multi-agent berkala (~3.5 detik per siklus) yang mencakup seluruh 6 ruangan proyek, memungkinkan multiple kru bangkit, meregangkan badan, berkeliling ruang, mengunjungi pantry atau sofa santai secara bersamaan.
-3. **Pemicu Perintah Konsol Pengunjung (`VisitorCommandConsole.tsx`):**
-   - Tombol aksi cepat `/bangunkan`, `/kopi`, `/pizza`, `/lembur`, dan `/pesta` memicu reaksi langsung ke anggota kru terkait.
+1. **Pemicu Deployment Live Produksi (`deploy:live`):**
+   - Perintah `npm run deploy:live` mengompilasi bundel TypeScript `dist/` terbaru (`index-D8rWmNfr.js`) dan mengunggah langsung ke Cloudflare Pages `sleepykoala` menggunakan Cloudflare Wrangler CLI.
+   - Pengecekan jaringan HTTP langsung via `Invoke-WebRequest` membuktikan server `https://sleepykoala.pages.dev` merespons dengan `HTTP 200 OK` dan menyajikan aset JavaScript terbaru.
+2. **Pemicu Sinyal Webhook GitHub (`/api/webhook/github`):**
+   - Payload commit Git bertanda tangan kriptografi HMAC-SHA256 (`X-Hub-Signature-256`) dikirimkan dari repositori game (`mobile-kasir` & `dompetnalar`).
+   - Sistem membaca payload dan memvalidasi integritas pengirim.
+3. **Pemicu Editorial Admin CMS (`/admin`):**
+   - Admin login terotentikasi membuka tab `PROGRESS` -> `EVENTS`.
+   - Admin meninjau draf changelog dan menekan tombol transisi publikasi (`review` -> `public`).
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-1. **Dynamic Animation Blending KayKit (`ThreeCampusCanvas.tsx` & `kayKitModelLoader.ts`):**
-   - Pengelola animasi independen per kru (`crewAnimControllersRef`) mengontrol pergantian aksi secara halus (*cross-fade* 0.2 detik).
-   - Karakter saat duduk memainkan pose `Sit_Chair_Idle`.
-   - Ketika bergerak menuju tujuan, animasi otomatis beralih ke `Walking_A` dengan gerakan langkah kaki nyata.
-   - Saat tiba di pantry atau layar proyek, animasi beralih ke `Interact` / `Cheer` / `Idle`.
-2. **Sistem Deteksi Tabrakan & Anti-Overlap (`collisionSystem.ts`):**
-   - Fungsi `resolveObstacleCollision`: Karakter yang mendekati meja kerja, dinding, atau furnitur otomatis meluncur di tepi objek (*wall sliding*) dan dilarang menembus ke dalam kotak perabotan.
-   - Fungsi `resolveAgentCollisions`: Menerapkan gaya tolak antar-karakter (*boids separation*) saat jarak < 0.75m sehingga dua karakter tidak pernah bertumpuk menjadi satu.
-   - Pembatasan koordinat pelat kampus: Mencegah karakter jatuh atau melayang keluar dari area gedung.
-3. **Pembangkit Tekstur Prosedural Otomatis (`officeTextureGenerator.ts`):**
-   - Menghasilkan tekstur grafis beresolusi tinggi menggunakan Canvas 2D lokal Three.js tanpa mengunduh gambar eksternal (0 KB kuota):
-     * `createParquetFloorTexture`: Serat kayu parket elegan untuk DompetNalar, Worklume, dan Mobile Kasir.
-     * `createOfficeTileTexture`: Ubin keramik modern bergaris nat bersih untuk IDLE MASTER dan Idle Mining.
-     * `createCarpetTexture`: Anyaman kain karpet hangat untuk Collaboration Plaza.
-     * `createCorridorRunnerTexture`: Karpet biru pemandu koridor utama.
-4. **Dinding Arsitektur & Papan Nama 3D (`officeGeometryBuilder.ts`):**
-   - Dinding ruangan setinggi 2.8m dengan lis plin bawah (*baseboard*), bukaan pintu selebar 4.5m menghadap koridor, dan partisi kaca bening.
-   - Papan nama 3D bercahaya dipasang di atas pintu masuk setiap ruangan, menampilkan nama proyek resmi (misal: "DOMPETNALAR • APPLICATION LAB", "IDLE MASTER • GAME LAB") dengan lampu LED aksen warna neon.
+1. **Transformasi Event & Penguncian Status Draf Otomatis (`githubWebhookService.ts`):**
+   - Fungsi `transformPushEvent` secara ketat mengunci atribut `publicationStatus: 'draft'`.
+   - Kode dilarang keras mengubah status langsung ke `public` tanpa persetujuan Admin.
+2. **Isolasi Publik Ketat (Fail-Closed Whitelist Projection — `cmsProgressService.ts`):**
+   - Fungsi `fetchPublicProjectProgress` mengekstraksi data melalui `extractPublicProgress()`, yang secara matematis memfilter dan membuang semua item berstatus `draft` dan `review`.
+   - Pengunjung publik dibuktikan 100% tidak dapat melihat catatan rilis yang masih dalam bentuk draf.
+3. **Validasi Alur Editorial Berlapis (`canTransitionPublication`):**
+   - Transisi langsung dari `draft` ke `public` diblokir dengan eror `INVALID_EDITORIAL_TRANSITION`.
+   - Alur wajib: `draft` -> `review` (ditinjau) -> `public` (dipublikasikan).
+4. **Audit Trail Logging yang Terverifikasi (`recordProgressAuditLog`):**
+   - Setiap perubahan status publikasi meninggalkan jejak audit permanen yang mencatat email admin, id item, waktu, dan status sebelum & sesudah.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-1. **Kode Terintegrasi Penuh ke Sistem Produksi:**
-   - `src/components/virtual-office/three/collisionSystem.ts`
-   - `src/components/virtual-office/three/officeTextureGenerator.ts`
-   - `src/components/virtual-office/three/crewAIController.ts`
-   - `src/components/virtual-office/three/officeGeometryBuilder.ts`
-   - `src/components/virtual-office/ThreeCampusCanvas.tsx`
-2. **Keluaran Visual Tiga Dimensi yang Tersaji:**
-   - Semua 30 kru memiliki animasi berjalan, duduk, dan bekerja yang hidup.
-   - Karakter tidak lagi menembus meja dan tidak saling tabrak.
-   - Lantai ruangan tidak lagi berwarna polos datar, melainkan bertekstur kayu parket, ubin kantor, dan karpet nyata.
-   - Papan nama 3D terpasang di atas pintu masuk ruangan, memudahkan pengunjung mengenali ruangan tiap proyek.
-   - Penjelajahan kamera mouse drag-to-pan mengalir bebas tanpa terkunci di titik tengah.
+1. **Server Produksi Live Terbarui:**
+   - Website `https://sleepykoala.pages.dev` telah menerima seluruh aset kantor 3D (lantai kayu/keramik/karpet, dinding berpintu 2.8m, papan nama 3D bercahaya, 30 kru bergerak aktif).
+2. **Keluaran Halaman Etalase Publik (`ProjectDetailPage.tsx`):**
+   - Begitu item changelog berstatus `public`, halaman detail proyek publik (`/projects/:slug`) di bagian "Linimasa Perkembangan Proyek" secara otomatis menampilkan judul dan deskripsi catatan rilis tersebut.
+3. **Dokumen Panduan Custom Domain Rp 0:**
+   - `Artifact/PANDUAN_PENYAMBUNGAN_CUSTOM_DOMAIN_STUDIO.md` telah dibuat lengkap dengan instruksi 3 langkah mudah dan bebas biaya.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
 1. **Pengujian Otomatis Vitest:**
-   - **41 Test Suites LULUS 100% (41/41 PASSED)**.
-   - **781 Tests LULUS 100% (781/781 PASSED)** (meningkat dari 779 tes sebelumnya).
-2. **Pemeriksaan Kualitas Kode & DevSecOps:**
-   - `npm run build`: 0 Eror TypeScript.
-   - `python auto_sync.py audit`: 0 Kode tiruan / placeholder / TODO / Dummy.
+   - **42 Test Suites LULUS 100% (42/42 PASSED)**.
+   - **787 Tests LULUS 100% (787/787 PASSED)** (meningkat dari 781 tes sebelumnya).
+2. **Pemeriksaan DevSecOps & Integritas Repositori:**
+   - `npm run scan`: 0 Kredensial bocor.
+   - `npm run security:privacy`: 0 Data PII bocor.
+   - `npm run security:files`: 2.595 berkas patuh.
    - Biaya Operasional: **Rp 0 / $0.00**.

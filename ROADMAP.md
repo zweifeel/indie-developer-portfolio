@@ -76,13 +76,27 @@ Berdasarkan umpan balik langsung Owner dari tangkapan layar:
 
 ## 🚀 TAHAP PRIORITAS BERIKUTNYA
 
-### 📊 9. Monitoring Closed Testing 14 Hari Mobile Kasir & Verifikasi CMS Changelog
-- [ ] **9.1 Modul Pemantauan 14 Hari Closed Testing di Web Admin CMS (`/admin`):**
+### 9. Monitoring Closed Testing 14 Hari Mobile Kasir & Verifikasi CMS Changelog
+- [x] **9.1 Modul Pemantauan 14 Hari Closed Testing di Web Admin CMS (`/admin`):**
   - Progress tracker interaktif hari ke-1 sampai hari ke-14.
   - Verifikasi kepatuhan dashboard Google Play Console (20 tester opt-in, crash rate < 1.09%, ANR rate < 0.47%).
   - Generator draf jawaban resmi 6 pertanyaan pengajuan akses produksi Google Play siap-salin 1-klik.
-- [ ] **9.2 Verifikasi Hulu-ke-Hilir Alur CMS Changelog GitHub Webhook:**
+- [x] **9.2 Verifikasi Hulu-ke-Hilir Alur CMS Changelog GitHub Webhook & Live Deploy:**
   - Uji otomatis event webhook masuk sebagai DRAFT (anti-bocor ke etalase publik).
-  - Uji peninjauan dan penyuntingan oleh Admin di `/admin` -> `PROGRESS` -> `EVENTS`.
-  - Uji publikasi langsung muncul di etalase publik (`/project/:slug` Linimasa Perkembangan Proyek).
-- [ ] **9.3 Artefak Panduan Eksekutif Owner (`CHECKLIST_MONITORING_CLOSED_TESTING_14_HARI_MOBILE_KASIR.md`):** Panduan operasional harian ramah non-coder untuk memantau Google Play Console hingga permohonan produksi disetujui Google.
+  - Uji peninjauan dan penyuntingan oleh Admin di `/admin` -> `PROGRESS` -> `EVENTS` dengan alur editorial wajib (`draft` -> `review` -> `public`).
+  - Uji publikasi langsung muncul di etalase publik (`/projects/:slug` Linimasa Perkembangan Proyek).
+  - Deploy langsung ke produksi Cloudflare Pages (`https://sleepykoala.pages.dev`).
+- [x] **9.3 Panduan Eksekutif Custom Domain Studio ($0.00 / Rp 0):**
+  - Panduan penyambungan nama domain kustom studio sendiri ke Cloudflare Pages tanpa biaya hosting dan SSL gratis (`Artifact/PANDUAN_PENYAMBUNGAN_CUSTOM_DOMAIN_STUDIO.md`).
+
+---
+
+## 🚀 TAHAP PRIORITAS BERIKUTNYA
+
+### 🎯 10. Pengawasan Harian Siklus 14 Hari Closed Testing & Persiapan Rilis Produksi Google Play
+- [ ] **10.1 Pemantauan Harian Kepatuhan 14 Hari Mobile Kasir:**
+  - Verifikasi harian status keaktifan 20 tester opt-in di Google Play Console.
+  - Pemantauan metrik stabilitas aplikasi (crash rate & ANR).
+- [ ] **10.2 Finalisasi Pengajuan Akses Produksi Google Play:**
+  - Review 6 formulir evaluasi jawaban Google Play Console.
+  - Pengajuan permohonan rilis produksi resmi ke Google Play Store.

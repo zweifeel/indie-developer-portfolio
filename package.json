@@ -19,7 +19,7 @@
     "git:dry-run": "node scripts/git-automation/cli.js --mode DRY-RUN",
     "git:commit": "node scripts/git-automation/cli.js --mode COMMIT",
     "git:push": "node scripts/git-automation/cli.js --mode PUSH",
-    "deploy:live": "npm run build && wrangler pages deploy dist --project-name=sleepykoala --branch=main",
+    "deploy:live": "npm run build && npx wrangler pages deploy dist --project-name=sleepykoala --branch=main",
     "preview": "vite preview"
   },
   "dependencies": {
