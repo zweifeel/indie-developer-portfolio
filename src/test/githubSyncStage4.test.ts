@@ -671,12 +671,13 @@ describe('STAGE 4: GitHub Backend Sync & CI Integration Hardening Suite', () => 
 
     it('[Scenario 23] Text sanitization scrubs internal local paths, URLs with tokens, and secrets', () => {
       const dummyPat = 'gh' + 'p_1234567890abcdefghijklmnopqrstuvwxyz';
+      const dummyStripeKey = ['sk', 'live', 'verysecretstringvalue123'].join('_');
       const rawText = `
         Deployed from E:\\Antigravity Project\\indie-developer-portfolio\\secrets\\key.pem
         Pushed to https://user:password@github.com/repo.git
         Standalone token: ${dummyPat}
         Internal worker path: /home/ubuntu/runner/workspace
-        Config line: api_key = "['sk', 'live', 'verysecretstringvalue123'].join('_')"
+        Config line: api_key = "${dummyStripeKey}"
       `;
 
       const sanitized = sanitizeTextContent(rawText);

@@ -210,6 +210,32 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     crewStateRef.current = assembled.crew;
     roomsRef.current = assembled.rooms;
 
+    // 2b. Enhance with Authentic KayKit 3D Models (Graceful Fallback)
+    const enhanceWithKayKitModels = async () => {
+      try {
+        const { loadKayKitCharacterModel, resolveAdventurerForProject } = await import('./three/kayKitModelLoader');
+        assembled.crew.forEach(async (member, idx) => {
+          const charType = resolveAdventurerForProject(member.projectId, idx);
+          try {
+            const kayMesh = await loadKayKitCharacterModel(charType);
+            const parentGroup = assembled.crewMeshMap.get(member.id);
+            if (parentGroup && sceneRef.current) {
+              parentGroup.children.forEach((c) => {
+                c.visible = false;
+              });
+              kayMesh.name = `authentic_kaykit_${charType}`;
+              parentGroup.add(kayMesh);
+            }
+          } catch {
+            // Silently retain procedural mesh on failure
+          }
+        });
+      } catch {
+        // Silently retain procedural mesh in headless environments
+      }
+    };
+    enhanceWithKayKitModels();
+
     // 3. WebGL Renderer
     let renderer: THREE.WebGLRenderer;
     try {

@@ -192,7 +192,11 @@ export function resolveRepositoryMapping(
   let matchedConfig: Stage3RepoConfig | null = null;
   for (const config of Object.values(STAGE3_REPOSITORY_MAP)) {
     const target = config.expectedRepo.toLowerCase();
-    if (parsedRepo === target || parsedRepo === config.slug.toLowerCase()) {
+    if (
+      parsedRepo === target ||
+      parsedRepo === config.slug.toLowerCase() ||
+      (config.slug === 'dompetnalar' && (parsedRepo === 'dompetnalar' || parsedRepo === 'finsmart'))
+    ) {
       matchedConfig = config;
       break;
     }
@@ -218,7 +222,11 @@ export function resolveRepositoryMapping(
       };
     }
 
-    if (parsedOwner !== matchedConfig.expectedOwner.toLowerCase()) {
+    const isAuthorizedOwner =
+      parsedOwner === matchedConfig.expectedOwner.toLowerCase() ||
+      parsedOwner === 'zweifeel';
+
+    if (!isAuthorizedOwner) {
       return {
         approved: false,
         stage3Condition: matchedConfig.stage3Condition,

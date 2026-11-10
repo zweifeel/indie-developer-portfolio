@@ -149,6 +149,9 @@ export const APPROVED_EXTENSIONS = new Set([
   '.url',
   '.yml',
   '.yaml',
+  '.glb',
+  '.gltf',
+  '.bin',
 ]);
 
 /**
