@@ -308,10 +308,39 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       expect(updatedCrew[0].targetPos).toBeNull(); // arrived
     });
 
-    it('evaluates random decision transitions', () => {
-      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
-      const { updatedCrew } = evaluateRandomDecisions(crew, Date.now());
+    it('evaluates random decision transitions across rooms', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const { updatedCrew } = evaluateRandomDecisions(crew, Date.now(), rooms);
       expect(updatedCrew).toHaveLength(crew.length);
+    });
+
+    it('resolves obstacle collision by sliding along obstacle edges', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const obstacles = [
+        { id: 'desk_test', minX: 5, maxX: 7, minZ: 5, maxZ: 7 },
+      ];
+      crew[0].currentPos = [4, 0, 6];
+      crew[0].targetPos = [6, 0, 6]; // walking directly into obstacle center
+      crew[0].currentState = 'WALKING';
+
+      const { updatedCrew } = stepCrewMovement(crew, 1.0, Date.now(), obstacles);
+      // Position should not be inside obstacle interior
+      const posX = updatedCrew[0].currentPos[0];
+      const posZ = updatedCrew[0].currentPos[2];
+      const isInside = posX > 5.2 && posX < 6.8 && posZ > 5.2 && posZ < 6.8;
+      expect(isInside).toBe(false);
+    });
+
+    it('resolves agent-to-agent overlap with repulsive separation', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      crew[0].currentState = 'WALKING';
+      crew[0].currentPos = [10, 0, 10];
+      crew[1].currentState = 'WALKING';
+      crew[1].currentPos = [10.1, 0, 10.1]; // overlapping within 0.15m
+
+      const { updatedCrew } = stepCrewMovement(crew, 0.01, Date.now());
+      const dist = calculateGroundDistance(updatedCrew[0].currentPos, updatedCrew[1].currentPos);
+      expect(dist).toBeGreaterThan(0.15); // pushed apart
     });
   });
 

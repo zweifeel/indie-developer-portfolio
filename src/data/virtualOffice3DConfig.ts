@@ -13,6 +13,7 @@ import {
   Vector3Tuple,
   HumanAttire3D,
   CoreCrewRole,
+  ObstacleBox3D,
 } from '../types/virtualOffice3D';
 import type { Project } from '../types/project';
 import { CANONICAL_PROJECT_SEEDS } from './virtualOfficePresets';
@@ -137,8 +138,75 @@ export const ROLE_ATTIRES: Record<CoreCrewRole, HumanAttire3D> = {
 };
 
 /**
- * Canonical Crew Names by Role and Project index
+ * Generate in-room wander destinations for autonomous crew activities
  */
+export function getInRoomWanderTargets(room: DynamicProjectRoom3D): Vector3Tuple[] {
+  const [cx, , cz] = room.centerPos;
+  return [
+    [cx - 5.5, 0, cz + 1.5], // near side prop / sofa
+    [cx + 5.5, 0, cz + 1.5], // near arcade / showcase
+    [cx, 0, cz],             // room center meeting zone
+    [cx - 2.5, 0, cz + 4.5], // front left near corridor entry
+    [cx + 2.5, 0, cz + 4.5], // front right near corridor entry
+    [cx, 0, cz - 4.5],       // near back wall kanban / display
+  ];
+}
+
+/**
+ * Generate 3D Obstacle Bounding Boxes for Workstations and Furniture to prevent clipping
+ */
+export function generateCampusObstacles(
+  rooms: DynamicProjectRoom3D[],
+  crew: ProjectCrewMember3D[]
+): ObstacleBox3D[] {
+  const obstacles: ObstacleBox3D[] = [];
+
+  // 1. Workstations (Desk Top Footprint)
+  crew.forEach((c) => {
+    const [hx, , hz] = c.homeDeskPos;
+    obstacles.push({
+      id: `desk_${c.id}`,
+      minX: hx - 1.25,
+      maxX: hx + 1.25,
+      minZ: hz - 0.7,
+      maxZ: hz + 0.7,
+    });
+  });
+
+  // 2. Room Back and Outer Walls
+  rooms.forEach((r) => {
+    // Back wall
+    obstacles.push({
+      id: `wall_back_${r.roomId}`,
+      minX: r.bounds.minX,
+      maxX: r.bounds.maxX,
+      minZ: r.bounds.minZ - 0.3,
+      maxZ: r.bounds.minZ + 0.3,
+    });
+
+    // Outer side wall
+    if (r.wing === 'west') {
+      obstacles.push({
+        id: `wall_west_${r.roomId}`,
+        minX: r.bounds.minX - 0.3,
+        maxX: r.bounds.minX + 0.3,
+        minZ: r.bounds.minZ,
+        maxZ: r.bounds.maxZ,
+      });
+    } else {
+      obstacles.push({
+        id: `wall_east_${r.roomId}`,
+        minX: r.bounds.maxX - 0.3,
+        maxX: r.bounds.maxX + 0.3,
+        minZ: r.bounds.minZ,
+        maxZ: r.bounds.maxZ,
+      });
+    }
+  });
+
+  return obstacles;
+}
+
 const CANONICAL_NAMES: Record<CoreCrewRole, string[]> = {
   PLANNER: ['Budi', 'Dimas', 'Adit', 'Fajar', 'Surya', 'Rama', 'Gilang', 'Bayu'],
   DEVELOPER: ['Reza', 'Rian', 'Fauzan', 'Taufik', 'Iqbal', 'Farhan', 'Hendra', 'Eko'],

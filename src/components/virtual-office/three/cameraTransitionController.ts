@@ -105,8 +105,8 @@ export function applyCameraPan(
   const moveZ = (-deltaX * rightZ + deltaY * forwardZ) * factor;
 
   // Clamp target coordinates to keep within campus boundaries
-  const newX = Math.max(-50, Math.min(50, state.target[0] + moveX));
-  const newZ = Math.max(-50, Math.min(50, state.target[2] + moveZ));
+  const newX = Math.max(-65, Math.min(65, state.target[0] + moveX));
+  const newZ = Math.max(-65, Math.min(65, state.target[2] + moveZ));
 
   return {
     ...state,

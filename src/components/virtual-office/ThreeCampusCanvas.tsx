@@ -29,7 +29,11 @@ import {
   StudioActivityLog,
   VisitorCommandFeedback,
   ChatBubbleData,
+  ObstacleBox3D,
 } from '../../types/virtualOffice3D';
+import {
+  generateCampusObstacles,
+} from '../../data/virtualOffice3DConfig';
 import {
   assembleProcedural3DCampus,
   syncCrewMeshes,
@@ -92,12 +96,19 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
   // Fallback state if WebGL is disabled
   const [webglSupported] = useState<boolean>(() => isWebGLAvailable());
 
+interface CrewAnimationController {
+  mixer: THREE.AnimationMixer;
+  actions: Map<string, THREE.AnimationAction>;
+  currentAction: THREE.AnimationAction | null;
+  currentClipName: string;
+}
+
   // Simulation & State
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [lastFeedback, setLastFeedback] = useState<VisitorCommandFeedback | null>(null);
   const [activityLogs, setActivityLogs] = useState<StudioActivityLog[]>([]);
   const [activeBubbles, setActiveBubbles] = useState<ChatBubbleData[]>([]);
-  const [controlMode, setControlMode] = useState<'orbit' | 'pan'>('orbit');
+  const [controlMode, setControlMode] = useState<'orbit' | 'pan'>('pan');
 
   // Camera state refs for continuous frame loop
   const currentCameraState = useRef<CameraState>({ ...CAMPUS_OVERVIEW_PRESET });
@@ -111,6 +122,8 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
   const crewStateRef = useRef<ProjectCrewMember3D[]>([]);
   const roomsRef = useRef<DynamicProjectRoom3D[]>([]);
   const animationMixersRef = useRef<THREE.AnimationMixer[]>([]);
+  const crewAnimControllersRef = useRef<Map<string, CrewAnimationController>>(new Map());
+  const campusObstaclesRef = useRef<ObstacleBox3D[]>([]);
 
   // Drag interaction refs
   const isDragging = useRef<boolean>(false);
@@ -129,6 +142,7 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
   useEffect(() => {
     roomsRef.current = initialRooms;
     crewStateRef.current = initialCrew;
+    campusObstaclesRef.current = generateCampusObstacles(initialRooms, initialCrew);
   }, [initialRooms, initialCrew]);
 
   // Focused Room computation
@@ -228,8 +242,9 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
         } = await import('./three/kayKitModelLoader');
 
         animationMixersRef.current = [];
+        crewAnimControllersRef.current.clear();
 
-        // 1. Load Authentic KayKit Characters with Active Sit_Chair_Idle Animations
+        // 1. Load Authentic KayKit Characters with Dynamic Multi-Action Animations
         for (let idx = 0; idx < assembled.crew.length; idx++) {
           const member = assembled.crew[idx];
           const charType = resolveAdventurerForProject(member.projectId, idx);
@@ -241,19 +256,29 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
               kayMesh.name = `kaykit_${charType}_${member.id}`;
               parentGroup.add(kayMesh);
 
-              // Setup AnimationMixer to play authentic KayKit Sit_Chair_Idle
+              // Setup AnimationMixer with all animation actions
               const clips = getCharacterAnimations(charType);
               if (clips && clips.length > 0) {
                 const mixer = new THREE.AnimationMixer(kayMesh);
-                const sitClip =
-                  clips.find((c) => c.name === 'Sit_Chair_Idle') ||
-                  clips.find((c) => c.name === 'Sit_Chair_Pose') ||
-                  clips.find((c) => c.name === 'Idle') ||
-                  clips[0];
-                if (sitClip) {
-                  const action = mixer.clipAction(sitClip);
-                  action.play();
-                }
+                const actionsMap = new Map<string, THREE.AnimationAction>();
+                clips.forEach((clip) => {
+                  actionsMap.set(clip.name, mixer.clipAction(clip));
+                });
+
+                const sitClipAction =
+                  actionsMap.get('Sit_Chair_Idle') ||
+                  actionsMap.get('Sit_Chair_Pose') ||
+                  actionsMap.get('Idle') ||
+                  mixer.clipAction(clips[0]);
+
+                sitClipAction.play();
+
+                crewAnimControllersRef.current.set(member.id, {
+                  mixer,
+                  actions: actionsMap,
+                  currentAction: sitClipAction,
+                  currentClipName: 'Sit_Chair_Idle',
+                });
                 animationMixersRef.current.push(mixer);
               }
             }
@@ -429,8 +454,46 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
       const deltaSec = Math.min(deltaMs / 1000, 0.1);
       lastTime = time;
 
-      // Update KayKit AnimationMixers (Sit_Chair_Idle & typing)
+      // Update KayKit AnimationMixers
       animationMixersRef.current.forEach((mixer) => mixer.update(deltaSec));
+
+      // Dynamically blend KayKit animations based on crew state
+      crewStateRef.current.forEach((c) => {
+        const ctrl = crewAnimControllersRef.current.get(c.id);
+        if (!ctrl) return;
+
+        let targetClip = 'Sit_Chair_Idle';
+        if (c.currentState === 'WALKING') {
+          targetClip = 'Walking_A';
+        } else if (c.currentState === 'AT_PANTRY' || c.currentState === 'INSPECTING_SCREEN') {
+          targetClip = 'Interact';
+        } else if (c.currentState === 'AT_LOUNGE') {
+          targetClip = 'Sit_Floor_Idle';
+        } else if (c.currentState === 'SLEEPING') {
+          targetClip = 'Lie_Idle';
+        } else if (c.currentState === 'CELEBRATING' || c.currentState === 'STRETCHING') {
+          targetClip = 'Cheer';
+        } else if (c.currentState === 'CHATTING') {
+          targetClip = 'Idle';
+        }
+
+        if (ctrl.currentClipName !== targetClip) {
+          const nextAction =
+            ctrl.actions.get(targetClip) ||
+            ctrl.actions.get('Walking_A') ||
+            ctrl.actions.get('Idle') ||
+            ctrl.actions.get('Sit_Chair_Idle');
+
+          if (nextAction && nextAction !== ctrl.currentAction) {
+            if (ctrl.currentAction) {
+              ctrl.currentAction.fadeOut(0.2);
+            }
+            nextAction.reset().fadeIn(0.2).play();
+            ctrl.currentAction = nextAction;
+            ctrl.currentClipName = targetClip;
+          }
+        }
+      });
 
       // Camera lerp
       currentCameraState.current = stepCameraInterpolation(
@@ -446,18 +509,23 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
         currentCameraState.current.target[2]
       );
 
-      // Autonomous Movement step
-      const moveResult = stepCrewMovement(crewStateRef.current, deltaSec, time);
+      // Autonomous Movement step with obstacle collision resolution
+      const moveResult = stepCrewMovement(
+        crewStateRef.current,
+        deltaSec,
+        time,
+        campusObstaclesRef.current
+      );
       crewStateRef.current = moveResult.updatedCrew;
       if (moveResult.arrivedLogs.length > 0) {
         setActivityLogs((prev) => [...moveResult.arrivedLogs, ...prev.slice(0, 40)]);
       }
 
-      // Random Decision timer (~every 6s)
+      // Random Decision timer (~every 3.5s across all rooms)
       decisionTimer += deltaMs;
-      if (decisionTimer > 6000) {
+      if (decisionTimer > 3500) {
         decisionTimer = 0;
-        const decResult = evaluateRandomDecisions(crewStateRef.current, time);
+        const decResult = evaluateRandomDecisions(crewStateRef.current, time, roomsRef.current);
         crewStateRef.current = decResult.updatedCrew;
         if (decResult.decisionLogs.length > 0) {
           setActivityLogs((prev) => [...decResult.decisionLogs, ...prev.slice(0, 40)]);
@@ -510,22 +578,43 @@ export const ThreeCampusCanvas: React.FC<ThreeCampusCanvasProps> = ({
     const dy = e.clientY - previousPointer.current.y;
     previousPointer.current = { x: e.clientX, y: e.clientY };
 
-    // Pan when in PAN mode OR when Right-Click (buttons === 2) OR when Shift key is pressed
-    if (controlMode === 'pan' || e.buttons === 2 || e.shiftKey) {
-      desiredCameraState.current = applyCameraPan(
-        desiredCameraState.current,
-        dx,
-        dy,
-        0.045
-      );
+    // Free Drag-to-Pan (Default) vs 360° Orbit Mode
+    if (controlMode === 'pan') {
+      if (e.buttons === 2 || e.shiftKey || e.altKey) {
+        // Orbit rotation on right-click / shift-drag
+        const speed = 0.006;
+        desiredCameraState.current.orbitAngleHorizontal -= dx * speed;
+        desiredCameraState.current.orbitAngleVertical = Math.max(
+          Math.PI / 8, // ~22° min
+          Math.min(Math.PI / 3, desiredCameraState.current.orbitAngleVertical + dy * speed) // ~60° max
+        );
+      } else {
+        // Primary Free Ground Drag Pan
+        desiredCameraState.current = applyCameraPan(
+          desiredCameraState.current,
+          dx,
+          dy,
+          0.055
+        );
+      }
     } else {
-      // Orbit rotation
-      const speed = 0.006;
-      desiredCameraState.current.orbitAngleHorizontal -= dx * speed;
-      desiredCameraState.current.orbitAngleVertical = Math.max(
-        Math.PI / 8, // ~22° min
-        Math.min(Math.PI / 3, desiredCameraState.current.orbitAngleVertical + dy * speed) // ~60° max
-      );
+      if (e.buttons === 2 || e.shiftKey || e.altKey) {
+        // Pan on secondary drag
+        desiredCameraState.current = applyCameraPan(
+          desiredCameraState.current,
+          dx,
+          dy,
+          0.055
+        );
+      } else {
+        // Primary Orbit rotation
+        const speed = 0.006;
+        desiredCameraState.current.orbitAngleHorizontal -= dx * speed;
+        desiredCameraState.current.orbitAngleVertical = Math.max(
+          Math.PI / 8, // ~22° min
+          Math.min(Math.PI / 3, desiredCameraState.current.orbitAngleVertical + dy * speed) // ~60° max
+        );
+      }
     }
   };
 

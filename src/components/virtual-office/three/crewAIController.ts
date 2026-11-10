@@ -2,8 +2,8 @@
  * ============================================================================
  * SLEEPYKOALA STUDIO — CREW AI CONTROLLER (LAPIS 2)
  * 
- * Autonomous Random Wandering, Waypoint Navigation, State Machine Transitions,
- * and Live Activity Logging.
+ * Multi-Agent Autonomous Random Wandering, Collision Avoidance, Waypoint Navigation,
+ * State Machine Transitions, and Live Activity Logging.
  * ============================================================================
  */
 
@@ -11,24 +11,32 @@ import {
   ProjectCrewMember3D,
   StudioActivityLog,
   Vector3Tuple,
+  ObstacleBox3D,
+  DynamicProjectRoom3D,
 } from '../../../types/virtualOffice3D';
 import {
   SHARED_FACILITIES,
+  getInRoomWanderTargets,
 } from '../../../data/virtualOffice3DConfig';
 import { calculateGroundDistance } from './chatBubbleEngine';
+import {
+  resolveObstacleCollision,
+  resolveAgentCollisions,
+} from './collisionSystem';
 
 /**
- * Step crew positions towards their target position.
+ * Step crew positions towards their target position with collision resolution.
  */
 export function stepCrewMovement(
   crewList: ProjectCrewMember3D[],
   deltaSeconds: number,
-  now: number
+  now: number,
+  obstacles: ObstacleBox3D[] = []
 ): { updatedCrew: ProjectCrewMember3D[]; arrivedLogs: StudioActivityLog[] } {
   const arrivedLogs: StudioActivityLog[] = [];
   const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-  const updatedCrew = crewList.map((crew) => {
+  let updatedCrew = crewList.map((crew) => {
     if (!crew.targetPos) {
       return crew;
     }
@@ -45,27 +53,47 @@ export function stepCrewMovement(
     const dz = target[2] - current[2];
     const distance = Math.sqrt(dx * dx + dz * dz);
 
-    if (distance <= stepDistance || distance < 0.2) {
-      // Arrived at target
-      const arrivedPos: Vector3Tuple = [target[0], 0, target[2]];
+    if (distance <= stepDistance || distance < 0.25) {
+      // Arrived at target (with obstacle collision clamp)
+      const rawArrived: Vector3Tuple = [target[0], 0, target[2]];
+      const arrivedPos: Vector3Tuple = obstacles.length > 0
+        ? resolveObstacleCollision(current, rawArrived, obstacles)
+        : rawArrived;
       let nextState = crew.currentState;
       let logMsg = '';
 
       if (crew.currentState === 'WALKING') {
         // Check if returned home to desk
         const distToHome = calculateGroundDistance(arrivedPos, crew.homeDeskPos);
-        if (distToHome < 0.5) {
+        if (distToHome < 0.8) {
           nextState = 'WORKING_AT_DESK';
           logMsg = `Kembali ke meja kerja dan fokus melanjutkan tugas di ${crew.projectName}.`;
         } else {
-          // Arrived at destination facility
+          // Check if arrived at Pantry
           const distToPantry = calculateGroundDistance(arrivedPos, SHARED_FACILITIES[2].centerPos);
           if (distToPantry < 8) {
             nextState = 'AT_PANTRY';
             logMsg = `Tiba di Pantry untuk mengambil kopi / air minum.`;
           } else {
-            nextState = 'AT_LOUNGE';
-            logMsg = `Duduk di Collaboration Lounge untuk beristirahat.`;
+            // Check if arrived at Lounge
+            const distToLounge = calculateGroundDistance(arrivedPos, SHARED_FACILITIES[1].centerPos);
+            if (distToLounge < 8) {
+              nextState = 'AT_LOUNGE';
+              logMsg = `Duduk di Collaboration Lounge untuk beristirahat.`;
+            } else {
+              // In-room activity
+              const dice = Math.random();
+              if (dice < 0.35) {
+                nextState = 'STRETCHING';
+                logMsg = `Melakukan peregangan sejenak di ruang ${crew.projectName}.`;
+              } else if (dice < 0.70) {
+                nextState = 'INSPECTING_SCREEN';
+                logMsg = `Memeriksa layar monitor / papan ide di ruang ${crew.projectName}.`;
+              } else {
+                nextState = 'CHATTING';
+                logMsg = `Berdiskusi santai dengan rekan tim di ruang ${crew.projectName}.`;
+              }
+            }
           }
         }
       }
@@ -93,98 +121,144 @@ export function stepCrewMovement(
 
     // Move towards target
     const ratio = stepDistance / distance;
-    const nextX = current[0] + dx * ratio;
-    const nextZ = current[2] + dz * ratio;
+    const rawNextX = current[0] + dx * ratio;
+    const rawNextZ = current[2] + dz * ratio;
     const facingAngleY = Math.atan2(dx, dz);
+
+    // Apply obstacle collision and sliding
+    const resolvedPos = obstacles.length > 0
+      ? resolveObstacleCollision(current, [rawNextX, 0, rawNextZ], obstacles)
+      : ([rawNextX, 0, rawNextZ] as Vector3Tuple);
 
     return {
       ...crew,
-      currentPos: [nextX, 0, nextZ] as Vector3Tuple,
+      currentPos: resolvedPos,
       facingAngleY,
     };
   });
+
+  // Apply agent-to-agent separation to avoid overlapping characters
+  updatedCrew = resolveAgentCollisions(updatedCrew, 0.75);
 
   return { updatedCrew, arrivedLogs };
 }
 
 /**
- * Periodically pick a crew member at random to change state / wander or return home.
+ * Multi-Agent Decision Making: Periodically allow multiple crew members across
+ * different rooms to decide their next autonomous activity.
  */
 export function evaluateRandomDecisions(
   crewList: ProjectCrewMember3D[],
-  now: number
+  now: number,
+  rooms: DynamicProjectRoom3D[] = []
 ): { updatedCrew: ProjectCrewMember3D[]; decisionLogs: StudioActivityLog[] } {
   const updatedCrew = crewList.map((c) => ({ ...c }));
   const decisionLogs: StudioActivityLog[] = [];
   const timestamp = new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 
-  // Only pick 1 or 2 crew members per evaluation turn to maintain a smooth natural flow
-  const candidateIndex = Math.floor(Math.random() * updatedCrew.length);
-  const candidate = updatedCrew[candidateIndex];
+  // Group crew by project so every room gets a chance to be lively
+  const projectGroups = new Map<string, ProjectCrewMember3D[]>();
+  updatedCrew.forEach((c) => {
+    const list = projectGroups.get(c.projectId) || [];
+    list.push(c);
+    projectGroups.set(c.projectId, list);
+  });
 
-  if (!candidate || candidate.targetPos !== null) {
-    return { updatedCrew, decisionLogs };
-  }
+  // Evaluate 1 candidate per project group to ensure active life across the entire campus
+  projectGroups.forEach((groupCrew, projectId) => {
+    // Filter candidates that are not currently walking
+    const idleCandidates = groupCrew.filter((c) => c.targetPos === null);
+    if (idleCandidates.length === 0) return;
 
-  // 1. If currently at desk -> 30% chance to go out to pantry or lounge, or 10% chance to doze off
-  if (candidate.currentState === 'WORKING_AT_DESK') {
-    const dice = Math.random();
+    // Pick 1 candidate in this room
+    const candidate = idleCandidates[Math.floor(Math.random() * idleCandidates.length)];
+    const matchingRoom = rooms.find((r) => r.projectId === projectId);
 
-    if (dice < 0.12) {
-      // Doze off / take a micro nap
-      candidate.currentState = 'SLEEPING';
-      candidate.isSleeping = true;
-      candidate.currentActivityLog = 'Tertidur sejenak karena lelah kompilasi build...';
-      decisionLogs.push({
-        id: `log_${now}_${candidate.id}`,
-        timestamp,
-        projectId: candidate.projectId,
-        projectName: candidate.projectName,
-        crewName: candidate.name,
-        message: `Tertidur sejenak di meja kerja (${candidate.projectName}).`,
-        type: 'work',
-      });
-    } else if (dice < 0.40) {
-      // Go to Pantry or Collaboration Lounge
-      const destination = Math.random() < 0.6 ? SHARED_FACILITIES[2] : SHARED_FACILITIES[1]; // Pantry or Plaza
-      const waypoints = destination.waypoints;
-      const targetPoint = waypoints[Math.floor(Math.random() * waypoints.length)];
+    // 1. If currently at desk -> 45% chance to do something (walk in-room, visit pantry/lounge, or stretch)
+    if (candidate.currentState === 'WORKING_AT_DESK') {
+      const dice = Math.random();
 
-      candidate.currentState = 'WALKING';
-      candidate.targetPos = [...targetPoint];
-      candidate.isSleeping = false;
-      const destName = destination.facilityId === 'pantry_coffee_bar' ? 'Pantry Kopi' : 'Collaboration Lounge';
-      candidate.currentActivityLog = `Berjalan menuju ${destName}`;
+      if (dice < 0.08) {
+        // Doze off / take a micro nap
+        candidate.currentState = 'SLEEPING';
+        candidate.isSleeping = true;
+        candidate.currentActivityLog = 'Tertidur sejenak karena lelah kompilasi build...';
+        decisionLogs.push({
+          id: `log_${now}_${candidate.id}`,
+          timestamp,
+          projectId: candidate.projectId,
+          projectName: candidate.projectName,
+          crewName: candidate.name,
+          message: `Tertidur sejenak di meja kerja (${candidate.projectName}).`,
+          type: 'work',
+        });
+      } else if (dice < 0.35 && matchingRoom) {
+        // In-room activity (walk to whiteboard, inspect screen, or stretch)
+        const inRoomTargets = getInRoomWanderTargets(matchingRoom);
+        const target = inRoomTargets[Math.floor(Math.random() * inRoomTargets.length)];
 
-      decisionLogs.push({
-        id: `log_${now}_${candidate.id}`,
-        timestamp,
-        projectId: candidate.projectId,
-        projectName: candidate.projectName,
-        crewName: candidate.name,
-        message: `Meninggalkan meja untuk pergi ke ${destName}.`,
-        type: 'movement',
-      });
+        candidate.currentState = 'WALKING';
+        candidate.targetPos = [...target];
+        candidate.isSleeping = false;
+        candidate.currentActivityLog = `Bangkit dari meja untuk berkeliling di ruang ${candidate.projectName}`;
+
+        decisionLogs.push({
+          id: `log_${now}_${candidate.id}`,
+          timestamp,
+          projectId: candidate.projectId,
+          projectName: candidate.projectName,
+          crewName: candidate.name,
+          message: `Berdiri meregangkan badan dan berkeliling di ruang ${candidate.projectName}.`,
+          type: 'movement',
+        });
+      } else if (dice < 0.55) {
+        // Go to Pantry or Collaboration Lounge
+        const destination = Math.random() < 0.55 ? SHARED_FACILITIES[2] : SHARED_FACILITIES[1]; // Pantry or Plaza
+        const waypoints = destination.waypoints;
+        const targetPoint = waypoints[Math.floor(Math.random() * waypoints.length)];
+
+        candidate.currentState = 'WALKING';
+        candidate.targetPos = [...targetPoint];
+        candidate.isSleeping = false;
+        const destName = destination.facilityId === 'pantry_coffee_bar' ? 'Pantry Kopi' : 'Collaboration Lounge';
+        candidate.currentActivityLog = `Berjalan menuju ${destName}`;
+
+        decisionLogs.push({
+          id: `log_${now}_${candidate.id}`,
+          timestamp,
+          projectId: candidate.projectId,
+          projectName: candidate.projectName,
+          crewName: candidate.name,
+          message: `Meninggalkan meja untuk pergi ke ${destName}.`,
+          type: 'movement',
+        });
+      }
     }
-  }
-  // 2. If currently at Pantry or Lounge -> 60% chance to return to home desk
-  else if (candidate.currentState === 'AT_PANTRY' || candidate.currentState === 'AT_LOUNGE') {
-    if (Math.random() < 0.65) {
-      candidate.currentState = 'WALKING';
-      candidate.targetPos = [...candidate.homeDeskPos];
-      candidate.currentActivityLog = `Kembali ke ruang kerja ${candidate.projectName}`;
+    // 2. If currently doing in-room activities or at Pantry/Lounge -> 70% chance to return to desk
+    else if (
+      candidate.currentState === 'AT_PANTRY' ||
+      candidate.currentState === 'AT_LOUNGE' ||
+      candidate.currentState === 'STRETCHING' ||
+      candidate.currentState === 'INSPECTING_SCREEN' ||
+      candidate.currentState === 'CHATTING'
+    ) {
+      if (Math.random() < 0.70) {
+        candidate.currentState = 'WALKING';
+        candidate.targetPos = [...candidate.homeDeskPos];
+        candidate.currentActivityLog = `Kembali ke ruang kerja ${candidate.projectName}`;
 
-      decisionLogs.push({
-        id: `log_${now}_${candidate.id}`,
-        timestamp,
-        projectId: candidate.projectId,
-        projectName: candidate.projectName,
-        crewName: candidate.name,
-        message: `Selesai istirahat dan berjalan kembali ke ruang ${candidate.projectName}.`,
-        type: 'movement',
-      });
+        decisionLogs.push({
+          id: `log_${now}_${candidate.id}`,
+          timestamp,
+          projectId: candidate.projectId,
+          projectName: candidate.projectName,
+          crewName: candidate.name,
+          message: `Selesai istirahat dan berjalan kembali ke ruang ${candidate.projectName}.`,
+          type: 'movement',
+        });
+      }
     }
-  }
+  });
 
   return { updatedCrew, decisionLogs };
 }

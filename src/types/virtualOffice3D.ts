@@ -24,7 +24,31 @@ export type CrewAIState =
   | 'VISITING_OTHER_ROOM'
   | 'IN_MEETING'
   | 'SLEEPING'
-  | 'CELEBRATING';
+  | 'CELEBRATING'
+  | 'STRETCHING'
+  | 'CHATTING'
+  | 'INSPECTING_SCREEN';
+
+/**
+ * 3D Obstacle Bounding Box for Collision Avoidance
+ */
+export interface ObstacleBox3D {
+  id: string;
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
+}
+
+/**
+ * Thematic 3D Room Signage Specification
+ */
+export interface RoomSignageSpec {
+  title: string;
+  subtitle: string;
+  accentColor: number;
+  accentColorHex: string;
+}
 
 /**
  * Procedural Kay Lousberg-style Human Stylization

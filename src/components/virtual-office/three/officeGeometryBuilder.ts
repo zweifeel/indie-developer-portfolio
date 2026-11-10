@@ -20,6 +20,13 @@ import {
   PROJECT_THEMATIC_SPECS,
   ThematicRoomSpec,
 } from '../../../types/virtualOfficeThemes';
+import {
+  createParquetFloorTexture,
+  createOfficeTileTexture,
+  createCarpetTexture,
+  createCorridorRunnerTexture,
+  createRoomSignageTexture,
+} from './officeTextureGenerator';
 
 /**
  * Palette of Warm Pastel & Studio Colors
@@ -57,7 +64,9 @@ export function buildUnifiedCampusGround(): THREE.Group {
   // 1. Massive Solid Foundation Slab covering the whole campus
   // Campus spans from x: -38 to 38 (width ~76), z: -38 to 38 (depth ~76)
   const slabGeo = new THREE.BoxGeometry(82, 0.4, 82);
+  const slabTex = createOfficeTileTexture('#1e293b', '#0f172a');
   const slabMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.campusBaseSlab });
+  if (slabTex) slabMat.map = slabTex;
   const slab = new THREE.Mesh(slabGeo, slabMat);
   slab.position.set(0, -0.3, 0);
   slab.receiveShadow = true;
@@ -78,9 +87,11 @@ export function buildUnifiedCampusGround(): THREE.Group {
   spine.receiveShadow = true;
   group.add(spine);
 
-  // 2b. Central Spine Carpet Runner
+  // 2b. Central Spine Carpet Runner with edge guide strips
   const runnerGeo = new THREE.BoxGeometry(4.5, 0.05, 62);
+  const runnerTex = createCorridorRunnerTexture('#0284c7', '#38bdf8');
   const runnerMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.corridorRunner });
+  if (runnerTex) runnerMat.map = runnerTex;
   const runner = new THREE.Mesh(runnerGeo, runnerMat);
   runner.position.set(0, -0.06, 0);
   group.add(runner);
@@ -368,7 +379,8 @@ export function buildThematicRoomProps(room: DynamicProjectRoom3D): THREE.Group 
 }
 
 /**
- * Build dynamic room walls and floors with Thematic Styling
+ * Build dynamic room walls and floors with Thematic Styling, Architectural Walls,
+ * Doorway Portals, and Illuminated 3D Project Signage Boards.
  */
 export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   const group = new THREE.Group();
@@ -381,8 +393,23 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
     PROJECT_THEMATIC_SPECS[room.projectSlug.toLowerCase()] ||
     PROJECT_THEMATIC_SPECS['dompetnalar'];
 
-  // Thematic Floor Tile
+  // 1. Procedural Textured Floor Tile
+  let floorTexture: THREE.CanvasTexture | null = null;
+  const hexStr = `#${spec.floorColor.toString(16).padStart(6, '0')}`;
+  const borderHexStr = `#${spec.floorBorderColor.toString(16).padStart(6, '0')}`;
+
+  if (spec.style === 'FINTECH_METRIC' || spec.style === 'WORKSPACE_SCANDI') {
+    floorTexture = createParquetFloorTexture(hexStr, borderHexStr, '#451a03');
+  } else if (spec.style === 'GAME_DEV_CYBERPUNK') {
+    floorTexture = createOfficeTileTexture('#2e1065', '#1e0845');
+  } else if (spec.style === 'RETAIL_STORE_POS') {
+    floorTexture = createParquetFloorTexture(hexStr, '#92400e', '#451a03');
+  } else {
+    floorTexture = createOfficeTileTexture(hexStr, '#1c1917');
+  }
+
   const floorMat = new THREE.MeshLambertMaterial({ color: spec.floorColor });
+  if (floorTexture) floorMat.map = floorTexture;
   const floorGeo = new THREE.BoxGeometry(w, 0.18, d);
   const floor = new THREE.Mesh(floorGeo, floorMat);
   floor.position.set(room.centerPos[0], -0.09, room.centerPos[2]);
@@ -396,18 +423,25 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   trim.position.set(room.centerPos[0], -0.18, room.centerPos[2]);
   group.add(trim);
 
-  // Low Isometric Half-Walls (Outer edges only so interior is easily visible)
+  // 2. Full Architectural Office Walls (2.8m height)
   const wallMat = new THREE.MeshLambertMaterial({ color: spec.accentWallColor });
-  const wallHeight = 2.4;
+  const wallHeight = 2.8;
 
-  // Back Wall
+  // 2a. Back Wall
   const backWallGeo = new THREE.BoxGeometry(w, wallHeight, 0.3);
   const backWall = new THREE.Mesh(backWallGeo, wallMat);
   backWall.position.set(room.centerPos[0], wallHeight / 2, room.bounds.minZ);
   backWall.receiveShadow = true;
   group.add(backWall);
 
-  // Side Wall (Far edge)
+  // Back Wall Baseboard Trim
+  const baseboardGeo = new THREE.BoxGeometry(w, 0.2, 0.35);
+  const baseboardMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+  const baseboard = new THREE.Mesh(baseboardGeo, baseboardMat);
+  baseboard.position.set(room.centerPos[0], 0.1, room.bounds.minZ);
+  group.add(baseboard);
+
+  // 2b. Outer Side Wall (Far edge opposite corridor)
   const sideX = room.wing === 'west' ? room.bounds.minX : room.bounds.maxX;
   const sideWallGeo = new THREE.BoxGeometry(0.3, wallHeight, d);
   const sideWall = new THREE.Mesh(sideWallGeo, wallMat);
@@ -415,7 +449,64 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   sideWall.receiveShadow = true;
   group.add(sideWall);
 
-  // Add Thematic Wall Props
+  // 2c. Corridor Entry Wall with Center Doorway Opening (4.5m) and Glass Partitions
+  const corridorX = room.wing === 'west' ? room.bounds.maxX : room.bounds.minX;
+  const wallSegmentLength = (d - 4.5) / 2; // ~5.75m per side
+
+  // North segment
+  const northWallGeo = new THREE.BoxGeometry(0.3, wallHeight, wallSegmentLength);
+  const northWall = new THREE.Mesh(northWallGeo, wallMat);
+  northWall.position.set(corridorX, wallHeight / 2, room.bounds.minZ + wallSegmentLength / 2);
+  group.add(northWall);
+
+  // South segment
+  const southWallGeo = new THREE.BoxGeometry(0.3, wallHeight, wallSegmentLength);
+  const southWall = new THREE.Mesh(southWallGeo, wallMat);
+  southWall.position.set(corridorX, wallHeight / 2, room.bounds.maxZ - wallSegmentLength / 2);
+  group.add(southWall);
+
+  // Doorway Lintel Beam (above 2.2m door opening)
+  const lintelGeo = new THREE.BoxGeometry(0.35, 0.6, 4.6);
+  const lintel = new THREE.Mesh(lintelGeo, wallMat);
+  lintel.position.set(corridorX, 2.5, room.centerPos[2]);
+  group.add(lintel);
+
+  // Modern Glass Partition Windows on North & South corridor walls
+  const glassMat = new THREE.MeshLambertMaterial({
+    color: STUDIO_PALETTE.wallGlass,
+    transparent: true,
+    opacity: 0.35,
+  });
+  const glassGeo = new THREE.BoxGeometry(0.08, 1.4, wallSegmentLength - 1.2);
+  const glassNorth = new THREE.Mesh(glassGeo, glassMat);
+  glassNorth.position.set(corridorX, 1.4, room.bounds.minZ + wallSegmentLength / 2);
+  group.add(glassNorth);
+
+  const glassSouth = new THREE.Mesh(glassGeo, glassMat);
+  glassSouth.position.set(corridorX, 1.4, room.bounds.maxZ - wallSegmentLength / 2);
+  group.add(glassSouth);
+
+  // 3. 3D Illuminated Room Signage Board (Displaying Project Name & Role)
+  const signTex = createRoomSignageTexture({
+    title: room.projectName,
+    subtitle: `${room.category} LAB`,
+    accentColor: spec.neonAccentColor || 0x38bdf8,
+    accentColorHex: borderHexStr,
+  });
+
+  const signBoardGeo = new THREE.BoxGeometry(0.12, 1.1, 4.2);
+  const signBoardMat = new THREE.MeshLambertMaterial({ color: 0xffffff });
+  if (signTex) signBoardMat.map = signTex;
+  const signMesh = new THREE.Mesh(signBoardGeo, signBoardMat);
+  signMesh.position.set(corridorX + (room.wing === 'west' ? 0.2 : -0.2), 3.2, room.centerPos[2]);
+  group.add(signMesh);
+
+  // Subtle LED Glow Light under the signboard
+  const signLight = new THREE.PointLight(spec.neonAccentColor || 0x38bdf8, 0.8, 8);
+  signLight.position.set(corridorX, 3.2, room.centerPos[2]);
+  group.add(signLight);
+
+  // 4. Add Thematic Interior Wall Props
   const thematicProps = buildThematicRoomProps(room);
   group.add(thematicProps);
 
@@ -423,7 +514,7 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
 }
 
 /**
- * Build Shared Facilities (Lobby, Lounge, Pantry)
+ * Build Shared Facilities (Lobby, Lounge, Pantry) with Textured Surfaces
  */
 export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THREE.Group {
   const group = new THREE.Group();
@@ -432,10 +523,23 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
     const w = fac.bounds.maxX - fac.bounds.minX;
     const d = fac.bounds.maxZ - fac.bounds.minZ;
 
-    // Floor
-    const floorMat = new THREE.MeshLambertMaterial({
-      color: fac.facilityId === 'collaboration_plaza' ? 0x0f766e : STUDIO_PALETTE.corridorWood,
-    });
+    // Floor with procedural texture
+    let facFloorTex: THREE.CanvasTexture | null = null;
+    let baseCol = STUDIO_PALETTE.corridorWood;
+
+    if (fac.facilityId === 'collaboration_plaza') {
+      facFloorTex = createCarpetTexture('#0f766e', '#134e4a');
+      baseCol = 0x0f766e;
+    } else if (fac.facilityId === 'pantry_coffee_bar') {
+      facFloorTex = createOfficeTileTexture('#334155', '#1e293b');
+      baseCol = 0x334155;
+    } else {
+      facFloorTex = createOfficeTileTexture('#1e293b', '#0f172a');
+      baseCol = 0x1e293b;
+    }
+
+    const floorMat = new THREE.MeshLambertMaterial({ color: baseCol });
+    if (facFloorTex) floorMat.map = facFloorTex;
     const floorGeo = new THREE.BoxGeometry(w, 0.16, d);
     const floor = new THREE.Mesh(floorGeo, floorMat);
     floor.position.set(fac.centerPos[0], -0.08, fac.centerPos[2]);
