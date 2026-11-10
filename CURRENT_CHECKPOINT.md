@@ -7,22 +7,22 @@
 
 ## 📌 Identitas Proyek & Status
 - **Nama Proyek:** SleepyKoala Studio — Indie Developer Portfolio
-- **Tanggal Diperbarui:** 2026-11-11 01:22:00
-- **Status Terakhir:** Siap Dilanjutkan (Revisi Kantor 3D: Anti-Tabrak Meja, Tekstur Dinding Wainscoting & Lantai Parket CC0, Koridor Multi-Hop Anti-Void, & Perabotan Kenney CC0)
+- **Tanggal Diperbarui:** 2026-11-11 01:58:00
+- **Status Terakhir:** Siap Dilanjutkan (Revisi Lanjutan Kantor 3D: Personal Space, Kampus Rapat, Dinding Kaca Ruang Tengah, & 3D Project Detail)
 - **Fitur Aktif Berikutnya (Setelah Owner Menyatakan PASS untuk Kantor 3D):** 
   1. Menjalankan pengawasan harian kepatuhan 14 hari Closed Testing Mobile Kasir di Google Play Console (pemantauan 20 tester opt-in, crash rate < 1.09%, dan ANR rate < 0.47%).
   2. Memverifikasi kesiapan 6 formulir evaluasi jawaban resmi untuk pengajuan akses produksi Google Play Store di Web Admin CMS (`/admin` -> tab `COMPLIANCE`).
 - **Kondisi Kesehatan Sistem:** 
   - 🧪 Pengujian Otomatis: **790 / 790 Lulus (100% PASS across 42 Test Suites)**
-  - 🔍 Pengecekan Kode: **0 Eror TypeScript, 0 Eror Linter (Build Selesai dalam 6.25s)**
+  - 🔍 Pengecekan Kode: **0 Eror TypeScript, 0 Eror Linter (Build Selesai dalam 3.93s)**
   - 🛡️ Keamanan & Privasi: **0 Rahasia Bocor, 0 Data Pribadi Bocor, 0 File Ilegal (2.627 berkas patuh)**
   - 💰 Biaya Operasional: **Rp 0 / $0.00 (100% Free Open-Source Three.js MIT, Kay Lousberg CC0, Poly Haven CC0, Kenney CC0 via Poly Pizza)**
 
 ---
 
 ## 🎭 Persona Spesialis yang Diaktifkan untuk Tahap Ini
-1. **Autonomous Live-Studio Technical Director & Visual Pipeline Architect:** Mengorkestrasi visual 3D kampus kantor virtual, integrasi model perabotan Kenney CC0, wainscoting dinding berjenjang, dan tekstur lantai WebP Poly Haven CC0.
-2. **Lead Software Architect:** Merancang skema data 3-Lapis (`seatedPos`, `pathQueue`, obstacle collider meja, dan multi-hop corridor routing) agar pergerakan kru presisi tanpa tabrakan.
+1. **Autonomous Live-Studio Technical Director & Visual Pipeline Architect:** Mengorkestrasi visual 3D kampus kantor virtual, integrasi dinding partisi kaca modern semi-transparan, parket herringbone, ubin slate paving, dan model perabotan Kenney CC0.
+2. **Lead Software Architect:** Merancang skema data 3-Lapis (`PERSONAL_SPACE_RADIUS`, `PERSONAL_COLLISION_DISTANCE`, relokasi kampus rapat `x = ±18`, docking izin kursi, dan integrasi `ThreeCampusCanvas` pada `ProjectDetailPage.tsx`).
 3. **QA Verification Auditor:** Menjalankan verifikasi 42 test suites (790 tes lulus 100%), memeriksa kualitas build, serta memvalidasi kesesuaian visual via Protokol Mata AI multimodal.
 4. **Security & Anti-Exploit Specialist:** Memverifikasi keamanan berkas, integritas repositori, sanitasi input, dan pemindaian 0 rahasia.
 5. **Studio Producer / Scope Protector:** Menjaga mandat anggaran Rp 0, mendampingi Owner non-coder dengan bahasa awam yang bersahabat, dan menahan pengerjaan Tahap 10 hingga revisi visual kantor 3D dinyatakan PASS oleh Owner.
@@ -30,17 +30,19 @@
 ---
 
 ## 🎯 Keputusan Kunci Owner (Terkunci)
-1. **Pencegahan Tabrakan Meja (Anti-Desk Collision):** Posisi kembali kru saat selesai istirahat dikunci ke `seatedPos` di kursi belakang meja (`z: hz + 0.75` s/d `hz + 0.85`), bukan ke titik tengah meja. Bounding box meja dipangkas ke `maxZ: hz + 0.55` sehingga karakter duduk santai menghadap laptop tanpa tersangkut meja.
-2. **Penggantian Dinding & Lantai Solid Menjadi Bertekstur:** Dinding tidak lagi abu-abu/hitam solid polos; kini dilapisi panel wainscoting arsitektural dua lapis, list profil tengah (*chair rail molding*), plester halus di bagian atas, dan list mahkota (*crown molding*). Lantai dilapisi tekstur kayu herringbone parquet, ubin batu slate gelap, dan terrazzo modern berformat WebP (~25-45KB).
-3. **Jalur Koridor Multi-Hop (Anti-Melangkah ke Ruang Hampa):** Kru yang bepergian antar ruangan, ke lounge, atau ke dapur/pantry diwajibkan melewati jalur antrean `pathQueue`: Pintu Ruangan -> Walkway Lampu Penghubung -> Poros Kampus Utama (Central Spine) -> Ruangan Tujuan. Karakter tidak bisa lagi mengambil jalan pintas diagonal melintasi area hampa hitam di luar kampus.
-4. **Penambahan Furnitur & Dekorasi Lengkap Kenney CC0:** Seluruh ruangan diperkaya dengan 18 model 3D perabotan CC0 (rak buku terbuka, tanaman pot hias, lampu lantai, gantungan pakaian, tempat sampah, sofa santai desainer, meja kopi, dan karpet).
-5. **Mandat Anggaran Nol Rupiah (Rp 0 / $0.00):** Seluruh aset 3D dan tekstur berasal dari sumber domain publik CC0 (Kenney, Poly Haven, Kay Lousberg) yang bebas hak cipta dan dapat digunakan secara komersial tanpa royalti.
-6. **Prioritas Urutan Kerja:** Tahap 10 (Closed Testing Google Play) TIDAK dijalankan sebelum Owner menyatakan revisi kantor 3D ini telah lulus (PASS).
+1. **Aturan Psikologis Jarak Personal Antar-Karakter (Personal Space):** Karakter yang berjalan mempertahankan jarak personal minimal `1.15m` satu sama lain dengan gaya tolak tolak lembut dinamis (anti-saling tabrak dan anti-stuck). Terhadap karakter yang sedang duduk bekerja atau tidur, karakter yang berjalan mempertahankan jarak aman `1.25m` dan dibelokkan secara otomatis tanpa mengganggu karakter yang sedang duduk.
+2. **Penuntasan Tabrakan Meja & Kursi (Workstation Protection & Smart Docking):** Kotak rintangan diperluas membungkus meja dan kursi tugas (`minX: hx - 1.25, maxX: hx + 1.25, minZ: hz - 0.70, maxZ: hz + 1.15`). Pengecualian khusus docking hanya berlaku bagi pemilik kursi dari arah belakang saat jarak < 2.2m.
+3. **Penyempitan Kampus (Compact Campus Layout):** Jarak antar-ruangan dirapatkan dari `x = ±26` ke `x = ±18` dan lantai dasar fondasi diperluas ke `64m x 64m` dengan paving batu slate, sehingga menghapuskan jurang/void hitam di antara koridor penghubung.
+4. **Renovasi Ruang Tengah (Collaboration Lounge):** Karpet hijau terang diganti dengan lantai kayu parket herringbone hangat. Ditambahkan 4 dinding partisi kaca modern semi-transparan (`opacity: 0.35`) dengan bingkai gelap dan 4 pintu akses terbuka (Utara, Selatan, Timur, Barat) serta sofa desainer, meja kopi, tanaman hias, lampu lantai, dan TV standing.
+5. **Modernisasi Tampilan Detail Proyek (`ProjectDetailPage.tsx`):** Komponen lama 2.5D pixel art diganti total dengan tampilan 3D WebGL Live (`ThreeCampusCanvas`), menyatukan desain seluruh aplikasi web secara modern dan konsisten.
+6. **Mandat Anggaran Nol Rupiah (Rp 0 / $0.00):** Seluruh aset 3D dan tekstur berasal dari sumber domain publik CC0 (Kenney, Poly Haven, Kay Lousberg) yang bebas hak cipta dan dapat digunakan secara komersial tanpa royalti.
+7. **Prioritas Urutan Kerja:** Tahap 10 (Closed Testing Google Play) TIDAK dijalankan sebelum Owner menyatakan revisi kantor 3D ini telah lulus (PASS).
 
 ---
 
 ## 📜 Log Riwayat Selesai (Verified E2E)
-- [2026-11-11 01:19:58] Verified E2E: Revisi Kantor 3D: Anti-Tabrak Meja, Tekstur Dinding Wainscoting & Lantai Parket CC0, Koridor Multi-Hop Anti-Void, & Perabotan Kenney CC0
+- [2026-11-11 01:57:22] Verified E2E: Revisi Lanjutan Kantor 3D: Personal Space, Kampus Rapat, Dinding Kaca Ruang Tengah, & 3D Project Detail
+- [2026-11-11 01:58:00] Verified E2E: Revisi Lanjutan Kantor 3D: Personal Space, Kampus Rapat x=±18, Dinding Kaca Ruang Tengah, & 3D WebGL Project Detail
 - [2026-11-11 01:20:00] Verified E2E: Revisi Kantor 3D: Anti-Tabrak Meja, Tekstur Dinding Wainscoting & Lantai Parket CC0, Koridor Multi-Hop Anti-Void, & Perabotan Lengkap Kenney CC0
 - [2026-11-10 22:27:46] Verified E2E: Tahap 9: Verifikasi CMS Changelog, Panduan Custom Domain, & Deploy Live Kantor 3D
 - [2026-11-10 20:34:30] Verified E2E: Revisi Virtual Crew 3D: Multi-Agent Animasi, Collision, Tekstur Lantai Tembok & Papan Nama 3D, Free Drag-Pan

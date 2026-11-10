@@ -406,22 +406,39 @@ interface CrewAnimationController {
         // 3. Load Collaboration Lounge Furniture (Plaza at center)
         try {
           const loungeSofaN = await loadKenneyFurnitureModel('loungeDesignSofa');
-          loungeSofaN.position.set(0, 0, -3.2);
+          loungeSofaN.position.set(0, 0, -2.6);
           assembled.scene.add(loungeSofaN);
 
           const loungeSofaS = await loadKenneyFurnitureModel('loungeDesignSofa');
-          loungeSofaS.position.set(0, 0, 3.2);
+          loungeSofaS.position.set(0, 0, 2.6);
           loungeSofaS.rotation.y = Math.PI;
           assembled.scene.add(loungeSofaS);
+
+          const loungeChairW = await loadKenneyFurnitureModel('loungeDesignChair');
+          loungeChairW.position.set(-2.5, 0, 0);
+          loungeChairW.rotation.y = Math.PI / 2;
+          assembled.scene.add(loungeChairW);
+
+          const loungeChairE = await loadKenneyFurnitureModel('loungeDesignChair');
+          loungeChairE.position.set(2.5, 0, 0);
+          loungeChairE.rotation.y = -Math.PI / 2;
+          assembled.scene.add(loungeChairE);
 
           const loungeTable = await loadKenneyFurnitureModel('tableCoffee');
           loungeTable.position.set(0, 0, 0);
           assembled.scene.add(loungeTable);
 
-          const plazaRug = await loadKenneyFurnitureModel('rugRound');
-          plazaRug.position.set(0, 0.02, 0);
-          plazaRug.scale.set(3.0, 1.0, 3.0);
-          assembled.scene.add(plazaRug);
+          const lampLounge = await loadKenneyFurnitureModel('lampRoundFloor');
+          lampLounge.position.set(-4.5, 0, -4.5);
+          assembled.scene.add(lampLounge);
+
+          const plantLounge = await loadKenneyFurnitureModel('pottedPlant');
+          plantLounge.position.set(4.5, 0, -4.5);
+          assembled.scene.add(plantLounge);
+
+          const tvLounge = await loadKenneyFurnitureModel('television');
+          tvLounge.position.set(0, 0, -5.2);
+          assembled.scene.add(tvLounge);
         } catch {
           // Safe fallback
         }

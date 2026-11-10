@@ -23,7 +23,6 @@ import {
 import {
   createParquetFloorTexture,
   createOfficeTileTexture,
-  createCarpetTexture,
   createCorridorRunnerTexture,
   createRoomSignageTexture,
   createWainscotingWallTexture,
@@ -64,11 +63,10 @@ export function buildUnifiedCampusGround(): THREE.Group {
   const group = new THREE.Group();
   group.name = 'unified_campus_foundation';
 
-  // 1. Massive Solid Foundation Slab covering the whole campus
-  // Campus spans from x: -38 to 38 (width ~76), z: -38 to 38 (depth ~76)
-  const slabGeo = new THREE.BoxGeometry(82, 0.4, 82);
-  const slabTex = createOfficeTileTexture('#1e293b', '#0f172a');
-  const slabMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.campusBaseSlab });
+  // 1. Solid Foundation Slab covering the compact campus (width 64m x depth 64m)
+  const slabGeo = new THREE.BoxGeometry(64, 0.4, 64);
+  const slabTex = createOfficeTileTexture('#334155', '#1e293b');
+  const slabMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
   if (slabTex) slabMat.map = slabTex;
   const slab = new THREE.Mesh(slabGeo, slabMat);
   slab.position.set(0, -0.3, 0);
@@ -76,22 +74,24 @@ export function buildUnifiedCampusGround(): THREE.Group {
   group.add(slab);
 
   // 1b. Foundation Edge Trim
-  const borderGeo = new THREE.BoxGeometry(83, 0.15, 83);
-  const borderMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.campusBaseBorder });
+  const borderGeo = new THREE.BoxGeometry(65, 0.15, 65);
+  const borderMat = new THREE.MeshLambertMaterial({ color: 0x475569 });
   const border = new THREE.Mesh(borderGeo, borderMat);
   border.position.set(0, -0.45, 0);
   group.add(border);
 
   // 2. Central Spine Corridor (North-South connecting Reception, Plaza, Pantry)
-  const spineGeo = new THREE.BoxGeometry(10, 0.04, 66);
-  const spineMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+  const spineGeo = new THREE.BoxGeometry(18, 0.04, 58);
+  const spineTex = createParquetFloorTexture();
+  const spineMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
+  if (spineTex) spineMat.map = spineTex;
   const spine = new THREE.Mesh(spineGeo, spineMat);
   spine.position.set(0, -0.08, 0);
   spine.receiveShadow = true;
   group.add(spine);
 
   // 2b. Central Spine Carpet Runner with edge guide strips
-  const runnerGeo = new THREE.BoxGeometry(4.5, 0.05, 62);
+  const runnerGeo = new THREE.BoxGeometry(4.0, 0.05, 56);
   const runnerTex = createCorridorRunnerTexture('#0284c7', '#38bdf8');
   const runnerMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.corridorRunner });
   if (runnerTex) runnerMat.map = runnerTex;
@@ -103,18 +103,18 @@ export function buildUnifiedCampusGround(): THREE.Group {
   const rows = [-20, 0, 20];
   rows.forEach((z) => {
     // West connector
-    const westWalkGeo = new THREE.BoxGeometry(18, 0.04, 6);
+    const westWalkGeo = new THREE.BoxGeometry(10, 0.04, 5.0);
     const westWalk = new THREE.Mesh(westWalkGeo, spineMat);
-    westWalk.position.set(-13, -0.08, z);
+    westWalk.position.set(-13.5, -0.08, z);
     group.add(westWalk);
 
     // East connector
-    const eastWalkGeo = new THREE.BoxGeometry(18, 0.04, 6);
+    const eastWalkGeo = new THREE.BoxGeometry(10, 0.04, 5.0);
     const eastWalk = new THREE.Mesh(eastWalkGeo, spineMat);
-    eastWalk.position.set(13, -0.08, z);
+    eastWalk.position.set(13.5, -0.08, z);
     group.add(eastWalk);
 
-    // Subtle guide lights along walkways
+    // Guide lights along walkways
     const lightGeo = new THREE.CylinderGeometry(0.12, 0.12, 0.5, 8);
     const lightMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
     const postMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
@@ -131,10 +131,10 @@ export function buildUnifiedCampusGround(): THREE.Group {
       return bollard;
     };
 
-    group.add(createBollard(-6, z - 3.2));
-    group.add(createBollard(-6, z + 3.2));
-    group.add(createBollard(6, z - 3.2));
-    group.add(createBollard(6, z + 3.2));
+    group.add(createBollard(-9.2, z - 2.8));
+    group.add(createBollard(-9.2, z + 2.8));
+    group.add(createBollard(9.2, z - 2.8));
+    group.add(createBollard(9.2, z + 2.8));
   });
 
   return group;
@@ -625,8 +625,8 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
     let baseCol = STUDIO_PALETTE.corridorWood;
 
     if (fac.facilityId === 'collaboration_plaza') {
-      facFloorTex = createCarpetTexture('#0f766e', '#134e4a');
-      baseCol = 0x0f766e;
+      facFloorTex = createParquetFloorTexture();
+      baseCol = 0xb45309;
     } else if (fac.facilityId === 'pantry_coffee_bar') {
       facFloorTex = createOfficeTileTexture('#334155', '#1e293b');
       baseCol = 0x334155;
@@ -642,22 +642,81 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
     floor.position.set(fac.centerPos[0], -0.08, fac.centerPos[2]);
     group.add(floor);
 
-    // Collaboration Lounge Props
+    // Collaboration Lounge: Modern Glass Partition Walls & Round Designer Rug
     if (fac.facilityId === 'collaboration_plaza') {
-      const sofaMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.sofaTeal });
-      const sofaGeo = new THREE.BoxGeometry(4.2, 0.6, 1.4);
-      const sofa1 = new THREE.Mesh(sofaGeo, sofaMat);
-      sofa1.position.set(0, 0.3, -3.5);
-      const sofa2 = new THREE.Mesh(sofaGeo, sofaMat);
-      sofa2.position.set(0, 0.3, 3.5);
-      group.add(sofa1);
-      group.add(sofa2);
+      const glassMat = new THREE.MeshLambertMaterial({
+        color: 0x93c5fd,
+        transparent: true,
+        opacity: 0.35,
+      });
+      const frameMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+      const kickMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
 
-      // Coffee Table in Plaza Center
-      const tableMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
-      const table = new THREE.Mesh(new THREE.BoxGeometry(2.4, 0.45, 2.4), tableMat);
-      table.position.set(0, 0.22, 0);
-      group.add(table);
+      const halfW = w / 2;
+      const halfD = d / 2;
+      const wallH = 2.8;
+      const doorHalfW = 1.8;
+      const sidePanelW = halfW - doorHalfW;
+
+      const buildPartition = (isEW: boolean, posSign: number) => {
+        const wallG = new THREE.Group();
+        const thick = 0.16;
+
+        const pGeo = new THREE.BoxGeometry(
+          isEW ? thick : sidePanelW,
+          wallH,
+          isEW ? sidePanelW : thick
+        );
+        const p1 = new THREE.Mesh(pGeo, glassMat);
+        const kGeo = new THREE.BoxGeometry(
+          isEW ? thick + 0.04 : sidePanelW,
+          0.45,
+          isEW ? sidePanelW : thick + 0.04
+        );
+        const k1 = new THREE.Mesh(kGeo, kickMat);
+        k1.position.y = -wallH / 2 + 0.225;
+        p1.add(k1);
+
+        const p2 = p1.clone();
+
+        const hGeo = new THREE.BoxGeometry(
+          isEW ? thick + 0.02 : doorHalfW * 2,
+          0.35,
+          isEW ? doorHalfW * 2 : thick + 0.02
+        );
+        const header = new THREE.Mesh(hGeo, frameMat);
+        header.position.y = wallH / 2 - 0.175;
+        wallG.add(header);
+
+        if (!isEW) {
+          const zPos = posSign * halfD;
+          p1.position.set(-doorHalfW - sidePanelW / 2, wallH / 2, 0);
+          p2.position.set(doorHalfW + sidePanelW / 2, wallH / 2, 0);
+          wallG.position.set(fac.centerPos[0], 0, fac.centerPos[2] + zPos);
+        } else {
+          const xPos = posSign * halfW;
+          p1.position.set(0, wallH / 2, -doorHalfW - sidePanelW / 2);
+          p2.position.set(0, wallH / 2, doorHalfW + sidePanelW / 2);
+          wallG.position.set(fac.centerPos[0] + xPos, 0, fac.centerPos[2]);
+        }
+
+        wallG.add(p1);
+        wallG.add(p2);
+        return wallG;
+      };
+
+      // 4 glass walls with wide archways (North, South, West, East)
+      group.add(buildPartition(false, -1)); // North
+      group.add(buildPartition(false, 1));  // South
+      group.add(buildPartition(true, -1));  // West
+      group.add(buildPartition(true, 1));   // East
+
+      // Wine-Red Circular Designer Rug
+      const rugMat = new THREE.MeshLambertMaterial({ color: 0x881337 });
+      const rugGeo = new THREE.CylinderGeometry(3.6, 3.6, 0.04, 24);
+      const rug = new THREE.Mesh(rugGeo, rugMat);
+      rug.position.set(fac.centerPos[0], 0.02, fac.centerPos[2]);
+      group.add(rug);
     }
 
     // Pantry Props (Coffee maker counter)

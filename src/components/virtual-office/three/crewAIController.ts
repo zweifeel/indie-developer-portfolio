@@ -86,9 +86,8 @@ export function stepCrewMovement(
         // Check if returned home to chair behind desk
         const targetChair = crew.seatedPos || [crew.homeDeskPos[0], 0, crew.homeDeskPos[2] + 0.75];
         const distToChair = calculateGroundDistance(arrivedPos, targetChair);
-        const distToDesk = calculateGroundDistance(arrivedPos, crew.homeDeskPos);
 
-        if (distToChair < 1.4 || distToDesk < 1.6) {
+        if (distToChair < 0.6) {
           nextState = 'WORKING_AT_DESK';
           finalPos = [...targetChair];
           finalFacing = Math.PI; // Face forward towards computer screen
@@ -96,13 +95,13 @@ export function stepCrewMovement(
         } else {
           // Check if arrived at Pantry
           const distToPantry = calculateGroundDistance(arrivedPos, SHARED_FACILITIES[2].centerPos);
-          if (distToPantry < 8) {
+          if (distToPantry < 5) {
             nextState = 'AT_PANTRY';
             logMsg = `Tiba di Pantry untuk mengambil kopi / air minum.`;
           } else {
             // Check if arrived at Lounge
             const distToLounge = calculateGroundDistance(arrivedPos, SHARED_FACILITIES[1].centerPos);
-            if (distToLounge < 8) {
+            if (distToLounge < 5) {
               nextState = 'AT_LOUNGE';
               logMsg = `Duduk di Collaboration Lounge untuk beristirahat.`;
             } else {
@@ -152,9 +151,18 @@ export function stepCrewMovement(
     const rawNextZ = current[2] + dz * ratio;
     const facingAngleY = Math.atan2(dx, dz);
 
+    // Exclude own workstation collider when within 2.2m of own chair to dock smoothly
+    const effectiveObstacles = obstacles.filter((obs) => {
+      if (crew.targetPos && crew.seatedPos && obs.id === `desk_${crew.id}`) {
+        const dChair = calculateGroundDistance(current, crew.seatedPos);
+        if (dChair < 2.2) return false;
+      }
+      return true;
+    });
+
     // Apply obstacle collision and sliding
-    const resolvedPos = obstacles.length > 0
-      ? resolveObstacleCollision(current, [rawNextX, 0, rawNextZ], obstacles)
+    const resolvedPos = effectiveObstacles.length > 0
+      ? resolveObstacleCollision(current, [rawNextX, 0, rawNextZ], effectiveObstacles)
       : ([rawNextX, 0, rawNextZ] as Vector3Tuple);
 
     return {
@@ -164,8 +172,8 @@ export function stepCrewMovement(
     };
   });
 
-  // Apply agent-to-agent separation to avoid overlapping characters
-  updatedCrew = resolveAgentCollisions(updatedCrew, 0.75);
+  // Apply agent-to-agent separation with psychological personal space radius
+  updatedCrew = resolveAgentCollisions(updatedCrew, 1.15);
 
   return { updatedCrew, arrivedLogs };
 }

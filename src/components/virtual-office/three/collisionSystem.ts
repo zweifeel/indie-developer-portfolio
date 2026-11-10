@@ -64,19 +64,22 @@ export function resolveObstacleCollision(
     }
   }
 
-  // Campus Ground Boundary Clamp (-40 to 40 on X, -40 to 40 on Z)
-  const clampedX = Math.max(-39, Math.min(39, targetX));
-  const clampedZ = Math.max(-39, Math.min(39, targetZ));
+  // Campus Ground Boundary Clamp (-30 to 30 on X, -30 to 30 on Z for compact campus)
+  const clampedX = Math.max(-30, Math.min(30, targetX));
+  const clampedZ = Math.max(-30, Math.min(30, targetZ));
 
   return [clampedX, targetY, clampedZ];
 }
 
 /**
- * Resolve Agent-to-Agent collisions using gentle repulsive separation force (Boids)
+ * Resolve Agent-to-Agent collisions using personal space repulsion (Proxemics & Social Force)
+ * - Walking agents maintain 1.15m personal space from other walking agents
+ * - Walking agents maintain 1.25m clearance from seated agents (cannot walk through seated crew)
+ * - Seated crew members remain firmly anchored to their chairs
  */
 export function resolveAgentCollisions(
   crewList: ProjectCrewMember3D[],
-  minDistance: number = 0.75
+  minDistance: number = 1.15
 ): ProjectCrewMember3D[] {
   const count = crewList.length;
   if (count <= 1) return crewList;
@@ -86,26 +89,38 @@ export function resolveAgentCollisions(
     currentPos: [...c.currentPos] as Vector3Tuple,
   }));
 
+  const SEATED_SAFE_DISTANCE = 1.25;
+
   for (let i = 0; i < count; i++) {
     const a = result[i];
-    // Don't displace crew members who are sitting at desk
+    // Seated crew members are firmly anchored to their chairs
     if (a.currentState === 'WORKING_AT_DESK' || a.currentState === 'SLEEPING') {
       continue;
     }
 
-    for (let j = i + 1; j < count; j++) {
+    for (let j = 0; j < count; j++) {
+      if (i === j) continue;
       const b = result[j];
-      if (b.currentState === 'WORKING_AT_DESK' || b.currentState === 'SLEEPING') {
-        continue;
-      }
 
       const dx = a.currentPos[0] - b.currentPos[0];
       const dz = a.currentPos[2] - b.currentPos[2];
       const distSq = dx * dx + dz * dz;
 
-      if (distSq < minDistance * minDistance && distSq > 0.0001) {
+      // Interaction with seated agent: walking agent receives 100% of deflection force
+      if (b.currentState === 'WORKING_AT_DESK' || b.currentState === 'SLEEPING') {
+        if (distSq < SEATED_SAFE_DISTANCE * SEATED_SAFE_DISTANCE && distSq > 0.0001) {
+          const dist = Math.sqrt(distSq);
+          const push = SEATED_SAFE_DISTANCE - dist;
+          a.currentPos[0] += (dx / dist) * push;
+          a.currentPos[2] += (dz / dist) * push;
+        }
+        continue;
+      }
+
+      // Interaction between two walking agents (i < j to avoid duplicate half-pushes)
+      if (i < j && distSq < minDistance * minDistance && distSq > 0.0001) {
         const dist = Math.sqrt(distSq);
-        const overlap = (minDistance - dist) * 0.5;
+        const overlap = (minDistance - dist) * 0.55;
         const pushX = (dx / dist) * overlap;
         const pushZ = (dz / dist) * overlap;
 

@@ -342,19 +342,19 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
 
       const { updatedCrew } = stepCrewMovement(crew, 0.01, Date.now());
       const dist = calculateGroundDistance(updatedCrew[0].currentPos, updatedCrew[1].currentPos);
-      expect(dist).toBeGreaterThan(0.15); // pushed apart
+      expect(dist).toBeGreaterThan(0.2); // actively pushed apart by personal space
     });
 
     it('builds multi-hop corridor route through doorway, connector walkway and central spine', () => {
       const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
-      const westRoom = rooms[0]; // West room at cx = -26, cz = -20
-      const pantryPos: [number, number, number] = [0, 0, 22];
+      const westRoom = rooms[0]; // West room
+      const pantryPos: [number, number, number] = [0, 0, 20];
 
       const route = buildCorridorRoute(crew[0].currentPos, pantryPos, westRoom);
       expect(route.length).toBeGreaterThanOrEqual(4);
 
       // First hop should exit via room doorway
-      expect(route[0][0]).toBeCloseTo(westRoom.centerPos[0] + 8.5);
+      expect(route[0][0]).toBeCloseTo(westRoom.centerPos[0] + 7.5);
       // Intermediate hop should transition onto central spine (x = 0)
       const hasSpineWaypoint = route.some((pt) => Math.abs(pt[0]) < 0.1);
       expect(hasSpineWaypoint).toBe(true);
@@ -378,7 +378,7 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       expect(updatedCrew[0].currentState).toBe('WALKING');
     });
 
-    it('ensures seated desk positions are clear of desk obstacle bounding boxes', () => {
+    it('ensures workstation obstacle bounding box protects employee seating zone from others', () => {
       const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
       const obstacles = generateCampusObstacles(rooms, crew);
 
@@ -386,8 +386,9 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
         const deskBox = obstacles.find((o) => o.id === `desk_${c.id}`);
         expect(deskBox).toBeDefined();
         if (deskBox && c.seatedPos) {
-          // Chair Z position must be strictly behind maxZ of desk obstacle
-          expect(c.seatedPos[2]).toBeGreaterThan(deskBox.maxZ);
+          // Bounding box encompasses both desk and task chair
+          expect(deskBox.maxZ).toBeGreaterThanOrEqual(c.seatedPos[2]);
+          expect(deskBox.minZ).toBeLessThan(c.homeDeskPos[2]);
         }
       });
     });

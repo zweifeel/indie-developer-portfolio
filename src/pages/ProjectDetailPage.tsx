@@ -22,6 +22,7 @@ import {
   MonitorSmartphone,
   Eye,
   Layers,
+  Box,
 } from 'lucide-react';
 import { useProjects } from '../services/projectService';
 import {
@@ -35,8 +36,8 @@ import { ProjectIcon, ScreenshotImage } from '../components/ProjectMedia';
 import { RegistrationModal } from '../components/RegistrationModal';
 import { usePageMeta } from '../hooks/usePageMeta';
 import { id } from '../locales/id';
-import { PixelProjectRoom } from '../components/virtual-office/PixelProjectRoom';
-import { provisionProjectRoom } from '../data/virtualOfficePresets';
+import { ThreeCampusCanvas } from '../components/virtual-office/ThreeCampusCanvas';
+import { VIRTUAL_OFFICE_SIMULATION_LABEL } from '../types/virtualOffice';
 
 export const ProjectDetailPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -81,12 +82,6 @@ export const ProjectDetailPage: React.FC = () => {
       isMounted = false;
     };
   }, [project, isPreview]);
-
-  // Shared Project Room instance (derived from canonical project data)
-  const projectRoom = useMemo(() => {
-    if (!project) return null;
-    return provisionProjectRoom(project);
-  }, [project]);
 
   const jsonLd = useMemo(() => {
     if (!project) return null;
@@ -732,10 +727,35 @@ export const ProjectDetailPage: React.FC = () => {
         </div>
       </div>
 
-      {/* VIRTUAL DEVELOPMENT OFFICE — PROJECT ROOM CLOSE-UP (COZY ISOMETRIC PIXEL ART) */}
-      {projectRoom && (
-        <section className="pt-8 border-t border-stone-850">
-          <PixelProjectRoom room={projectRoom} />
+      {/* VIRTUAL DEVELOPMENT OFFICE — 3D INTERACTIVE WORKSPACE (KAYKIT THREE.JS) */}
+      {project && (
+        <section className="pt-8 border-t border-stone-850 space-y-4" aria-labelledby="virtual-office-3d-title">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 sm:p-5 rounded-2xl border border-stone-800 bg-stone-900/60 backdrop-blur-xs">
+            <div>
+              <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-950/40 text-[11px] font-mono font-medium text-cyan-300 mb-1.5">
+                <Sparkles className="w-3 h-3 text-cyan-400" />
+                <span>{VIRTUAL_OFFICE_SIMULATION_LABEL}</span>
+              </div>
+              <h2 id="virtual-office-3d-title" className="text-xl sm:text-2xl font-bold text-stone-100 flex items-center gap-2.5">
+                <span>Ruang Kerja Tim: {project.name}</span>
+                <span className="text-xs px-2.5 py-0.5 rounded-md bg-stone-800 text-cyan-300 font-mono font-normal">
+                  {project.category}
+                </span>
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-400 mt-1">
+                Simulasi visual 3D Low-Poly WebGL ruang kerja 5 agent inti SleepyKoala Studio. Tema: Android Studio Space.
+              </p>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-cyan-800/60 bg-cyan-950/40 text-cyan-300 text-xs font-mono font-bold shrink-0">
+              <Box className="w-3.5 h-3.5 text-cyan-400" />
+              <span>3D Low-Poly WebGL</span>
+              <span className="text-[10px] uppercase px-1.5 py-0.5 rounded-full bg-cyan-500 text-stone-950 font-extrabold">LIVE</span>
+            </div>
+          </div>
+          <ThreeCampusCanvas
+            projects={allProjects}
+            initialFocusedSlug={project.slug}
+          />
         </section>
       )}
 
