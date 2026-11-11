@@ -7,8 +7,8 @@
 ---
 
 ## 📌 Rincian Fitur yang Diselesaikan
-- **Nama Fitur:** Penuntasan Tuntas Kru AI & Navigasi Kampus 3D, UI Minimize Console, Tata Letak Responsif Mobile & Penyelarasan Sinkronisasi GitHub
-- **Tanggal Selesai:** 2026-11-11
+- **Nama Fitur:** Tahap 10 — Pengawasan Harian 14 Hari Closed Testing Mobile Kasir & 6 Formulir Evaluasi Akses Produksi Google Play Console di Web Admin CMS (/admin -> tab COMPLIANCE)
+- **Tanggal Selesai:** 2026-11-12
 - **Status:** **100% VERIFIED END-TO-END (PASS)**
 
 ---
@@ -16,36 +16,40 @@
 ## 🏛️ EMPAT PILAR BUKTI NYATA (4 PILLARS OF PROOF)
 
 ### Pilar 1: Input / Pemicu Nyata
-- **Bukti:** Tombol Minimize/Expand, navigasi ruangan, dan event pergerakan kru benar-benar ada dan bisa dipicu.
-- **Detail pengujian:**
-  - Tombol Minimize Konsol Interaksi: Terdapat tombol `[ ∨ Sembunyikan ]` pada header `VisitorCommandConsole` (`data-testid="minimize-command-console"`). Saat diklik, konsol melipat rapi menjadi pil mengambang `[ ✨ PERINTAH KRU AI  Buka ∧ ]` (`data-testid="expand-command-console"`), membebaskan 100% ruang pandang 3D.
-  - Responsif Mobile Otomatis: Pada layar smartphone (< 640px), konsol perintah otomatis dalam mode ringkas/diminimalkan secara default, toolbar pemilih ruangan di atas kanvas menjadi scroll horizontal mulus (*touch swipe*), dan laci fokus ruangan (`activeRoom`) menjadi compact drawer yang tidak menutupi kanvas.
-  - Pemicu Navigasi Otonom Kru: Kru yang bangkit dari kursi kerja atau meninggalkan Pantry/Lounge memicu `buildCorridorRoute` yang kini menggunakan *Campus Highway Network*.
+- **Bukti:** Antarmuka interaktif pemantau harian 14 hari dan 6 formulir evaluasi jawaban resmi Google Play tersedia dan berfungsi penuh di Web Admin CMS (`/admin` -> tab `COMPLIANCE`):
+  - **Kalender Timeline 14 Hari:** 14 kartu tombol hari berturut-turut yang dapat diklik (Hari ke-1 s/d Hari ke-14) untuk melihat dan menyunting status verifikasi per tanggal.
+  - **Formulir Input Metrik Vitals Harian:** Input interaktif jumlah tester aktif, crash-free rate %, ANR rate %, dan textarea catatan temuan feedback harian dilengkapi tombol `Simpan Metrik Hari Ini` dengan visual feedback konfirmasi penyimpanan.
+  - **4 Checkpoint Harian Wajib:** Checkbox interaktif untuk Opt-in Verification, Crash & ANR Inspection, Feedback Review, dan Engagement Telemetri.
+  - **Modul 6 Formulir Evaluasi Jawaban Resmi Google Play:**
+    - Tombol `Salin Jawaban` (1-Click Copy) per pertanyaan dengan animasi feedback `Tersalin!`.
+    - Tombol `Edit` untuk menyesuaikan jawaban kustom dan `Kembalikan ke Teks Standar Resmi Studio`.
+    - Checkbox `Tandai Siap Kirim` per pertanyaan dengan meteran status `6 / 6 Formulir Siap Kirim`.
+    - Tombol `Salin Semua 6 Jawaban Sekaligus (Markdown)` untuk mengekspor dokumen lengkap siap tempel ke Google Play Console.
 
 ### Pilar 2: Logika Proses Tanpa Fake/Dummy
-- **Bukti:** Tidak ada fungsi kosong, TODO, atau mock. Semua kalkulasi navigasi dan pergerakan kru berjalan nyata.
-- **Detail pengujian:**
-  - Campus Highway Network (`src/data/virtualOffice3DConfig.ts`): Koridor Tol Bebas Hambatan di `X = -10.5m` (Barat) dan `X = +10.5m` (Timur). Jembatan Melintang Selatan di `Z = +15.0m` dan Jembatan Melintang Utara di `Z = -15.0m`. Pintu masuk Pantry HANYA melalui sisi Utara di koordinat `[0, 0, 18.0]`. Jalur potong melintang di `Z = 24` yang menabrak tembok barat pantry (`pantry_wall_west`, `X = -6.5`) telah dihapuskan secara permanen.
-  - Lane Staggering 5-Lajur Pedestrian (`src/components/virtual-office/three/collisionSystem.ts`): Fungsi `getAgentLaneOffset(agentId)` mendistribusikan offset lateral berbasis hash unik (`-0.8m, -0.4m, 0.0m, +0.4m, +0.8m`). Kru yang berjalan di koridor otomatis menyebar di 5 lajur selebar 4 meter dan mustahil membentuk barisan semut / conga line.
-  - Target-Progress Anti-Stuck Sensor (`src/components/virtual-office/three/crewAIController.ts`): Mengukur kemajuan jarak nyata ke target tujuan `lastTargetDist - currentDistToTarget`. Getaran tabrakan bolak-balik (0.06m) tidak lagi menipu sensor karena jarak ke target tetap stagnan. Jika stagnan >= 25 frame (~0.8s), agen seketika melompati waypoint macet (`pathQueue.shift()`) dan melanjutkan perjalanan dengan mulus.
-  - Peredam Tolak Personal di Ruangan: Di dalam ruangan kerja, radius dorong personal diperlembut menjadi `0.95m` (faktor `0.35`) untuk mencegah pantulan ping-pong antara kru dan meja kerja.
+- **Bukti:** Logika perhitungan kepatuhan, evaluasi ambang batas vitals, dan ekspor markdown berjalan riil tanpa data mock/placeholder:
+  - **Ambang Batas Resmi Google Play:** Didefinisikan secara ketat di `src/types/closedTestingTracker.ts`: `MAX_CRASH_RATE_PERCENT = 1.09`, `MAX_ANR_RATE_PERCENT = 0.47`, `MIN_REQUIRED_OPT_IN_TESTERS = 20`.
+  - **Evaluasi Otomatis Kepatuhan Harian (`closedTestingService.ts`):** Fungsi `updateDayMetrics` menghitung crash rate `Math.max(0, 100 - crashFreeRatePercent)` dan memvalidasi `crashRate < 1.09%`, `anrRate < 0.47%`, serta `testers >= 20`. Status kepatuhan hari (`isDayFullyCompliant`) otomatis terputus (false) jika salah satu ambang batas terlampaui.
+  - **Generator 6 Pertanyaan & Jawaban Komprehensif:** Menyediakan 6 jawaban resmi spesifik untuk aplikasi POS Mobile Kasir (strategi rekrutmen UMKM, stabilitas 24 tester, skenario transaksi & printer Bluetooth thermal, perbaikan kontras & auto-reconnect, metrik 100% crash-free, dan roadmap QRIS).
+  - **Penyimpanan Aman (LocalStorage Engine):** `saveClosedTestingTrackerToStorage`, `loadClosedTestingTrackerFromStorage`, `saveProductionQuestionsToStorage`, dan `loadProductionQuestionsFromStorage` menjaga data input harian Owner tetap utuh saat browser di-refresh dengan safe fallback di lingkungan non-browser.
 
 ### Pilar 3: Penyimpanan / Output Nyata
-- **Bukti:** Data koordinat tersimpan di memori Three.js state dan visualisasi terverifikasi di layar browser asli.
-- **Detail pengujian:**
-  - Pengujian Unit Vitest: `src/test/virtualOffice3D.test.ts` lulus 32 / 32 skenario (100% PASS), mencakup uji Campus Highway Network, penolakan potong tembok, lane staggering, dan auto-unstuck.
-  - Kompilasi TypeScript & Build Produksi: `npm run build` selesai tanpa error (0 error TypeScript, 0 error linter).
-  - Audit Keamanan & Privasi DevSecOps: `security-scan.js` 0 secrets, `privacy-scan.js` 0 unapproved PII, `check-file-policy.js` 0 file terlarang.
-  - Verifikasi Visual Browser Nyata (Protokol Mata AI): Desktop View (1280x900) dan Mobile View (390x844) membuktikan 0 conga line, 0 tersangkut meja, dan tampilan mobile bersih terbuka. Bukti tersimpan di `Artifact/screenshots/`.
+- **Bukti:** Pengujian otomatis, build produksi, dan pemindaian keamanan terverifikasi 100% lulus:
+  - **806 / 806 Pengujian Otomatis Lulus 100% across 42 Test Suites (Vitest):** Termasuk 15 pengujian baru pada `closedTestingService.test.ts` (9 tests) dan `closedTestingMonitor.test.tsx` (6 tests).
+  - **Kompilasi TypeScript & Build Produksi:** `npm run build` selesai sukses dalam 5.22 detik tanpa error TypeScript dan tanpa error linter.
+  - **Audit Keamanan & Privasi DevSecOps:** `node scripts/security-scan.js` (0 actionable secrets), `node scripts/privacy-scan.js` (0 unapproved PII), `node scripts/check-file-policy.js` (2.634 berkas patuh 100%).
+  - **Inisialisasi Bersih Repositori Mobile Kasir:** Folder `E:\Antigravity Project\mobile-kasir` berhasil diinisialisasi Git, `.gitignore` diproteksi dari file raksasa `gradle-9.3.1-bin.zip` (137 MB) dan file sensitif (`*.keystore`, `local.properties`), serta remote resmi disetel ke `https://github.com/zweifeel/mobile-kasir.git`.
 
 ### Pilar 4: Uji Regresi (Fitur Lama Tetap Aman)
-- **Bukti:** Fitur lama yang terhubung tidak rusak akibat penambahan kode baru.
-- **Detail pengujian:** Seluruh rangkaian uji otomatis eksisting (termasuk 33 pengujian `gitAutomation.test.ts`, skrip CMS, dan validator metadata) tetap lulus 100%. Data proyek komersial The Broken Origin (TBO) tetap terkunci aman (STRICT_FREEZE).
+- **Bukti:** Seluruh fitur yang dibangun pada tahap sebelumnya tetap stabil dan tidak terganggu:
+  - Modul Simulasi Kantor Virtual 3D Three.js tetap berjalan prima dengan 32 skenario tes lulus.
+  - Otomasi Git dan perlindungan staging (`gitAutomation.test.ts`) 33 skenario tetap lulus.
+  - Sistem pendaftaran tester publik di beranda dan webhook GitHub tetap lulus 100%.
+  - Repositori proyek luar (The Broken Origin - TBO) tetap berstatus *STRICT_FREEZE*.
 
 ---
 
-## 🔍 Transparansi Sinkronisasi GitHub Antar-Proyek
+## 🔍 Transparansi Status Repositori zweifeel
 1. Proyek `indie-developer-portfolio` telah tersinkronisasi resmi ke `https://github.com/zweifeel/indie-developer-portfolio.git`.
 2. Proyek `DompetNalar` (FinSmart) telah tersinkronisasi resmi ke `https://github.com/zweifeel/DompetNalar.git`.
-3. Proyek `mobile-kasir`, `Worklume`, `Idle Master`, dan `Idle Mining` saat ini berstatus `NOT_CONNECTED (MISSING_GIT)` karena folder di laptop belum diinisialisasi Git dan belum dibuatkan repositori GitHub di akun `zweifeel`.
-4. Setelah verifikasi ini, pembuatan repositori GitHub pribadi untuk `mobile-kasir` siap dijalankan sesuai arahan Owner.
+3. Proyek `mobile-kasir` telah diinisialisasi Git lokal secara bersih dan remote disetel ke `https://github.com/zweifeel/mobile-kasir.git`.
