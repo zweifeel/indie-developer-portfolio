@@ -91,6 +91,9 @@ export interface ProjectCrewMember3D {
   isSleeping: boolean;
   speedBuffUntil: number; // timestamp ms
   activeChatBubble?: ChatBubbleData | null;
+  stuckCounter?: number; // Consecutive frames with zero/near-zero movement
+  lastPosSnapshot?: Vector3Tuple; // Position snapshot for stagnation detection
+  escapeWaypoint?: Vector3Tuple | null; // Temporary emergency detour waypoint
 }
 
 /**

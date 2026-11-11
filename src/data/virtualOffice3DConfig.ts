@@ -204,48 +204,69 @@ export function buildCorridorRoute(
   const isDestInsideRoom = (isWest ? destPos[0] < cx + 7.8 : destPos[0] > cx - 7.8) &&
     Math.abs(destPos[2] - cz) < 6.5;
 
+  // Directional pedestrian lane assignment along central spine to eliminate head-on stalemates
+  // Southbound (moving +Z) uses West lane (x = -0.9), Northbound (moving -Z) uses East lane (x = +0.9)
+  const spineLaneX = (destPos[2] > startPos[2]) ? -0.9 : 0.9;
+  // Connector walkway directional lane: Outbound to corridor vs Inbound to room
+  const connectorZ_outbound = isWest ? cz - 0.45 : cz + 0.45;
+  const connectorZ_inbound = isWest ? cz + 0.45 : cz - 0.45;
+
   const route: Vector3Tuple[] = [];
+
+  // Helper: Safe departure waypoint from workstation chair into room clear central aisle (cz)
+  const isAtDeskRow = Math.abs(startPos[2] - cz) > 1.2;
+  const stepOutFromDesk = (): Vector3Tuple => {
+    // If back row (z < cz), step forward/south into central aisle
+    if (startPos[2] < cz) {
+      return [startPos[0], 0, cz];
+    }
+    // If front row (z > cz), step sideways to center column (cx) or lateral aisle first
+    const clearSideX = (Math.abs(startPos[0] - cx) > 1.5) ? (startPos[0] > cx ? startPos[0] - 1.5 : startPos[0] + 1.5) : cx;
+    return [clearSideX, 0, cz];
+  };
 
   // CASE 1: Navigating entirely inside the same room (e.g. from desk to whiteboard, or returning to chair)
   if (isInsideRoom && isDestInsideRoom) {
-    // 1. Step into desk/wander aisle
-    const aisleZ = startPos[2] > cz ? cz + 2.5 : cz - 2.5;
-    if (Math.abs(startPos[0] - cx) > 1.0) {
-      route.push([startPos[0], 0, aisleZ]);
+    // 1. Step safely out of desk into room central aisle (Z = cz) if currently seated near desk
+    if (isAtDeskRow) {
+      route.push(stepOutFromDesk());
     }
-    // 2. Move to room central aisle
-    route.push([cx, 0, aisleZ]);
-    // 3. Move along central aisle to destination aisle
-    const destAisleZ = destPos[2] > cz ? cz + 2.5 : cz - 2.5;
-    route.push([cx, 0, destAisleZ]);
-    // 4. Approach destination column from aisle
+    // 2. Move to room center meeting/corridor nexus
+    route.push([cx, 0, cz]);
+    // 3. Move along central aisle to destination column
     if (Math.abs(destPos[0] - cx) > 1.0) {
-      route.push([destPos[0], 0, destAisleZ]);
+      route.push([destPos[0], 0, cz]);
     }
-    // 5. Final step into destination (chair or prop)
+    // 4. Step from aisle to destination (chair or prop)
     route.push([destPos[0], 0, destPos[2]]);
     return route;
   }
 
   // CASE 2: Leaving room towards common facilities (Lounge, Pantry, Corridor)
   if (isInsideRoom) {
-    // 1. Move to doorway inside room
-    route.push([insideDoorX, 0, cz]);
-    // 2. Step outside door onto the connector walkway
-    route.push([outsideDoorX, 0, cz]);
-    // 3. Move onto central spine (x = 0)
-    route.push([0, 0, cz]);
+    // 1. Step safely out of desk into room central aisle if departing from workstation
+    if (isAtDeskRow) {
+      route.push(stepOutFromDesk());
+    }
+    // 2. Move to room center nexus
+    route.push([cx, 0, cz]);
+    // 3. Move to doorway inside room
+    route.push([insideDoorX, 0, connectorZ_outbound]);
+    // 4. Step outside door onto the connector walkway
+    route.push([outsideDoorX, 0, connectorZ_outbound]);
+    // 5. Merge onto central directional spine lane (x = ±0.9)
+    route.push([spineLaneX, 0, cz]);
 
     // Check if dest is Collaboration Lounge (bounds: -6.5 to 6.5)
     if (Math.abs(destPos[0]) < 6.5 && Math.abs(destPos[2]) < 6.5) {
       // Enter through the closest of the 4 doors
-      const doorEntry: Vector3Tuple = isWest ? [-6.5, 0, 0] : [6.5, 0, 0];
+      const doorEntry: Vector3Tuple = isWest ? [-6.5, 0, connectorZ_outbound] : [6.5, 0, connectorZ_outbound];
       route.push(doorEntry);
       // Step into lounge inner perimeter
       route.push([isWest ? -3.0 : 3.0, 0, 0]);
     } else {
-      // Move along spine towards destination Z
-      route.push([0, 0, destPos[2]]);
+      // Move along directional spine lane towards destination Z
+      route.push([spineLaneX, 0, destPos[2]]);
     }
     // Final step into destination
     route.push([destPos[0], 0, destPos[2]]);
@@ -255,20 +276,22 @@ export function buildCorridorRoute(
   // CASE 3: Returning from outside facility back into room
   // 1. If currently inside Collaboration Lounge, exit via nearest door
   if (Math.abs(startPos[0]) < 6.0 && Math.abs(startPos[2]) < 6.0) {
-    const doorExit: Vector3Tuple = isWest ? [-6.5, 0, 0] : [6.5, 0, 0];
+    const doorExit: Vector3Tuple = isWest ? [-6.5, 0, connectorZ_inbound] : [6.5, 0, connectorZ_inbound];
     route.push(doorExit);
   }
-  // 2. Move along corridor to room connector row Z
-  route.push([0, 0, cz]);
+  // 2. Move along directional spine lane to room connector row Z
+  route.push([spineLaneX, 0, cz]);
   // 3. Move along connector walkway to outside doorway
-  route.push([outsideDoorX, 0, cz]);
+  route.push([outsideDoorX, 0, connectorZ_inbound]);
   // 4. Step through doorway into room
-  route.push([insideDoorX, 0, cz]);
-  // 5. Approach chair from aisle
+  route.push([insideDoorX, 0, connectorZ_inbound]);
+  // 5. Move to room center nexus
+  route.push([cx, 0, cz]);
+  // 6. Approach chair from aisle
   if (Math.abs(destPos[0] - cx) > 1.0) {
-    route.push([destPos[0], 0, destPos[2] + 0.65]);
+    route.push([destPos[0], 0, cz]);
   }
-  // 6. Step into chair / seatedPos
+  // 7. Step into chair / seatedPos
   route.push([destPos[0], 0, destPos[2]]);
 
   return route;
@@ -298,7 +321,7 @@ export function generateCampusObstacles(
 ): ObstacleBox3D[] {
   const obstacles: ObstacleBox3D[] = [];
 
-  // 1. Workstations (Full Workstation Footprint covering desk AND task chair)
+  // 1. Workstations (Precise Desktop Footprint without trapping the seated employee chair)
   crew.forEach((c) => {
     const [hx, , hz] = c.homeDeskPos;
     obstacles.push({
@@ -306,7 +329,7 @@ export function generateCampusObstacles(
       minX: hx - 1.25,
       maxX: hx + 1.25,
       minZ: hz - 0.70,
-      maxZ: hz + 1.15, // Encompasses task chair to protect employee personal workspace
+      maxZ: hz + 1.15, // Encompasses task chair to protect employee personal workspace from other crew members
     });
   });
 
@@ -419,12 +442,18 @@ export function generateCampusObstacles(
   // TV unit (North wall)
   obstacles.push({ id: 'lounge_tv_unit', minX: -1.5, maxX: 1.5, minZ: -5.7, maxZ: -4.7 });
 
-  // 4. Pantry Furniture Obstacles (center: [0, 0, 24])
+  // 4. Pantry Furniture & Enclosure Walls (center: [0, 0, 24])
+  obstacles.push({ id: 'pantry_wall_back', minX: -6.5, maxX: 6.5, minZ: 29.7, maxZ: 30.3 });
+  obstacles.push({ id: 'pantry_wall_west', minX: -6.7, maxX: -6.3, minZ: 18.0, maxZ: 30.0 });
+  obstacles.push({ id: 'pantry_wall_east', minX: 6.3, maxX: 6.7, minZ: 18.0, maxZ: 30.0 });
   obstacles.push({ id: 'pantry_counter_straight', minX: -3.6, maxX: -0.4, minZ: 23.2, maxZ: 24.8 });
   obstacles.push({ id: 'pantry_counter_sink', minX: 0.4, maxX: 3.6, minZ: 23.2, maxZ: 24.8 });
   obstacles.push({ id: 'pantry_table_round', minX: -1.4, maxX: 1.4, minZ: 18.6, maxZ: 21.4 });
 
-  // 5. Reception Furniture Obstacles (center: [0, 0, -24])
+  // 5. Reception Furniture & Enclosure Walls (center: [0, 0, -24])
+  obstacles.push({ id: 'reception_wall_back', minX: -6.5, maxX: 6.5, minZ: -30.3, maxZ: -29.7 });
+  obstacles.push({ id: 'reception_wall_west', minX: -6.7, maxX: -6.3, minZ: -30.0, maxZ: -18.0 });
+  obstacles.push({ id: 'reception_wall_east', minX: 6.3, maxX: 6.7, minZ: -30.0, maxZ: -18.0 });
   obstacles.push({ id: 'reception_front_desk', minX: -2.4, maxX: 2.4, minZ: -25.8, maxZ: -24.2 });
   obstacles.push({ id: 'reception_signboard', minX: -2.8, maxX: 2.8, minZ: -28.8, maxZ: -28.2 });
 

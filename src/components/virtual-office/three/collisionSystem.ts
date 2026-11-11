@@ -72,14 +72,15 @@ export function resolveObstacleCollision(
 }
 
 /**
- * Resolve Agent-to-Agent collisions using personal space repulsion (Proxemics & Social Force)
- * - Walking agents maintain 1.15m personal space from other walking agents
+ * Resolve Agent-to-Agent collisions using personal space repulsion & lateral steering
+ * - Walking agents maintain 1.35m personal space from other walking agents
+ * - Head-on encounters apply lateral "Keep-Right" steering force to pass smoothly without deadlock
  * - Walking agents maintain 1.25m clearance from seated agents (cannot walk through seated crew)
  * - Seated crew members remain firmly anchored to their chairs
  */
 export function resolveAgentCollisions(
   crewList: ProjectCrewMember3D[],
-  minDistance: number = 1.15
+  minDistance: number = 1.35
 ): ProjectCrewMember3D[] {
   const count = crewList.length;
   if (count <= 1) return crewList;
@@ -117,17 +118,50 @@ export function resolveAgentCollisions(
         continue;
       }
 
-      // Interaction between two walking agents (i < j to avoid duplicate half-pushes)
+      // Interaction between two walking agents (i < j to avoid duplicate processing)
       if (i < j && distSq < minDistance * minDistance && distSq > 0.0001) {
         const dist = Math.sqrt(distSq);
-        const overlap = (minDistance - dist) * 0.55;
-        const pushX = (dx / dist) * overlap;
-        const pushZ = (dz / dist) * overlap;
 
-        a.currentPos[0] += pushX;
-        a.currentPos[2] += pushZ;
-        b.currentPos[0] -= pushX;
-        b.currentPos[2] -= pushZ;
+        // Calculate heading vectors based on facing angles
+        const fAx = Math.sin(a.facingAngleY);
+        const fAz = Math.cos(a.facingAngleY);
+        const fBx = Math.sin(b.facingAngleY);
+        const fBz = Math.cos(b.facingAngleY);
+
+        // Dot product of forward headings to test for counter-directional (head-on) encounters
+        const headingDot = fAx * fBx + fAz * fBz;
+
+        if (headingDot < -0.2) {
+          // Head-on / counter-flow encounter: apply Keep-Right Lateral Steering
+          // Right-hand normal vector for agent A: (fAz, -fAx)
+          // Right-hand normal vector for agent B: (fBz, -fBx)
+          const lateralStrength = (minDistance - dist) * 0.45;
+
+          a.currentPos[0] += fAz * lateralStrength;
+          a.currentPos[2] += -fAx * lateralStrength;
+
+          b.currentPos[0] += fBz * lateralStrength;
+          b.currentPos[2] += -fBx * lateralStrength;
+
+          // Gentle radial damping to avoid clipping while lateral steering takes effect
+          if (dist < 0.7) {
+            const radialPush = (0.7 - dist) * 0.3;
+            a.currentPos[0] += (dx / dist) * radialPush;
+            a.currentPos[2] += (dz / dist) * radialPush;
+            b.currentPos[0] -= (dx / dist) * radialPush;
+            b.currentPos[2] -= (dz / dist) * radialPush;
+          }
+        } else {
+          // Non-head-on / converging encounter: Standard soft radial boids separation
+          const overlap = (minDistance - dist) * 0.5;
+          const pushX = (dx / dist) * overlap;
+          const pushZ = (dz / dist) * overlap;
+
+          a.currentPos[0] += pushX;
+          a.currentPos[2] += pushZ;
+          b.currentPos[0] -= pushX;
+          b.currentPos[2] -= pushZ;
+        }
       }
     }
   }

@@ -142,7 +142,70 @@ export function stepCrewMovement(
         currentState: nextState,
         facingAngleY: finalFacing,
         currentActivityLog: logMsg || crew.currentActivityLog,
+        stuckCounter: 0,
+        lastPosSnapshot: [...finalPos],
       };
+    }
+
+    // Anti-stuck monitoring for walking agents
+    let stuckCount = crew.stuckCounter || 0;
+    const lastSnap = crew.lastPosSnapshot || current;
+    const progressDist = calculateGroundDistance(current, lastSnap);
+
+    if (progressDist < 0.05) {
+      stuckCount += 1;
+    } else {
+      stuckCount = 0;
+    }
+
+    // Auto-Unstuck Recovery: If stuck against an obstacle for >= 25 frames (~0.8 - 1.2s)
+    if (stuckCount >= 25) {
+      // 1. Advance to next hop in pathQueue if available
+      if (crew.pathQueue && crew.pathQueue.length > 0) {
+        const nextWaypoint = crew.pathQueue[0];
+        const remainingQueue = crew.pathQueue.slice(1);
+        const nextFacing = Math.atan2(nextWaypoint[0] - current[0], nextWaypoint[2] - current[2]);
+        arrivedLogs.push({
+          id: `log_unstuck_${now}_${crew.id}`,
+          timestamp,
+          projectId: crew.projectId,
+          projectName: crew.projectName,
+          crewName: crew.name,
+          message: `${crew.name} memutar rute untuk melewati hambatan di ${crew.projectName}.`,
+          type: 'movement',
+        });
+        return {
+          ...crew,
+          targetPos: [...nextWaypoint] as Vector3Tuple,
+          pathQueue: remainingQueue,
+          facingAngleY: nextFacing,
+          stuckCounter: 0,
+          lastPosSnapshot: [...current],
+        };
+      } else {
+        // 2. Clear blocked target and redirect into room/corridor clear aisle
+        const lateralStep = current[0] >= 0 ? 1.2 : -1.2;
+        const escapeTarget: Vector3Tuple = [
+          current[0] + lateralStep,
+          0,
+          current[2] + (dz >= 0 ? 1.5 : -1.5),
+        ];
+        arrivedLogs.push({
+          id: `log_unstuck_${now}_${crew.id}`,
+          timestamp,
+          projectId: crew.projectId,
+          projectName: crew.projectName,
+          crewName: crew.name,
+          message: `${crew.name} mengambil jalan memutar alternatif di ${crew.projectName}.`,
+          type: 'movement',
+        });
+        return {
+          ...crew,
+          targetPos: escapeTarget,
+          stuckCounter: 0,
+          lastPosSnapshot: [...current],
+        };
+      }
     }
 
     // Move towards target
@@ -151,14 +214,8 @@ export function stepCrewMovement(
     const rawNextZ = current[2] + dz * ratio;
     const facingAngleY = Math.atan2(dx, dz);
 
-    // Exclude own workstation collider when within 2.2m of own chair to dock smoothly
-    const effectiveObstacles = obstacles.filter((obs) => {
-      if (crew.targetPos && crew.seatedPos && obs.id === `desk_${crew.id}`) {
-        const dChair = calculateGroundDistance(current, crew.seatedPos);
-        if (dChair < 2.2) return false;
-      }
-      return true;
-    });
+    // Exclude own workstation collider for the assigned employee (they cannot collide with their own desk)
+    const effectiveObstacles = obstacles.filter((obs) => obs.id !== `desk_${crew.id}`);
 
     // Apply obstacle collision and sliding
     const resolvedPos = effectiveObstacles.length > 0
@@ -169,11 +226,13 @@ export function stepCrewMovement(
       ...crew,
       currentPos: resolvedPos,
       facingAngleY,
+      stuckCounter: stuckCount,
+      lastPosSnapshot: (now % 1000 < 100) ? [...resolvedPos] : lastSnap,
     };
   });
 
-  // Apply agent-to-agent separation with psychological personal space radius
-  updatedCrew = resolveAgentCollisions(updatedCrew, 1.15);
+  // Apply agent-to-agent separation with psychological personal space radius & lateral steering
+  updatedCrew = resolveAgentCollisions(updatedCrew, 1.35);
 
   return { updatedCrew, arrivedLogs };
 }

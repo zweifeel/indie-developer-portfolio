@@ -353,15 +353,103 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       const route = buildCorridorRoute(crew[0].currentPos, pantryPos, westRoom);
       expect(route.length).toBeGreaterThanOrEqual(4);
 
-      // First hop should exit via room doorway
-      expect(route[0][0]).toBeCloseTo(westRoom.centerPos[0] + 7.5);
-      // Intermediate hop should transition onto central spine (x = 0)
-      const hasSpineWaypoint = route.some((pt) => Math.abs(pt[0]) < 0.1);
+      // Initial hops must safely exit desk into room aisle, then through room doorway
+      expect(route[0][2]).toBeCloseTo(westRoom.centerPos[2]); // Safe departure into central aisle cz
+      const hasDoorwayWaypoint = route.some((pt) => Math.abs(pt[0] - (westRoom.centerPos[0] + 7.5)) < 0.1);
+      expect(hasDoorwayWaypoint).toBe(true);
+      // Intermediate hop should transition onto central spine lane (x = ±0.9)
+      const hasSpineWaypoint = route.some((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
       expect(hasSpineWaypoint).toBe(true);
       // Final hop should land at pantry destination
       const last = route[route.length - 1];
       expect(last[0]).toBe(pantryPos[0]);
       expect(last[2]).toBe(pantryPos[2]);
+    });
+
+    it('steers walking agents laterally to the right when meeting head-on (Keep-Right Rule)', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      // Agent 0 is walking South (facingAngleY = 0 -> forward vector [0, 1])
+      crew[0].currentState = 'WALKING';
+      crew[0].currentPos = [0, 0, 9.5];
+      crew[0].targetPos = [0, 0, 15];
+      crew[0].facingAngleY = 0; // facing +Z (South)
+
+      // Agent 1 is walking North (facingAngleY = Math.PI -> forward vector [0, -1])
+      crew[1].currentState = 'WALKING';
+      crew[1].currentPos = [0, 0, 10.5];
+      crew[1].targetPos = [0, 0, 5];
+      crew[1].facingAngleY = Math.PI; // facing -Z (North)
+
+      const { updatedCrew } = stepCrewMovement(crew, 0.01, Date.now());
+
+      // Agent 0 (Southbound) should be steered to its right (+X / East)
+      // Agent 1 (Northbound) should be steered to its right (-X / West)
+      expect(updatedCrew[0].currentPos[0]).toBeGreaterThan(0);
+      expect(updatedCrew[1].currentPos[0]).toBeLessThan(0);
+      // Both agents should have distinct lateral paths, preventing 1D head-on stalemate
+      expect(Math.abs(updatedCrew[0].currentPos[0] - updatedCrew[1].currentPos[0])).toBeGreaterThan(0.15);
+    });
+
+    it('assigns separate directional pedestrian lanes on the central corridor', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const room = rooms[0];
+
+      // Route going South towards Pantry (z = 20)
+      const southRoute = buildCorridorRoute(crew[0].currentPos, [0, 0, 20], room);
+      // Route going North towards Reception (z = -20)
+      const northRoute = buildCorridorRoute([0, 0, 20], [0, 0, -20], room);
+
+      const southSpinePt = southRoute.find((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
+      const northSpinePt = northRoute.find((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
+
+      expect(southSpinePt).toBeDefined();
+      expect(northSpinePt).toBeDefined();
+      // Southbound should use West lane (x < 0) and Northbound should use East lane (x > 0)
+      if (southSpinePt && northSpinePt) {
+        expect(southSpinePt[0]).toBeLessThan(0);
+        expect(northSpinePt[0]).toBeGreaterThan(0);
+      }
+    });
+
+    it('executes auto-unstuck recovery maneuver when agent is blocked for multiple frames', () => {
+      const { crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const testObstacle = [
+        { id: 'impassable_barrier', minX: -2, maxX: 2, minZ: 5, maxZ: 7 },
+      ];
+
+      crew[0].currentState = 'WALKING';
+      crew[0].currentPos = [0, 0, 4.5]; // Right in front of barrier
+      crew[0].targetPos = [0, 0, 6.0]; // Inside barrier
+      crew[0].pathQueue = [[0, 0, 10]]; // Alternate path hop queued
+      crew[0].stuckCounter = 24; // 1 frame away from threshold
+      crew[0].lastPosSnapshot = [0, 0, 4.5];
+
+      // Step simulation
+      const { updatedCrew, arrivedLogs } = stepCrewMovement(crew, 0.05, Date.now(), testObstacle);
+
+      // Should have triggered unstuck and advanced to next waypoint in pathQueue
+      expect(updatedCrew[0].stuckCounter).toBe(0);
+      expect(updatedCrew[0].targetPos).toEqual([0, 0, 10]);
+      expect(arrivedLogs.some((l) => l.message.includes('memutar rute'))).toBe(true);
+    });
+
+    it('registers obstacle boxes for reception and pantry boundary walls', () => {
+      const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
+      const obstacles = generateCampusObstacles(rooms, crew);
+
+      const requiredWallIds = [
+        'reception_wall_back',
+        'reception_wall_west',
+        'reception_wall_east',
+        'pantry_wall_back',
+        'pantry_wall_west',
+        'pantry_wall_east',
+      ];
+
+      requiredWallIds.forEach((id) => {
+        const obs = obstacles.find((o) => o.id === id);
+        expect(obs, `Missing boundary wall ${id}`).toBeDefined();
+      });
     });
 
     it('advances through pathQueue waypoints sequentially until final arrival', () => {

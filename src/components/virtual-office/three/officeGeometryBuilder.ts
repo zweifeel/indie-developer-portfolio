@@ -585,6 +585,54 @@ export function buildRoomMesh(room: DynamicProjectRoom3D): THREE.Group {
   glassSouth.position.set(corridorX, 1.4, room.bounds.maxZ - wallSegmentLength / 2);
   group.add(glassSouth);
 
+  // 2d. Front Wall with Studio Panoramic Windows & Architectural Baseboard/Crown (South edge: room.bounds.maxZ)
+  // Lower solid wainscoting section (0.9m height)
+  const frontLowerGeo = new THREE.BoxGeometry(w, 0.9, 0.3);
+  const frontLower = new THREE.Mesh(frontLowerGeo, wallMat);
+  frontLower.position.set(room.centerPos[0], 0.45, room.bounds.maxZ);
+  frontLower.receiveShadow = true;
+  group.add(frontLower);
+
+  // Front Wall Baseboard Trim
+  const frontBaseboardGeo = new THREE.BoxGeometry(w, 0.22, 0.35);
+  const frontBaseboard = new THREE.Mesh(frontBaseboardGeo, baseboardMat);
+  frontBaseboard.position.set(room.centerPos[0], 0.11, room.bounds.maxZ);
+  group.add(frontBaseboard);
+
+  // Front Wall Chair-Rail Sill Trim (at 0.9m height)
+  const frontSillGeo = new THREE.BoxGeometry(w, 0.1, 0.35);
+  const frontSill = new THREE.Mesh(frontSillGeo, chairRailMat);
+  frontSill.position.set(room.centerPos[0], 0.9, room.bounds.maxZ);
+  group.add(frontSill);
+
+  // Panoramic Studio Glass Windows (1.4m height from 0.95m to 2.35m)
+  const frontGlassGeo = new THREE.BoxGeometry(w - 0.6, 1.4, 0.1);
+  const frontGlass = new THREE.Mesh(frontGlassGeo, glassMat);
+  frontGlass.position.set(room.centerPos[0], 1.65, room.bounds.maxZ);
+  group.add(frontGlass);
+
+  // Panoramic Window Architectural Mullions (Vertical dividing posts every 3.8m)
+  const mullionGeo = new THREE.BoxGeometry(0.12, 1.4, 0.18);
+  const mullionMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+  for (let mx = -w / 2 + 3.8; mx < w / 2 - 1.0; mx += 3.8) {
+    const mullion = new THREE.Mesh(mullionGeo, mullionMat);
+    mullion.position.set(room.centerPos[0] + mx, 1.65, room.bounds.maxZ);
+    group.add(mullion);
+  }
+
+  // Upper Header Beam (0.45m height from 2.35m to 2.8m)
+  const frontHeaderGeo = new THREE.BoxGeometry(w, 0.45, 0.3);
+  const frontHeader = new THREE.Mesh(frontHeaderGeo, wallMat);
+  frontHeader.position.set(room.centerPos[0], 2.575, room.bounds.maxZ);
+  frontHeader.receiveShadow = true;
+  group.add(frontHeader);
+
+  // Front Crown Moulding
+  const frontCrownGeo = new THREE.BoxGeometry(w, 0.12, 0.36);
+  const frontCrown = new THREE.Mesh(frontCrownGeo, crownMat);
+  frontCrown.position.set(room.centerPos[0], 2.74, room.bounds.maxZ);
+  group.add(frontCrown);
+
   // 3. 3D Illuminated Room Signage Board (Displaying Project Name & Role)
   const signTex = createRoomSignageTexture({
     title: room.projectName,
@@ -722,22 +770,115 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
       group.add(rug);
     }
 
-    // Pantry Props (Coffee maker counter)
+    // Pantry Props & Full Architectural Enclosure Walls
     if (fac.facilityId === 'pantry_coffee_bar') {
+      const pantryWallMat = new THREE.MeshLambertMaterial({ color: 0x27272a });
+      const pantryWoodMat = new THREE.MeshLambertMaterial({ color: 0x78350f });
+      const pantryFrameMat = new THREE.MeshLambertMaterial({ color: 0x18181b });
+      const wallH = 2.8;
+
+      // 1. Pantry Back Wall (South edge at z = fac.bounds.maxZ = 30)
+      const backWallGeo = new THREE.BoxGeometry(w, wallH, 0.3);
+      const backWall = new THREE.Mesh(backWallGeo, pantryWallMat);
+      backWall.position.set(fac.centerPos[0], wallH / 2, fac.bounds.maxZ);
+      backWall.receiveShadow = true;
+      group.add(backWall);
+
+      // Back Wall Baseboard Trim & Crown
+      const bbGeo = new THREE.BoxGeometry(w, 0.22, 0.35);
+      const bb = new THREE.Mesh(bbGeo, pantryFrameMat);
+      bb.position.set(fac.centerPos[0], 0.11, fac.bounds.maxZ);
+      group.add(bb);
+
+      const crownGeo = new THREE.BoxGeometry(w, 0.12, 0.36);
+      const crown = new THREE.Mesh(crownGeo, pantryFrameMat);
+      crown.position.set(fac.centerPos[0], 2.74, fac.bounds.maxZ);
+      group.add(crown);
+
+      // Acoustic Slatted Wood Accent Panel on Back Wall
+      const slatPanel = new THREE.Mesh(new THREE.BoxGeometry(7.0, 1.8, 0.08), pantryWoodMat);
+      slatPanel.position.set(0, 1.6, fac.bounds.maxZ - 0.16);
+      group.add(slatPanel);
+
+      // Cafe Blackboard Menu Sign
+      const menuSignMat = new THREE.MeshLambertMaterial({ color: 0x09090b });
+      const menuSign = new THREE.Mesh(new THREE.BoxGeometry(3.6, 0.9, 0.06), menuSignMat);
+      menuSign.position.set(0, 2.0, fac.bounds.maxZ - 0.22);
+      group.add(menuSign);
+
+      // Floating Cafe Shelves with Ceramic Mugs
+      const shelfGeo = new THREE.BoxGeometry(5.4, 0.08, 0.4);
+      const shelf1 = new THREE.Mesh(shelfGeo, pantryWoodMat);
+      shelf1.position.set(0, 1.1, fac.bounds.maxZ - 0.22);
+      group.add(shelf1);
+
+      // 2. West & East Glass Partition Boundary Walls (x = ±6.5)
+      const pGlassMat = new THREE.MeshLambertMaterial({
+        color: 0x93c5fd,
+        transparent: true,
+        opacity: 0.35,
+      });
+      const sideWallGeo = new THREE.BoxGeometry(0.16, wallH, d);
+      const westWall = new THREE.Mesh(sideWallGeo, pGlassMat);
+      westWall.position.set(fac.bounds.minX, wallH / 2, fac.centerPos[2]);
+      group.add(westWall);
+
+      const eastWall = new THREE.Mesh(sideWallGeo, pGlassMat);
+      eastWall.position.set(fac.bounds.maxX, wallH / 2, fac.centerPos[2]);
+      group.add(eastWall);
+
+      // Counter & Coffee Machine
       const counterMat = new THREE.MeshLambertMaterial({ color: 0x3f3f46 });
       const counter = new THREE.Mesh(new THREE.BoxGeometry(5.0, 1.1, 1.2), counterMat);
       counter.position.set(0, 0.55, fac.centerPos[2] + 2);
       group.add(counter);
 
-      // Coffee Machine on Counter
       const machineMat = new THREE.MeshLambertMaterial({ color: STUDIO_PALETTE.coffeeMaker });
       const machine = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.8, 0.7), machineMat);
       machine.position.set(0, 1.5, fac.centerPos[2] + 2);
       group.add(machine);
     }
 
-    // Reception Props (Front Desk & Studio Backboard)
+    // Reception Props & Grand Architectural Feature Wall
     if (fac.facilityId === 'reception') {
+      const recWallMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+      const recFrameMat = new THREE.MeshLambertMaterial({ color: 0x0f172a });
+      const wallH = 2.8;
+
+      // 1. Reception Back Wall (North edge at z = fac.bounds.minZ = -30)
+      const backWallGeo = new THREE.BoxGeometry(w, wallH, 0.3);
+      const backWall = new THREE.Mesh(backWallGeo, recWallMat);
+      backWall.position.set(fac.centerPos[0], wallH / 2, fac.bounds.minZ);
+      backWall.receiveShadow = true;
+      group.add(backWall);
+
+      // Baseboard & Crown
+      const bbGeo = new THREE.BoxGeometry(w, 0.22, 0.35);
+      const bb = new THREE.Mesh(bbGeo, recFrameMat);
+      bb.position.set(fac.centerPos[0], 0.11, fac.bounds.minZ);
+      group.add(bb);
+
+      const crownGeo = new THREE.BoxGeometry(w, 0.12, 0.36);
+      const crown = new THREE.Mesh(crownGeo, recFrameMat);
+      crown.position.set(fac.centerPos[0], 2.74, fac.bounds.minZ);
+      group.add(crown);
+
+      // 2. West & East Boundary Divider Partitions (x = ±6.5)
+      const recGlassMat = new THREE.MeshLambertMaterial({
+        color: 0x93c5fd,
+        transparent: true,
+        opacity: 0.35,
+      });
+      const sideWallGeo = new THREE.BoxGeometry(0.16, wallH, d);
+      const westWall = new THREE.Mesh(sideWallGeo, recGlassMat);
+      westWall.position.set(fac.bounds.minX, wallH / 2, fac.centerPos[2]);
+      group.add(westWall);
+
+      const eastWall = new THREE.Mesh(sideWallGeo, recGlassMat);
+      eastWall.position.set(fac.bounds.maxX, wallH / 2, fac.centerPos[2]);
+      group.add(eastWall);
+
+      // Front Desk & Counter
       const deskMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
       const deskTopMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
       const desk = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.15, 1.2), deskMat);
@@ -747,10 +888,22 @@ export function buildSharedFacilitiesGroup(facilities: SharedFacility3D[]): THRE
       group.add(desk);
       group.add(deskTop);
 
-      // Studio Signboard / Backboard
-      const signBoard = new THREE.Mesh(new THREE.BoxGeometry(5.2, 1.8, 0.15), deskMat);
-      signBoard.position.set(0, 2.0, fac.centerPos[2] - 4.5);
-      group.add(signBoard);
+      // Grand Studio Signboard / Backboard Feature Plaque
+      const plaqueMat = new THREE.MeshLambertMaterial({ color: 0x09090b });
+      const plaque = new THREE.Mesh(new THREE.BoxGeometry(6.4, 1.8, 0.16), plaqueMat);
+      plaque.position.set(0, 1.75, fac.bounds.minZ + 0.18);
+      group.add(plaque);
+
+      // Gold Bronze Logo Plate
+      const goldMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
+      const logoPlate = new THREE.Mesh(new THREE.BoxGeometry(5.2, 0.9, 0.08), goldMat);
+      logoPlate.position.set(0, 1.75, fac.bounds.minZ + 0.28);
+      group.add(logoPlate);
+
+      // Warm Amber Accent Spotlight for Studio Logo
+      const logoLight = new THREE.PointLight(0xfbbf24, 1.2, 10);
+      logoLight.position.set(0, 2.4, fac.bounds.minZ + 1.2);
+      group.add(logoLight);
 
       // Welcome Rug
       const recRugMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
