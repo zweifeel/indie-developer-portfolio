@@ -7,7 +7,7 @@
  * ============================================================================
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Send,
   HelpCircle,
@@ -21,6 +21,8 @@ import {
   X,
   CheckCircle2,
   AlertCircle,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import {
   VisitorCommandFeedback,
@@ -34,6 +36,7 @@ export interface VisitorCommandConsoleProps {
   lastFeedback?: VisitorCommandFeedback | null;
   className?: string;
   focusedProjectName?: string | null;
+  isDefaultMinimized?: boolean;
 }
 
 export const VisitorCommandConsole: React.FC<VisitorCommandConsoleProps> = ({
@@ -41,9 +44,15 @@ export const VisitorCommandConsole: React.FC<VisitorCommandConsoleProps> = ({
   lastFeedback,
   className = '',
   focusedProjectName,
+  isDefaultMinimized = false,
 }) => {
   const [inputText, setInputText] = useState('');
   const [showGuide, setShowGuide] = useState(false);
+  const [isMinimized, setIsMinimized] = useState<boolean>(isDefaultMinimized);
+
+  useEffect(() => {
+    setIsMinimized(isDefaultMinimized);
+  }, [isDefaultMinimized]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -56,8 +65,61 @@ export const VisitorCommandConsole: React.FC<VisitorCommandConsoleProps> = ({
     onExecuteCommand(cmd);
   };
 
+  // 1. Minimized State: Sleek, compact floating bar freeing 100% of the 3D office view
+  if (isMinimized) {
+    return (
+      <div className={`transition-all duration-300 ease-out ${className}`} data-testid="visitor-console-minimized">
+        <button
+          type="button"
+          onClick={() => setIsMinimized(false)}
+          className="group flex items-center justify-between gap-3 px-4 py-2.5 rounded-2xl border border-cyan-500/40 bg-stone-900/95 hover:bg-stone-850/95 backdrop-blur-md shadow-2xl text-stone-200 transition-all hover:scale-[1.02] cursor-pointer w-full sm:w-auto"
+          title="Buka konsol perintah kru AI"
+          data-testid="expand-command-console"
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse shrink-0" />
+            <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
+            <span className="text-xs font-mono font-bold text-stone-100 uppercase tracking-wider">
+              Perintah Kru AI
+            </span>
+            {focusedProjectName && (
+              <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-cyan-950/60 border border-cyan-800/80 text-[10px] font-mono text-cyan-300">
+                Target: {focusedProjectName}
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-cyan-400 font-semibold flex items-center gap-1 group-hover:text-cyan-300">
+              <span>Buka</span>
+              <ChevronUp className="w-3.5 h-3.5" />
+            </span>
+          </div>
+        </button>
+
+        {/* Floating feedback preview even when minimized */}
+        {lastFeedback && (
+          <div
+            className={`mt-2 p-2 px-3 rounded-xl border flex items-center gap-2 text-xs transition-all shadow-md ${
+              lastFeedback.success
+                ? 'border-emerald-500/40 bg-emerald-950/80 text-emerald-200'
+                : 'border-amber-500/40 bg-amber-950/80 text-amber-200'
+            }`}
+          >
+            {lastFeedback.success ? (
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+            ) : (
+              <AlertCircle className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+            )}
+            <span className="truncate text-[11px] font-medium">{lastFeedback.message}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
-    <div className={`space-y-3 ${className}`}>
+    <div className={`space-y-3 transition-all duration-300 ease-out ${className}`} data-testid="visitor-console-expanded">
       {/* 1. Command Input Bar */}
       <div className="p-3 sm:p-4 rounded-2xl border border-stone-800 bg-stone-900/90 backdrop-blur-md shadow-lg">
         <div className="flex items-center justify-between gap-2 mb-2.5">
@@ -73,15 +135,29 @@ export const VisitorCommandConsole: React.FC<VisitorCommandConsoleProps> = ({
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => setShowGuide(true)}
-            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-stone-800 hover:border-cyan-500/50 bg-stone-950/80 hover:bg-cyan-950/30 text-stone-400 hover:text-cyan-300 text-[11px] font-medium transition-colors"
-            title="Buka panduan perintah interaktif"
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>Panduan Perintah</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setShowGuide(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-stone-800 hover:border-cyan-500/50 bg-stone-950/80 hover:bg-cyan-950/30 text-stone-400 hover:text-cyan-300 text-[11px] font-medium transition-colors"
+              title="Buka panduan perintah interaktif"
+            >
+              <HelpCircle className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Panduan Perintah</span>
+            </button>
+
+            {/* Minimize Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setIsMinimized(true)}
+              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-stone-800 hover:border-amber-500/50 bg-stone-950/80 hover:bg-amber-950/30 text-stone-400 hover:text-amber-300 text-[11px] font-medium transition-colors"
+              title="Sembunyikan konsol perintah untuk melihat kantor 3D penuh"
+              data-testid="minimize-command-console"
+            >
+              <ChevronDown className="w-3.5 h-3.5" />
+              <span>Sembunyikan</span>
+            </button>
+          </div>
         </div>
 
         <form onSubmit={handleSubmit} className="flex items-center gap-2">

@@ -180,7 +180,13 @@ export const PERSONAL_COLLISION_DISTANCE = 1.15;
 
 /**
  * Build safe multi-hop corridor routes between rooms and shared campus facilities
- * to guarantee crew NEVER step onto unpaved edges or void.
+ * to guarantee crew NEVER step onto unpaved edges, void, or collide with exterior walls.
+ * Uses the open Campus Highway Network:
+ * - West Highway Corridor: X = -10.5m (open from Z = -30 to +30)
+ * - East Highway Corridor: X = +10.5m (open from Z = -30 to +30)
+ * - North Crossway: Z = -15.0m (connecting West & East highways to Reception South Entrance at [0, 0, -18])
+ * - South Crossway: Z = +15.0m (connecting West & East highways to Pantry North Entrance at [0, 0, 18])
+ * - Center Crossway: Z = 0.0m (connecting to Collaboration Lounge West & East doors at X = ±6.5)
  */
 export function buildCorridorRoute(
   startPos: Vector3Tuple,
@@ -190,7 +196,7 @@ export function buildCorridorRoute(
   const dx = destPos[0] - startPos[0];
   const dz = destPos[2] - startPos[2];
   const dist = Math.sqrt(dx * dx + dz * dz);
-  if (!room || dist < 1.0) {
+  if (!room || dist < 0.5) {
     return [[destPos[0], 0, destPos[2]]];
   }
 
@@ -199,22 +205,20 @@ export function buildCorridorRoute(
   // Doorway is on the corridor wall side (inner edge of the room)
   const insideDoorX = isWest ? cx + 7.5 : cx - 7.5;
   const outsideDoorX = isWest ? cx + 9.5 : cx - 9.5;
+  const highwayX = isWest ? -10.5 : 10.5;
 
   const isInsideRoom = isWest ? startPos[0] < cx + 7.8 : startPos[0] > cx - 7.8;
   const isDestInsideRoom = (isWest ? destPos[0] < cx + 7.8 : destPos[0] > cx - 7.8) &&
     Math.abs(destPos[2] - cz) < 6.5;
 
-  // Directional pedestrian lane assignment along central spine to eliminate head-on stalemates
-  // Southbound (moving +Z) uses West lane (x = -0.9), Northbound (moving -Z) uses East lane (x = +0.9)
-  const spineLaneX = (destPos[2] > startPos[2]) ? -0.9 : 0.9;
-  // Connector walkway directional lane: Outbound to corridor vs Inbound to room
+  // Directional pedestrian lane assignment along connector walkway
   const connectorZ_outbound = isWest ? cz - 0.45 : cz + 0.45;
   const connectorZ_inbound = isWest ? cz + 0.45 : cz - 0.45;
 
   const route: Vector3Tuple[] = [];
 
   // Helper: Safe departure waypoint from workstation chair into room clear central aisle (cz)
-  const isAtDeskRow = Math.abs(startPos[2] - cz) > 1.2;
+  const isAtDeskRow = Math.abs(startPos[2] - cz) > 1.0;
   const stepOutFromDesk = (): Vector3Tuple => {
     // If back row (z < cz), step forward/south into central aisle
     if (startPos[2] < cz) {
@@ -225,69 +229,107 @@ export function buildCorridorRoute(
     return [clearSideX, 0, cz];
   };
 
+  // Facility detection
+  const isDestPantry = destPos[2] >= 17.0 && Math.abs(destPos[0]) <= 6.5;
+  const isDestReception = destPos[2] <= -17.0 && Math.abs(destPos[0]) <= 6.5;
+  const isDestLounge = Math.abs(destPos[0]) <= 6.5 && Math.abs(destPos[2]) <= 6.5;
+
+  const isStartPantry = startPos[2] >= 17.0 && Math.abs(startPos[0]) <= 6.5;
+  const isStartReception = startPos[2] <= -17.0 && Math.abs(startPos[0]) <= 6.5;
+  const isStartLounge = Math.abs(startPos[0]) <= 6.5 && Math.abs(startPos[2]) <= 6.5;
+
   // CASE 1: Navigating entirely inside the same room (e.g. from desk to whiteboard, or returning to chair)
   if (isInsideRoom && isDestInsideRoom) {
-    // 1. Step safely out of desk into room central aisle (Z = cz) if currently seated near desk
     if (isAtDeskRow) {
       route.push(stepOutFromDesk());
     }
-    // 2. Move to room center meeting/corridor nexus
     route.push([cx, 0, cz]);
-    // 3. Move along central aisle to destination column
     if (Math.abs(destPos[0] - cx) > 1.0) {
       route.push([destPos[0], 0, cz]);
     }
-    // 4. Step from aisle to destination (chair or prop)
     route.push([destPos[0], 0, destPos[2]]);
     return route;
   }
 
-  // CASE 2: Leaving room towards common facilities (Lounge, Pantry, Corridor)
+  // CASE 2: Leaving room towards common facilities (Lounge, Pantry, Reception, or Campus Highway)
   if (isInsideRoom) {
-    // 1. Step safely out of desk into room central aisle if departing from workstation
+    // 1. Step safely out of desk into room central aisle
     if (isAtDeskRow) {
       route.push(stepOutFromDesk());
     }
     // 2. Move to room center nexus
     route.push([cx, 0, cz]);
-    // 3. Move to doorway inside room
+    // 3. Move to inside doorway
     route.push([insideDoorX, 0, connectorZ_outbound]);
-    // 4. Step outside door onto the connector walkway
+    // 4. Step outside door onto connector walkway
     route.push([outsideDoorX, 0, connectorZ_outbound]);
-    // 5. Merge onto central directional spine lane (x = ±0.9)
-    route.push([spineLaneX, 0, cz]);
+    // 5. Merge onto Highway Corridor (X = ±10.5)
+    route.push([highwayX, 0, connectorZ_outbound]);
 
-    // Check if dest is Collaboration Lounge (bounds: -6.5 to 6.5)
-    if (Math.abs(destPos[0]) < 6.5 && Math.abs(destPos[2]) < 6.5) {
-      // Enter through the closest of the 4 doors
-      const doorEntry: Vector3Tuple = isWest ? [-6.5, 0, connectorZ_outbound] : [6.5, 0, connectorZ_outbound];
-      route.push(doorEntry);
-      // Step into lounge inner perimeter
-      route.push([isWest ? -3.0 : 3.0, 0, 0]);
-    } else {
-      // Move along directional spine lane towards destination Z
-      route.push([spineLaneX, 0, destPos[2]]);
+    // Destination routing via Campus Highway Network:
+    if (isDestPantry) {
+      // Highway -> South Crossway (Z = 15) -> Pantry North Entrance (Z = 18) -> Inside Pantry
+      route.push([highwayX, 0, 15.0]);
+      route.push([0, 0, 15.0]);
+      route.push([0, 0, 18.0]);
+      route.push([destPos[0], 0, destPos[2]]);
+      return route;
     }
-    // Final step into destination
+
+    if (isDestReception) {
+      // Highway -> North Crossway (Z = -15) -> Reception South Entrance (Z = -18) -> Inside Reception
+      route.push([highwayX, 0, -15.0]);
+      route.push([0, 0, -15.0]);
+      route.push([0, 0, -18.0]);
+      route.push([destPos[0], 0, destPos[2]]);
+      return route;
+    }
+
+    if (isDestLounge) {
+      // Highway -> Lounge Door (Z = 0, X = ±6.5) -> Inside Lounge
+      route.push([highwayX, 0, 0.0]);
+      route.push([isWest ? -6.5 : 6.5, 0, 0.0]);
+      route.push([isWest ? -3.0 : 3.0, 0, 0.0]);
+      route.push([destPos[0], 0, destPos[2]]);
+      return route;
+    }
+
+    // Generic campus corridor navigation
+    route.push([highwayX, 0, destPos[2]]);
     route.push([destPos[0], 0, destPos[2]]);
     return route;
   }
 
   // CASE 3: Returning from outside facility back into room
-  // 1. If currently inside Collaboration Lounge, exit via nearest door
-  if (Math.abs(startPos[0]) < 6.0 && Math.abs(startPos[2]) < 6.0) {
-    const doorExit: Vector3Tuple = isWest ? [-6.5, 0, connectorZ_inbound] : [6.5, 0, connectorZ_inbound];
-    route.push(doorExit);
+  // 1. Exit shared facility safely onto Highway Network
+  if (isStartPantry) {
+    // Exit Pantry via North entrance (Z = 18) -> South Crossway (Z = 15) -> Highway
+    route.push([0, 0, 18.0]);
+    route.push([0, 0, 15.0]);
+    route.push([highwayX, 0, 15.0]);
+  } else if (isStartReception) {
+    // Exit Reception via South entrance (Z = -18) -> North Crossway (Z = -15) -> Highway
+    route.push([0, 0, -18.0]);
+    route.push([0, 0, -15.0]);
+    route.push([highwayX, 0, -15.0]);
+  } else if (isStartLounge) {
+    // Exit Lounge via West or East door -> Highway
+    route.push([isWest ? -6.5 : 6.5, 0, 0.0]);
+    route.push([highwayX, 0, 0.0]);
+  } else {
+    // From generic campus position, merge to Highway
+    route.push([highwayX, 0, startPos[2]]);
   }
-  // 2. Move along directional spine lane to room connector row Z
-  route.push([spineLaneX, 0, cz]);
+
+  // 2. Walk along Highway Corridor to room connector row Z
+  route.push([highwayX, 0, connectorZ_inbound]);
   // 3. Move along connector walkway to outside doorway
   route.push([outsideDoorX, 0, connectorZ_inbound]);
   // 4. Step through doorway into room
   route.push([insideDoorX, 0, connectorZ_inbound]);
   // 5. Move to room center nexus
   route.push([cx, 0, cz]);
-  // 6. Approach chair from aisle
+  // 6. Approach chair from central aisle
   if (Math.abs(destPos[0] - cx) > 1.0) {
     route.push([destPos[0], 0, cz]);
   }

@@ -110,6 +110,22 @@ interface CrewAnimationController {
   const [activeBubbles, setActiveBubbles] = useState<ChatBubbleData[]>([]);
   const [controlMode, setControlMode] = useState<'orbit' | 'pan'>('pan');
 
+  // Mobile viewport responsiveness
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth < 640;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   // Camera state refs for continuous frame loop
   const currentCameraState = useRef<CameraState>({ ...CAMPUS_OVERVIEW_PRESET });
   const desiredCameraState = useRef<CameraState>({ ...CAMPUS_OVERVIEW_PRESET });
@@ -760,7 +776,7 @@ interface CrewAnimationController {
     <div
       ref={containerRef}
       className={`relative w-full rounded-3xl border border-stone-800 bg-slate-950 overflow-hidden select-none ${className}`}
-      style={{ minHeight: '620px' }}
+      style={{ minHeight: isMobile ? '500px' : '620px' }}
       data-testid="three-campus-canvas-container"
       onContextMenu={(e) => e.preventDefault()} // prevent default right-click context menu so right-drag pan is smooth
     >
@@ -772,13 +788,13 @@ interface CrewAnimationController {
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
         onWheel={handleWheel}
-        className="w-full h-[620px] block cursor-grab active:cursor-grabbing touch-none"
+        className="w-full h-[500px] sm:h-[620px] block cursor-grab active:cursor-grabbing touch-none"
         data-testid="three-campus-canvas"
       />
 
       {/* 2. Top Room Navigator Toolbar */}
-      <div className="absolute top-4 left-4 right-4 z-20 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
-        <div className="flex flex-wrap items-center gap-1.5 pointer-events-auto bg-stone-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-800 shadow-xl max-w-full overflow-x-auto scrollbar-none">
+      <div className="absolute top-4 left-4 right-4 z-20 flex flex-nowrap items-center justify-between gap-2 pointer-events-none">
+        <div className="flex flex-nowrap items-center gap-1.5 pointer-events-auto bg-stone-900/90 backdrop-blur-md p-1.5 rounded-2xl border border-stone-800 shadow-xl max-w-full overflow-x-auto scrollbar-none">
           <button
             type="button"
             onClick={() => handleSelectRoom(null)}
@@ -900,8 +916,8 @@ interface CrewAnimationController {
 
       {/* 4. Project Room Focus Drawer (Displays when a Room is Selected) */}
       {activeRoom && (
-        <div className="absolute right-4 bottom-4 top-20 z-20 w-80 max-w-[90vw] pointer-events-auto">
-          <div className="h-full rounded-3xl border border-stone-800 bg-stone-900/95 backdrop-blur-lg shadow-2xl p-5 flex flex-col justify-between overflow-y-auto space-y-4">
+        <div className="absolute left-4 right-4 bottom-4 sm:left-auto sm:right-4 sm:bottom-4 sm:top-20 z-20 w-auto sm:w-80 max-h-[50vh] sm:max-h-none pointer-events-auto">
+          <div className="h-full rounded-3xl border border-stone-800 bg-stone-900/95 backdrop-blur-lg shadow-2xl p-4 sm:p-5 flex flex-col justify-between overflow-y-auto space-y-3 sm:space-y-4">
             <div className="space-y-3">
               <div className="flex items-center justify-between border-b border-stone-800 pb-3">
                 <div>
@@ -915,10 +931,10 @@ interface CrewAnimationController {
                 <button
                   type="button"
                   onClick={() => handleSelectRoom(null)}
-                  className="px-2 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-stone-200 text-xs font-mono"
+                  className="px-2.5 py-1 rounded-lg bg-stone-800 hover:bg-stone-700 text-stone-400 hover:text-stone-200 text-xs font-mono transition-colors"
                   title="Kembali ke tampilan penuh kampus"
                 >
-                  ✕ Zoom Out
+                  ✕ Tutup
                 </button>
               </div>
 
@@ -988,6 +1004,7 @@ interface CrewAnimationController {
           onExecuteCommand={handleExecuteCommand}
           lastFeedback={lastFeedback}
           focusedProjectName={activeRoom?.projectName || null}
+          isDefaultMinimized={isMobile}
         />
       </div>
     </div>

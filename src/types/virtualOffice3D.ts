@@ -93,6 +93,7 @@ export interface ProjectCrewMember3D {
   activeChatBubble?: ChatBubbleData | null;
   stuckCounter?: number; // Consecutive frames with zero/near-zero movement
   lastPosSnapshot?: Vector3Tuple; // Position snapshot for stagnation detection
+  lastTargetDist?: number; // Distance to target snapshot for true progress detection
   escapeWaypoint?: Vector3Tuple | null; // Temporary emergency detour waypoint
 }
 

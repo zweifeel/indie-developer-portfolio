@@ -72,9 +72,24 @@ export function resolveObstacleCollision(
 }
 
 /**
+ * Calculate deterministic lateral lane offset based on agent ID (-0.8m to +0.8m)
+ * Ensures crew members travelling along the same campus corridor walk side-by-side
+ * across the 4-meter wide highway rather than lining up in a single-file conga line.
+ */
+export function getAgentLaneOffset(agentId: string): number {
+  let hash = 0;
+  for (let i = 0; i < agentId.length; i++) {
+    hash = (hash * 31 + agentId.charCodeAt(i)) | 0;
+  }
+  const laneIndex = Math.abs(hash) % 5; // 0, 1, 2, 3, 4
+  return (laneIndex - 2) * 0.4; // -0.8, -0.4, 0.0, +0.4, +0.8
+}
+
+/**
  * Resolve Agent-to-Agent collisions using personal space repulsion & lateral steering
- * - Walking agents maintain 1.35m personal space from other walking agents
+ * - Walking agents maintain 1.35m personal space from other walking agents (softened in rooms)
  * - Head-on encounters apply lateral "Keep-Right" steering force to pass smoothly without deadlock
+ * - Same-direction encounters apply lateral lane diversion to prevent single-file conga lines
  * - Walking agents maintain 1.25m clearance from seated agents (cannot walk through seated crew)
  * - Seated crew members remain firmly anchored to their chairs
  */
@@ -118,8 +133,14 @@ export function resolveAgentCollisions(
         continue;
       }
 
+      // Determine effective personal space distance:
+      // Inside project rooms (Math.abs(x) > 13), use gentle personal space (0.95m)
+      // to prevent bouncing agents into desk colliders.
+      const isInRoom = Math.abs(a.currentPos[0]) > 13.0 || Math.abs(b.currentPos[0]) > 13.0;
+      const effectiveMinDist = isInRoom ? 0.95 : minDistance;
+
       // Interaction between two walking agents (i < j to avoid duplicate processing)
-      if (i < j && distSq < minDistance * minDistance && distSq > 0.0001) {
+      if (i < j && distSq < effectiveMinDist * effectiveMinDist && distSq > 0.0001) {
         const dist = Math.sqrt(distSq);
 
         // Calculate heading vectors based on facing angles
@@ -135,7 +156,7 @@ export function resolveAgentCollisions(
           // Head-on / counter-flow encounter: apply Keep-Right Lateral Steering
           // Right-hand normal vector for agent A: (fAz, -fAx)
           // Right-hand normal vector for agent B: (fBz, -fBx)
-          const lateralStrength = (minDistance - dist) * 0.45;
+          const lateralStrength = (effectiveMinDist - dist) * 0.45;
 
           a.currentPos[0] += fAz * lateralStrength;
           a.currentPos[2] += -fAx * lateralStrength;
@@ -144,16 +165,36 @@ export function resolveAgentCollisions(
           b.currentPos[2] += -fBx * lateralStrength;
 
           // Gentle radial damping to avoid clipping while lateral steering takes effect
-          if (dist < 0.7) {
-            const radialPush = (0.7 - dist) * 0.3;
+          if (dist < 0.6) {
+            const radialPush = (0.6 - dist) * 0.25;
             a.currentPos[0] += (dx / dist) * radialPush;
             a.currentPos[2] += (dz / dist) * radialPush;
             b.currentPos[0] -= (dx / dist) * radialPush;
             b.currentPos[2] -= (dz / dist) * radialPush;
           }
+        } else if (headingDot > 0.5 && !isInRoom) {
+          // Same-direction tandem flow on campus corridors:
+          // Apply lateral lane diversion to break up single-file conga lines
+          const laneDiff = getAgentLaneOffset(a.id) - getAgentLaneOffset(b.id);
+          const lateralDir = laneDiff !== 0 ? Math.sign(laneDiff) : 1;
+          const lateralOvertake = (effectiveMinDist - dist) * 0.35;
+
+          a.currentPos[0] += fAz * lateralOvertake * lateralDir;
+          a.currentPos[2] += -fAx * lateralOvertake * lateralDir;
+
+          b.currentPos[0] -= fBz * lateralOvertake * lateralDir;
+          b.currentPos[2] -= -fBx * lateralOvertake * lateralDir;
+
+          // Light radial separation
+          const overlap = (effectiveMinDist - dist) * 0.25;
+          a.currentPos[0] += (dx / dist) * overlap;
+          a.currentPos[2] += (dz / dist) * overlap;
+          b.currentPos[0] -= (dx / dist) * overlap;
+          b.currentPos[2] -= (dz / dist) * overlap;
         } else {
-          // Non-head-on / converging encounter: Standard soft radial boids separation
-          const overlap = (minDistance - dist) * 0.5;
+          // Converging encounter: Standard soft radial boids separation
+          const factor = isInRoom ? 0.35 : 0.5;
+          const overlap = (effectiveMinDist - dist) * factor;
           const pushX = (dx / dist) * overlap;
           const pushZ = (dz / dist) * overlap;
 

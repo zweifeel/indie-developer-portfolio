@@ -38,6 +38,9 @@ import {
   assembleProcedural3DCampus,
   syncCrewMeshes,
 } from '../components/virtual-office/three/proceduralCampusBuilder';
+import {
+  getAgentLaneOffset,
+} from '../components/virtual-office/three/collisionSystem';
 
 const MOCK_PROJECTS: Project[] = [
   {
@@ -345,7 +348,7 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       expect(dist).toBeGreaterThan(0.2); // actively pushed apart by personal space
     });
 
-    it('builds multi-hop corridor route through doorway, connector walkway and central spine', () => {
+    it('builds multi-hop corridor route through doorway, connector walkway and Campus Highway Network', () => {
       const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
       const westRoom = rooms[0]; // West room
       const pantryPos: [number, number, number] = [0, 0, 20];
@@ -357,9 +360,12 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       expect(route[0][2]).toBeCloseTo(westRoom.centerPos[2]); // Safe departure into central aisle cz
       const hasDoorwayWaypoint = route.some((pt) => Math.abs(pt[0] - (westRoom.centerPos[0] + 7.5)) < 0.1);
       expect(hasDoorwayWaypoint).toBe(true);
-      // Intermediate hop should transition onto central spine lane (x = ±0.9)
-      const hasSpineWaypoint = route.some((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
-      expect(hasSpineWaypoint).toBe(true);
+      // Intermediate hop should transition onto Highway Corridor (x = -10.5 for West)
+      const hasHighwayWaypoint = route.some((pt) => Math.abs(pt[0] - (-10.5)) < 0.2);
+      expect(hasHighwayWaypoint).toBe(true);
+      // South crossway hop to pantry entrance [0, 0, 18]
+      const hasCrosswayEntrance = route.some((pt) => pt[0] === 0 && pt[2] === 18);
+      expect(hasCrosswayEntrance).toBe(true);
       // Final hop should land at pantry destination
       const last = route[route.length - 1];
       expect(last[0]).toBe(pantryPos[0]);
@@ -390,25 +396,41 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       expect(Math.abs(updatedCrew[0].currentPos[0] - updatedCrew[1].currentPos[0])).toBeGreaterThan(0.15);
     });
 
-    it('assigns separate directional pedestrian lanes on the central corridor', () => {
+    it('routes pedestrians along open highway corridors and safe crossways without intersecting solid walls', () => {
       const { rooms, crew } = provisionProcedural3DCampus(MOCK_PROJECTS);
-      const room = rooms[0];
+      const westRoom = rooms[2]; // South-West room (Row 2, Z = 24)
+      const pantryPos: [number, number, number] = [0, 0, 24];
 
-      // Route going South towards Pantry (z = 20)
-      const southRoute = buildCorridorRoute(crew[0].currentPos, [0, 0, 20], room);
-      // Route going North towards Reception (z = -20)
-      const northRoute = buildCorridorRoute([0, 0, 20], [0, 0, -20], room);
+      // Route going from South-West room towards Pantry
+      const route = buildCorridorRoute(crew[10].currentPos, pantryPos, westRoom);
 
-      const southSpinePt = southRoute.find((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
-      const northSpinePt = northRoute.find((pt) => Math.abs(pt[0]) <= 1.0 && Math.abs(pt[0]) >= 0.8);
+      // Verify that NO waypoint cuts through pantry_wall_west (minX: -6.7, maxX: -6.3, minZ: 18, maxZ: 30)
+      route.forEach((pt) => {
+        const inWallWest = pt[0] >= -6.7 && pt[0] <= -6.3 && pt[2] >= 18 && pt[2] <= 30;
+        expect(inWallWest).toBe(false);
+      });
 
-      expect(southSpinePt).toBeDefined();
-      expect(northSpinePt).toBeDefined();
-      // Southbound should use West lane (x < 0) and Northbound should use East lane (x > 0)
-      if (southSpinePt && northSpinePt) {
-        expect(southSpinePt[0]).toBeLessThan(0);
-        expect(northSpinePt[0]).toBeGreaterThan(0);
-      }
+      // Must safely enter from the North entrance (Z = 18, X = 0)
+      const hasNorthEntrance = route.some((pt) => Math.abs(pt[0]) < 0.5 && Math.abs(pt[2] - 18) < 0.5);
+      expect(hasNorthEntrance).toBe(true);
+    });
+
+    it('calculates deterministic lateral lane offset to stagger agents across corridor', () => {
+      const offset1 = getAgentLaneOffset('crew_dompetnalar_planner');
+      const offset2 = getAgentLaneOffset('crew_dompetnalar_developer');
+      const offset3 = getAgentLaneOffset('crew_dompetnalar_tester');
+      const offset4 = getAgentLaneOffset('crew_dompetnalar_reviewer');
+      const offset5 = getAgentLaneOffset('crew_dompetnalar_publisher');
+
+      const offsets = [offset1, offset2, offset3, offset4, offset5];
+      // All offsets must be within [-0.8, 0.8]
+      offsets.forEach((off) => {
+        expect(off).toBeGreaterThanOrEqual(-0.8);
+        expect(off).toBeLessThanOrEqual(0.8);
+      });
+      // Should have diverse lateral values (not all identical)
+      const uniqueOffsets = new Set(offsets);
+      expect(uniqueOffsets.size).toBeGreaterThan(1);
     });
 
     it('executes auto-unstuck recovery maneuver when agent is blocked for multiple frames', () => {
@@ -423,6 +445,7 @@ describe('Virtual Office 3D — Suite (Lapis 1 & 2)', () => {
       crew[0].pathQueue = [[0, 0, 10]]; // Alternate path hop queued
       crew[0].stuckCounter = 24; // 1 frame away from threshold
       crew[0].lastPosSnapshot = [0, 0, 4.5];
+      crew[0].lastTargetDist = 1.5;
 
       // Step simulation
       const { updatedCrew, arrivedLogs } = stepCrewMovement(crew, 0.05, Date.now(), testObstacle);

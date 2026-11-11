@@ -24,6 +24,7 @@ import { calculateGroundDistance } from './chatBubbleEngine';
 import {
   resolveObstacleCollision,
   resolveAgentCollisions,
+  getAgentLaneOffset,
 } from './collisionSystem';
 
 /**
@@ -64,16 +65,30 @@ export function stepCrewMovement(
 
       // If there are more waypoints queued in the corridor route, advance to next hop
       if (crew.pathQueue && crew.pathQueue.length > 0) {
-        const nextWaypoint = crew.pathQueue[0];
+        const nextRawWaypoint = crew.pathQueue[0];
         const remainingQueue = crew.pathQueue.slice(1);
+
+        // Apply dynamic lane offset along Highway Corridor & Crossways
+        const laneOffset = getAgentLaneOffset(crew.id);
+        const isHighway = Math.abs(Math.abs(nextRawWaypoint[0]) - 10.5) < 0.3;
+        const isCrossway = Math.abs(Math.abs(nextRawWaypoint[2]) - 15.0) < 0.3;
+
+        const nextWaypoint: Vector3Tuple = [
+          isHighway ? nextRawWaypoint[0] + laneOffset : nextRawWaypoint[0],
+          0,
+          isCrossway ? nextRawWaypoint[2] + laneOffset * 0.4 : nextRawWaypoint[2],
+        ];
+
         const nextFacing = Math.atan2(nextWaypoint[0] - arrivedPos[0], nextWaypoint[2] - arrivedPos[2]);
         return {
           ...crew,
           currentPos: arrivedPos,
-          targetPos: [...nextWaypoint] as Vector3Tuple,
+          targetPos: nextWaypoint,
           pathQueue: remainingQueue,
           currentState: 'WALKING' as const,
           facingAngleY: nextFacing,
+          stuckCounter: 0,
+          lastTargetDist: calculateGroundDistance(arrivedPos, nextWaypoint),
         };
       }
 
@@ -144,26 +159,42 @@ export function stepCrewMovement(
         currentActivityLog: logMsg || crew.currentActivityLog,
         stuckCounter: 0,
         lastPosSnapshot: [...finalPos],
+        lastTargetDist: undefined,
       };
     }
 
-    // Anti-stuck monitoring for walking agents
+    // True Target-Progress Anti-Stuck Tracking:
+    // Measures whether the agent is actually reducing distance to destination.
+    // Collision vibrations (0.06m) cannot bypass this sensor because distance to target remains stagnant.
+    const currentDistToTarget = distance;
     let stuckCount = crew.stuckCounter || 0;
-    const lastSnap = crew.lastPosSnapshot || current;
-    const progressDist = calculateGroundDistance(current, lastSnap);
+    const lastTargetDist = crew.lastTargetDist !== undefined ? crew.lastTargetDist : currentDistToTarget;
+    const progressTowardsTarget = lastTargetDist - currentDistToTarget;
 
-    if (progressDist < 0.05) {
-      stuckCount += 1;
+    // If agent made meaningful forward progress (> 0.02m) towards target, decrement stuck counter
+    if (progressTowardsTarget > 0.02) {
+      stuckCount = Math.max(0, stuckCount - 1);
     } else {
-      stuckCount = 0;
+      stuckCount += 1;
     }
 
-    // Auto-Unstuck Recovery: If stuck against an obstacle for >= 25 frames (~0.8 - 1.2s)
+    // Auto-Unstuck Recovery: If stagnant or oscillating for >= 25 frames (~0.8 - 1.2s)
     if (stuckCount >= 25) {
       // 1. Advance to next hop in pathQueue if available
       if (crew.pathQueue && crew.pathQueue.length > 0) {
-        const nextWaypoint = crew.pathQueue[0];
+        const nextRawWaypoint = crew.pathQueue[0];
         const remainingQueue = crew.pathQueue.slice(1);
+
+        const laneOffset = getAgentLaneOffset(crew.id);
+        const isHighway = Math.abs(Math.abs(nextRawWaypoint[0]) - 10.5) < 0.3;
+        const isCrossway = Math.abs(Math.abs(nextRawWaypoint[2]) - 15.0) < 0.3;
+
+        const nextWaypoint: Vector3Tuple = [
+          isHighway ? nextRawWaypoint[0] + laneOffset : nextRawWaypoint[0],
+          0,
+          isCrossway ? nextRawWaypoint[2] + laneOffset * 0.4 : nextRawWaypoint[2],
+        ];
+
         const nextFacing = Math.atan2(nextWaypoint[0] - current[0], nextWaypoint[2] - current[2]);
         arrivedLogs.push({
           id: `log_unstuck_${now}_${crew.id}`,
@@ -176,17 +207,17 @@ export function stepCrewMovement(
         });
         return {
           ...crew,
-          targetPos: [...nextWaypoint] as Vector3Tuple,
+          targetPos: nextWaypoint,
           pathQueue: remainingQueue,
           facingAngleY: nextFacing,
           stuckCounter: 0,
           lastPosSnapshot: [...current],
+          lastTargetDist: calculateGroundDistance(current, nextWaypoint),
         };
       } else {
-        // 2. Clear blocked target and redirect into room/corridor clear aisle
-        const lateralStep = current[0] >= 0 ? 1.2 : -1.2;
+        // 2. Clear blocked target and redirect into open aisle / highway
         const escapeTarget: Vector3Tuple = [
-          current[0] + lateralStep,
+          current[0] > 0 ? (current[0] > 13 ? current[0] - 1.5 : 10.5) : (current[0] < -13 ? current[0] + 1.5 : -10.5),
           0,
           current[2] + (dz >= 0 ? 1.5 : -1.5),
         ];
@@ -204,6 +235,7 @@ export function stepCrewMovement(
           targetPos: escapeTarget,
           stuckCounter: 0,
           lastPosSnapshot: [...current],
+          lastTargetDist: calculateGroundDistance(current, escapeTarget),
         };
       }
     }
@@ -227,7 +259,8 @@ export function stepCrewMovement(
       currentPos: resolvedPos,
       facingAngleY,
       stuckCounter: stuckCount,
-      lastPosSnapshot: (now % 1000 < 100) ? [...resolvedPos] : lastSnap,
+      lastPosSnapshot: (now % 1000 < 100) ? [...resolvedPos] : (crew.lastPosSnapshot || current),
+      lastTargetDist: currentDistToTarget,
     };
   });
 
